@@ -1,3 +1,3 @@
-# __f__ast __t__ensor __l__ibrary
+# ftl (fast tensor library)
 
 A fast tensor library for c++.
