@@ -93,13 +93,23 @@ TEST( newList, CanCreateList )
     using namespace ftl2;
     using L2 = List<int, int>;
     using L3 = List<int, int, float>;
-        
+    using LI = List<ftl::Idx<0>, ftl::Idx<2>, ftl::Idx<1>>;
+    
+    using LC = concat<L2, L3>::result;
+   
     L2      l_1(2, 2);
     L3      l_2(3, 3, 4.f);
-    
+      
     L2 nlist = make_list(2, 2);
 
     auto new_list = join(l_1, l_2);
-        
+  
+    size_t found = type_index<ftl::Idx<2>, LI>::value;
+
+    size_t found_1 = type_index<float, LC>::value;
+    
+    std::cout << "IDX: " << found_1 << std::endl;
+    
+    EXPECT_GE( found, 1 );
     EXPECT_EQ( list_size(l_1), 2 );
 }

@@ -1,6 +1,8 @@
 #ifndef _LIST_
 #define _LIST_
 
+#include <type_traits>
+
 namespace ftl2 {
 
 // Helpers
@@ -36,6 +38,79 @@ public:
     List<Ts...> _tail;
 };
 
+// ===================================== LIST OP =================================== //
+
+// Get the index of a type T in a List of types L
+// Usage :
+// 
+//  using numeric_list = List<int, int, float, double>;
+//  
+//  size_t double_index = type_index<double, numeric_list>::value;
+//  
+template <typename T, typename L>
+struct type_index;
+
+template <typename T, typename Head, typename... Tail>
+struct type_index<T, List<Head, Tail...>>
+{
+    static constexpr size_t next_value  = type_index<T, List<Tail...>>::value;
+    static constexpr size_t value       = next_value >= 0 ? next_value + 1 : -1; // Prop
+};
+
+// Case for found type 
+template <typename T, typename... Tail>
+struct type_index<T, List<T, Tail...>>
+{
+    static constexpr size_t value = 0;
+};
+
+// Case for type not found 
+template <typename T>
+struct type_index<T, List<>>
+{ 
+    static constexpr size_t value = -1;
+};
+
+// ================================================================================= //
+
+template <typename R>
+struct function 
+{
+    using result = R;
+};
+
+template <typename L1, typename L2>
+struct concat;
+
+template <typename... Ts, typename... Us>
+struct concat<List<Ts...>, List<Us...>> : public function<List<Ts..., Us...>> {};
+
+// ================================================================================ //
+
+namespace num {
+    template <std::size_t V>
+    using size_t_ = std::integral_constant<std::size_t, V>;
+}
+
+template <typename L, typename I> struct get_t;
+
+template <typename Head, typename... Tail, std::size_t I>
+struct get_t<List<Head, Tail...>, num::size_t_<I>> : public get_t<List<Tail...>, num::size_t_<I - 1>> {};
+
+template <typename Head, typename... Tail>
+struct get_t<List<Head, Tail...>, num::size_t_<0>> : public function<Head> {};
+
+template <typename... As, std::size_t I>
+struct get_t<List<As...>, num::size_t_<I>>
+{
+    static_assert( sizeof...(As) != 0, "Index out of bounds for List" );
+};
+
+template <typename L, typename I>
+using get_tt = typename ftl2::get_t<L, I>::result;
+
+// ===================================== LIST ====================================== //
+ 
 template <> struct List<> {};
 
 template <typename... Ts>
@@ -117,5 +192,6 @@ decltype(join(
     );
 }
     
+
 }
 #endif
