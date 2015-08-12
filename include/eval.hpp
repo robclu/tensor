@@ -6,7 +6,7 @@
 
 /*
  * ----------------------------------------------------------------------------------------------------------
- * Eval header file for ftl library.
+ * eval header file for ftl library.
  * Copyright (C) 2015 Rob Clucas
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -25,102 +25,92 @@
  * ----------------------------------------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------------------------------------------
-// NOTES:
-//      - The following conventions are followed:
-//          : A     : Used to mean a single argumnet
-//          : I     : Used to mean a single numeric types
-//          : T     : Used to mean a single type
-//          : As    : Used to mean variadic arguments
-//          : Is    : Used to mean variadic numeric types
-//          : Ts    : Used to mean variadic types
-//          : Us    : Used to mean variadic types if Ts is also used in the function
-// ----------------------------------------------------------------------------------------------------------
-
 #ifndef FTL_EVAL
 #define FTL_EVAL
+
+#include "numeric_types.hpp"
 
 namespace ftl {
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     Identify
+/// @struct     identify
 /// @brief      Simply an identifier to identify meta types and meta functions. 
-/// @tparam     T       The type to identify
+/// @tparam     Type    The type to identify
 // ----------------------------------------------------------------------------------------------------------
-template <typename T>
-struct Identify
+template <typename Type>
+struct identify
 {
-    using value = T;
+    using value = Type;
 };
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     ArgList
+/// @struct     args_list
 /// @brief      A list of arguments
-/// @tparam     As          The list of types which make up the arguments
+/// @tparam     Args    The list of types which make up the arguments
 // ----------------------------------------------------------------------------------------------------------
-template <typename... As>
-struct ArgList;
+template <typename... Args>
+struct args_list;
 
-// An ArgList with no arguments.
-using NoArgs = ArgList<>;
+// Define an empty args list
+using no_args = args_list<>;
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     Expand 
+/// @struct     expand 
 /// @brief      Expands a list into its types.
-/// @tparam     E           The expression to expand
-/// @tparam     A           The argument to expand into the expression
+/// @tparam     Expression  The expression to expand
+/// @tparam     Arg         The argument to expand into the expression
 /// @tparam     Expandable  If the expression E is expandable
 // ----------------------------------------------------------------------------------------------------------
-template <typename E, typename A, bool Expandable>
-struct Expand;
+template <typename Expression, typename Arg, bool Expandable>
+struct expand;
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     Eval 
+/// @struct     eval 
 /// @brief      Evaluates an expression with arguments
-/// @tparam     E           The expression to evaluate
-/// @tparam     A           The argument to evaluate the expression with
+/// @tparam     Expresison  The expression to evaluate
+/// @tparam     Arg         The argument to evaluate the expression with
 // ----------------------------------------------------------------------------------------------------------
-template <typename E, typename A>
-struct Eval
+template <typename Expression, typename Arg>
+struct eval
 {
     // Base case, evaluates to the expression itself
-    using value = E;
+    using value = Expression;
 };
 
-// Specializing Expand - we needed Eval's definition first
+// Specializing expand - we needed eval's definition first
 
 // Case for when the the expression is not expandable
-template <typename E, typename A>
-struct Expand<E, A, false>
+template <typename Expression, typename Arg>
+struct expand<Expression, Arg, false>
 {
     // If not expandable then expression evaluates to itself
-    using value = E; 
+    using value = Expression; 
 };
 
 // Case for when the expression is expandable 
-template <typename E, typename A>
-struct Expand<E, A, true>
+template <typename Expression, typename Arg>
+struct expand<Expression, Arg, true>
 {
-    using value = typename Eval<E, A>::value;
+    using value = typename eval<Expression, Arg>::value;
 };
 
-// Coming back to specialize Eval now
+// Coming back to specialize eval now
 
 // Case for when there are no arguments
-template <typename E>
-struct Eval<E, NoArgs>
+template <typename Expression>
+struct eval<Expression, no_args>
 {
     // Expression must evaluate to itself
-    using result = E;
+    using result = Expression;
 };
 
 // Case for when the expression is actually a meta-function
-template <template <typename...> class F, typename... As>
-struct Eval<F<As...>, NoArgs>
+template <template <typename...> class Function, typename... Args>
+struct eval<Function<Args...>, no_args>
 {
     // Get the function type when each argument
     // of As is applied to the function F
-    using function = F<typename Expand<As, NoArgs, true>::result...>;
+    using function = Function<typename expand<Args, no_args, true>::value...>;
     
     // The value is then the function type
     using value = typename function::type;

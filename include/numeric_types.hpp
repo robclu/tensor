@@ -5,7 +5,7 @@
 
 /*
  * ----------------------------------------------------------------------------------------------------------
- * List header file for ftl library.
+ * Numeric types header file for ftl library.
  * Copyright (C) 2015 Rob Clucas
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -30,55 +30,55 @@
 namespace ftl {
  
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     Size_t
-/// @brief      Wrapper around size_t for static size_t types
-/// @tparam     I       The value of the size_t type
+/// @struct     size_t
+/// @brief      Wrapper around size_t for static size_t types used by metaclass and metafunctions in ftl
+/// @tparam     Value   The value of the size_t type
 // ----------------------------------------------------------------------------------------------------------
-template <std::size_t I>
-struct Size_t 
+template <std::size_t Value>
+struct size_t 
 {
     // ------------------------------------------------------------------------------------------------------
     /// @brief  Gets the value of the tyoe at compile time
     // ------------------------------------------------------------------------------------------------------
-    static constexpr std::size_t value = I;
+    static constexpr std::size_t value = Value;
    
     // -------------------------------------------------------------------------------------------------------
     /// @brief   Gets the value of the type at runtime
     /// @return  The value the type is holding
     // -------------------------------------------------------------------------------------------------------
-    constexpr std::size_t runtimeValue() const { return I; }
+    constexpr std::size_t runtime_value() const { return Value; }
 };
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     int
-/// @brief      Wrapper around int for static int types
-/// @tparam     I       The value of the int type
+/// @struct     int_t
+/// @brief      Wrapper around int for static int types used by metaclass and metafunctions in ftl
+/// @tparam     Value   The value of the int type
 // ----------------------------------------------------------------------------------------------------------
-template <int I>
-struct Int_t 
+template <int Value>
+struct int_t
 {
     // ------------------------------------------------------------------------------------------------------
     /// @brief  Gets the value type at compile time
     // ------------------------------------------------------------------------------------------------------
-    static constexpr int value = I;
+    static constexpr int value = Value;
     
     // -------------------------------------------------------------------------------------------------------
     /// @brief   Gets the value of the type at runtime
     /// @return  The value the type is holding
     // -------------------------------------------------------------------------------------------------------
-    constexpr int runtimeValue() const { return I; }
+    constexpr int runtime_value() const { return Value; }
 };
 
 // ----------------------------------------------------------------------------------------------------------
 /// @namespace  dim
-/// @brief      Defines Size_t types to use as dimension accessors in lists and tensors etc...
+/// @brief      Defines ftl::size_t types to use as dimension accessors in lists and tensors etc...
 // ----------------------------------------------------------------------------------------------------------
 namespace dim {
     
-Size_t<0> i;
-Size_t<1> j;
-Size_t<2> l;
-Size_t<3> m;
+    ftl::size_t<0> i;
+    ftl::size_t<1> j;
+    ftl::size_t<2> l;
+    ftl::size_t<3> m;
 
 }       // End namespace dim
 

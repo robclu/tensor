@@ -14,24 +14,24 @@ BOOST_AUTO_TEST_SUITE( NumericTypeTestSuite )
     
 BOOST_AUTO_TEST_CASE( canCreateStaticFtlIntType )
 {
-    ftl::Int_t<2> static_int;
+    ftl::int_t<2> static_int;
     
-    BOOST_CHECK( static_int.runtimeValue() == 2 );
+    BOOST_CHECK( static_int.runtime_value() == 2 );
 }
 
 BOOST_AUTO_TEST_CASE( canCreateStaticFtlSizeType )
 {
-    ftl::Size_t<0> static_size_type;
+    ftl::size_t<0> static_size_type;
     
-    BOOST_CHECK( static_size_type.runtimeValue() == 0 );
+    BOOST_CHECK( static_size_type.runtime_value() == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( canUseDefinedDimensionTypes )
 {
     using namespace ftl::dim;         // To access dimension variables
     
-    BOOST_CHECK( i.runtimeValue() == 0 );
-    BOOST_CHECK( j.runtimeValue() == 1 );
+    BOOST_CHECK( i.runtime_value() == 0 );
+    BOOST_CHECK( j.runtime_value() == 1 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -3,15 +3,9 @@
 /// @brief  Header file for the list metaclass to provide compile time lists
 // ----------------------------------------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------------------------------------
-// NOTES:
-//      - The following additional conventions (besides those in eval.hpp) are used:
-//          : L     : Used to mean a List
-// ----------------------------------------------------------------------------------------------------------
-
 /*
  * ----------------------------------------------------------------------------------------------------------
- * List header file for ftl library.
+ * list header file for ftl library.
  * Copyright (C) 2015 Rob Clucas
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -35,17 +29,19 @@
 
 #include "eval.hpp"
 
+#include <cassert>
+
 namespace ftl {
  
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     List
+/// @struct     list
 /// @brief      Meta class that holds types, and allows functions to be applied to the elements of the list 
 ///             using the internal apply struct.                                                             \n
 ///                                                                                                          \n
 ///             Usage:                                                                                       \n
 ///                                                                                                          \n
-///             using ftl::dim;         \\ To get dimension types                                            \n
-///             using list = List<i, j, k, l>;  \\ A list of dimensions                                      \n
+///             using ftl::dim;                         \\ To get dimension types                            \n
+///             using test_list = list<i, j, k, l>;     \\ A list of dimensions                              \n
 ///                                                                                                          \n
 ///             using shifted_list = list::apply<shift>;                                                     \n
 ///                                                                                                          \n
@@ -53,72 +49,95 @@ namespace ftl {
 /// @tparam     Ts      The tyes of the elements in the list
 // ----------------------------------------------------------------------------------------------------------
 template <typename... Ts>
-struct List
+struct list
 {
     // ------------------------------------------------------------------------------------------------------
     /// @struct     apply
-    /// @brief      Uses the function F and applies the function to each element in the list
+    /// @brief      Applies the function to each element in the list
     /// @tparam     Function    The function to apply the the list elements
     // ------------------------------------------------------------------------------------------------------
     template <template <typename...> class Function>
     struct apply
     {
-        using type = List<typename Eval<Function<Ts>, NoArgs>::value...>;
+        using type = list<typename eval<Function<Ts>, no_args>::value...>;
     };
 };
 
-// For an empty List
-using EmptyList = List<>;
+// Define a list with no arguments
+using empty_list = list<>;
 
-// ---------------------------------------- Operations on a List(s) -----------------------------------------
+// ---------------------------------------- Operations on a list(s) -----------------------------------------
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     FindType    
-/// @brief      Find the index of a specific type in the list (it results the index of the first occurence). \n
-///             If the type is not found then the value 'parameter' will be -1
-/// @tparams    T       The type to find
-/// @tparam     L       The list to find the type in
+/// @struct     get
+/// @brief      Meta function to get an element from a list 
+/// @tparam     Index       The index of the element in the list to get
+/// @tparam     List        The list to get the element from
 // ----------------------------------------------------------------------------------------------------------
-template <typename T, typename L>
-struct FindType;
+template <typename Index, typename List>
+struct get;
+
+// Recursive case to look through the list
+template <std::size_t Index, typename Head, typename... Tail>
+struct get<ftl::size_t<Index>, list<Head, Tail...>> : public get<ftl::size_t<Index - 1>, list<Tail...>> {};
+
+// Base case (when we reach the 0 element)
+template <typename Head, typename... Tail>
+struct get<ftl::size_t<0>, list<Head, Tail...>> : public identify<Head> {};
+
+// Case for checking if index is out of range 
+template <std::size_t Index, typename... Ts>
+struct get<ftl::size_t<Index>, list<Ts...>>
+{
+    static_assert( sizeof...(Ts) != 0, "Index out of range error for list" );
+};
+
+// ----------------------------------------------------------------------------------------------------------
+/// @struct     find_type
+/// @brief      Find the index of a specific type in the list (the index of the first occurrence).           \n 
+///             If the type is not found then the value 'parameter' will be -1.
+/// @tparam     Type    The type to find
+/// @tparam     List    The list to find the type in
+// ----------------------------------------------------------------------------------------------------------
+template <typename Type, typename List>
+struct find_type;
     
 // Case to recurse
-template <typename T,  typename Head, typename... Tail>
-struct FindType<T, List<Head, Tail...>>
+template <typename Type,  typename Head, typename... Tail>
+struct find_type<Type, list<Head, Tail...>>
 {
-    static constexpr std::size_t next_value = FindType<T, List<Tail...>>::value;
+    static constexpr std::size_t next_value = find_type<Type, list<Tail...>>::value;
     
     // 'Move through list'
     static constexpr std::size_t value      = next_value >= 0 ? next_value + 1 : -1;
 };
 
 // Case for when the type is found
-template <typename T, typename... Tail>
-struct FindType<T, List<T, Tail...>>
+template <typename Type, typename... Tail>
+struct find_type<Type, list<Type, Tail...>>
 {
     static constexpr std::size_t value = 0;
 };
 
 // Case for not found 
-template <typename T>
-struct FindType<T, EmptyList>
+template <typename Type>
+struct find_type<Type, empty_list>
 {
     static constexpr std::size_t value = -1;
 };
 
 // ----------------------------------------------------------------------------------------------------------
-/// @struct     Join
+/// @struct     join
 /// @brief      Joins two lists
-/// @tparam     L1      The first list to join
-/// @tparam     L2      The second list to join
+/// @tparam     List1       The first list to join
+/// @tparam     List2       The second list to join
 // ----------------------------------------------------------------------------------------------------------
-template <typename L1, typename L2>
-struct Join;
+template <typename List1, typename List2>
+struct join;
 
-// Specialization for using List types
+// Specialization for using list types
 template <typename... Ts, typename... Us>
-struct Join<List<Ts...>, List<Us...>> : public Identify<List<Ts..., Us...>> {};
-
+struct join<list<Ts...>, list<Us...>> : public identify<list<Ts..., Us...>> {};
 
 }   // End namespace ftl
 
