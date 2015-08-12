@@ -51,6 +51,8 @@ namespace ftl {
 template <typename... Ts>
 struct list
 {
+    using type = list<Ts...>;
+    
     // ------------------------------------------------------------------------------------------------------
     /// @struct     apply
     /// @brief      Applies the function to each element in the list
@@ -68,6 +70,8 @@ using empty_list = list<>;
 
 // ---------------------------------------- Operations on a list(s) -----------------------------------------
 
+namespace detail {
+    
 // ----------------------------------------------------------------------------------------------------------
 /// @struct     get
 /// @brief      Meta function to get an element from a list 
@@ -85,12 +89,11 @@ struct get<ftl::size_t<Index>, list<Head, Tail...>> : public get<ftl::size_t<Ind
 template <typename Head, typename... Tail>
 struct get<ftl::size_t<0>, list<Head, Tail...>> : public identify<Head> {};
 
-// Case for checking if index is out of range 
-template <std::size_t Index, typename... Ts>
-struct get<ftl::size_t<Index>, list<Ts...>>
-{
-    static_assert( sizeof...(Ts) != 0, "Index out of range error for list" );
-};
+}
+
+// Wrapper for getting
+template <std::size_t Index, typename List>
+using get = typename detail::get<ftl::size_t<Index>, List>::value;
 
 // ----------------------------------------------------------------------------------------------------------
 /// @struct     find_type

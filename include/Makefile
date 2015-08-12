@@ -65,7 +65,7 @@ debug: run
 
 run: build_tests
 	rm -rf *.o
-	./$(EXE)
+	./$(EXE) --log_level=test_suite
 	
 ftl_tests.o: ftl_tests.cpp 
 	$(NVCC) -x cu $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
