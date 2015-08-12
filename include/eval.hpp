@@ -29,10 +29,10 @@
 // NOTES:
 //      - The following conventions are followed:
 //          : A     : Used to mean a single argumnet
-//          : I     : Used to mean a single arithmetic types
+//          : I     : Used to mean a single numeric types
 //          : T     : Used to mean a single type
 //          : As    : Used to mean variadic arguments
-//          : Is    : Used to mean variadic arithmetic types
+//          : Is    : Used to mean variadic numeric types
 //          : Ts    : Used to mean variadic types
 //          : Us    : Used to mean variadic types if Ts is also used in the function
 // ----------------------------------------------------------------------------------------------------------
@@ -41,6 +41,17 @@
 #define FTL_EVAL
 
 namespace ftl {
+
+// ----------------------------------------------------------------------------------------------------------
+/// @struct     Identify
+/// @brief      Simply an identifier to identify meta types and meta functions. 
+/// @tparam     T       The type to identify
+// ----------------------------------------------------------------------------------------------------------
+template <typename T>
+struct Identify
+{
+    using value = T;
+};
 
 // ----------------------------------------------------------------------------------------------------------
 /// @struct     ArgList
