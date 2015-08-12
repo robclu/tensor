@@ -1,73 +1,78 @@
-########################################################
-#					EXECUTABLE NAME 				   #
-########################################################
+########################################################################################
+#				 	                EXECUTABLE NAME 	                               #
+#				 	                                                                   #
+# NOTE: The following conventions are used:                                            #
+#                                                                                      #
+#       - CU = CUDA related variables                                                  #
+#       - CX = C++ related variables                                                   #
+########################################################################################
 
-EXE 			:= new_tensor_tests
+EXE 			:= ftl_tests
 
-########################################################
-#					COMPILERS						   #
-########################################################
+########################################################################################
+#					                  COMPILERS						                   #
+#                                                                                      #					 
+# NOTE: Compiling with cuda because GPU support will be added                          #
+########################################################################################
 
 HOST_COMPILER	:= g++
 NVCC 			:= nvcc -ccbin $(HOST_COMPILER)
 CXX 			:= $(HOST_COMPILER)
 
-########################################################
-#				INCLUDE DIRECTORIES 				   #
-########################################################
+########################################################################################
+#				                    INCLUDE DIRECTORIES 		                       #
+########################################################################################
 
-INCLUDES 		:= -I/usr/local/cuda-7.0/include -I.
+CU_INC 		    := 
+CX_INC          :=
 
-########################################################
-#					LIBRARIES 						   #
-########################################################
+########################################################################################
+#				   	                   LIBRARIES 						               #
+########################################################################################
 
-CUDA_LIBS 		:= -lcuda -lcublas
-TEST_LIBS 		:= -lgtest -lgtest_main -lpthread
+CU_LIBS 		:= 
+CX_LIBS 		:= -lboost_unit_test_framework      
 
-LIB_DIR 		:= -L/usr/local/cuda/lib64
+CU_LDIR         :=
+CX_LDIR  	    := 
 
-########################################################
-#					COMPILER FLAGS 					   #
-#                                                      #
-# To enable compiler warnings, remove -w and replace   #
-# with :                                               #
-# 			--compiler-options -Wall                   #
-########################################################
+########################################################################################
+#					                COMPILER FLAGS 					                   #
+#                                                                                      #
+# NOTE: To enable compiler warnings, remove -w and replace with :                      #
+# 		--compiler-options -Wall                                                       #
+########################################################################################
 
-CCFLAGS 		:= -std=c++11 -w 
-CUFLAGS 		:= -arch=sm_30
+CU_FLAGS        := -arch=sm_30
+CX_FLAGS 		:= -std=c++11 -w 
 
-########################################################
-# 					TARGET RULES 					   #
-########################################################
+DG_FLAGS        := -g
+RE_FLAGS        := -O3
 
-.PHONY: all debug run cleanobs
+########################################################################################
+# 					                TARGET RULES 					                   #
+#######################################################################################
+
+.PHONY: all debug run 
 	
-all: debug 
-
-release: CCFLAGS += -O3
-release: tests
+all: debug
 	
-debug: CCFLAGS += -g
+release: CX_FLAGS += $(RE_FLAGS)
+release: run
+	
+debug: CX_FLAGS += $(DG_FLAGS)
 debug: run
-	
-new_tensor_tests.o: new_tensor_tests.cpp 
-	$(NVCC) -x cu $(INCLUDES) $(CCFLAGS) $(CUFLAGS) -o $@ -c $<
 
-main.o : main.cpp
-	$(NVCC) -x cu $(INCLUDES) $(CCFLAGS) $(CUFLAGS) -o $@ -c $<
-
-tests:  new_tensor_tests.o 
-	$(NVCC) $(LDFLAGS) -o $(EXE) $+ $(LIB_DIR) \
-		$(CUDA_LIBS) $(TEST_LIBS)	
-		
-run: tests cleanobs
+run: build_tests
+	rm -rf *.o
 	./$(EXE)
 	
-cleanobs:
-	rm -rf *.o
+ftl_tests.o: ftl_tests.cpp 
+	$(NVCC) -x cu $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
 
+build_tests: ftl_tests.o 
+	$(NVCC) -o $(EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)
+	
 clean:
 	rm -rf *.o
 	rm -rf $(EXE) 
