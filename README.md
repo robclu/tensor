@@ -92,6 +92,15 @@ I will update this formally, but for now it may help if reading the code.
 
 # Compiling
 
+To build the test suite which is provided with the library you will need two things installed: The boost libraries and the CUDA SDK (although this is nor currently necessary - see below)
+
+## Boost
+
+## CUDA
+
+
+## Install
+
 A makefile is provided in the include directory which builds the test suite.
 
 Simply issuing ```make release``` from the ```include`` directory will make the test suite. 
@@ -100,4 +109,4 @@ All library files are templated header files and thus to use the functionality y
 
 # Examples
 
-To do ...
+Coming soon
