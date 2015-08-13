@@ -43,7 +43,7 @@ CX_LDIR  	    :=
 # 		--compiler-options -Wall                                                       #
 ########################################################################################
 
-CU_FLAGS        := -arch=sm_30
+CU_FLAGS        :=
 CX_FLAGS 		:= -std=c++11 -w 
 
 DG_FLAGS        := -g
@@ -68,10 +68,10 @@ run: build_tests
 	./$(EXE) --log_level=test_suite
 	
 ftl_tests.o: ftl_tests.cpp 
-	$(NVCC) -x cu $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
+	$(CXX) $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
 
 build_tests: ftl_tests.o 
-	$(NVCC) -o $(EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)
+	$(CXX) -o $(EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)
 	
 clean:
 	rm -rf *.o
