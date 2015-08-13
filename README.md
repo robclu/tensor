@@ -2,8 +2,9 @@
 
 # FTL
 
-FTL is a fast (well hopefully) c++ tensor library. It is designed with both speed and clearity of expression in mind. 
-The library makes extensive use of templates, specifically [template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) to improve performance. [Expression templates](https://en.wikipedia.org/wiki/Expression_templates) are also used to allow mathematical expressions and tensor operations to be expressed exactly as they would be mathematically. 
+FTL is a fast (well hopefully) c++ tensor library. It is designed with both speed and clearity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
+
+[Template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) is used to 'offload' any work which can be computed at compile time, to the compiler and [expression templates](https://en.wikipedia.org/wiki/Expression_templates) are used to achieve the translation of the mathematically expressed code to performant code.
 
 A lot of the TMP implementations were understood from the following blogs and from endlessly reading the assosciated code on their Github accounts (thanks for the help!) : 
 
@@ -12,7 +13,7 @@ A lot of the TMP implementations were understood from the following blogs and fr
 
 Tests have been written using the [Boost Test library](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) to verify the 'correctness' of all the implemented components. The tests also help to illustrate the usage of the various components of the library.
 
-There will probably be many sections of code which can be improved. Any suggestions and improvements will be much appreciated - please contact me if with either.
+Please let me know, or just fix, any areas of the code which can be improved!
 
 # Current Status
 
@@ -26,7 +27,9 @@ All class and variable names are lowercase with underscore separators:
 
 ```c++
 class tensor_expression {};
-or 
+
+or
+
 int multiplication_result;
 ```
 
@@ -40,7 +43,7 @@ Classes and stucts have an opening brace on the same line (as per Stroustrup), u
 
 ```c++
 // Not a meta class
-template <typename T>
+template <typename T, typename E>
 class tensor {
 };
 
@@ -51,7 +54,7 @@ struct list
   template <template <typename...> class Function>
   stuct apply 
   {
-    // Rest of code ...
+    // Rest of apply struct ...
   };
 };
 ```
@@ -69,7 +72,10 @@ Namespaces have opening braces starting on the same line as the declaration
 
 ```c++
 namespace ftl {
-}                 // End namespace ftl
+
+      // Functions for namespace ftl ...
+
+} // End namespace ftl
 ```
 
 Class member variables begin with a single underscore, while local variables (and function parameters) do not: 
@@ -77,36 +83,62 @@ Class member variables begin with a single underscore, while local variables (an
 ```c++
 class foo {
 public:
-  int _class_member_variable;
+  int _class_member_variable;   // Single leading underscore
   
   void bar(int variable_one, int variable_two);
 };
 
 void foo::bar(int variable_one, int variable_two)
 {
-  int local_variable = 0;     // No leading single underscore
+  int local_variable = 0;       // No single leading underscore
+  
+  // Rest of bar ...
 }  
 ```
 
-I will update this formally, but for now it may help if reading the code.
+This will be updated more formally at a later stage, but for now it may help if reading the code.
 
-# Compiling
+# Building
 
-To build the test suite which is provided with the library you will need two things installed: The boost libraries and the CUDA SDK (although this is nor currently necessary - see below)
+To build the test suite which is provided with the library you will need two things installed: The Boost test libraries and the CUDA SDK (although this is nor currently necessary - see below)
 
 ## Boost
 
+You can get the Boost test library from here - [Boost](http://www.boost.org/) - and follow the [Getting Started Guide](http://www.boost.org/doc/libs/1_59_0/more/getting_started/index.html) to install the libraries.
+
+__Note:__ You only need the test library, and it is dynamically linked in the Makefile provided with the __ftl__ library, so you should install it to allow dynamic linking (i.e install the test library and not just the ```.hpp``` file.
+
 ## CUDA
 
+If you want to enable the GPU components of the library (for additional performance) then you will need to install the CUDA SDK (version 7 is used by __ftl__). You can find the CUDA SDK here -[CUDA 7](https://developer.nvidia.com/cuda-downloads) - and follow the __Getting Started Guide__ provided on the same page below the download section.
 
-## Install
+__Note:__ If you do not have a GPU you can still use __ftl__ - see below for compiling without GPU support.
 
-A makefile is provided in the include directory which builds the test suite.
+## Compiling
 
-Simply issuing ```make release``` from the ```include`` directory will make the test suite. 
+For compiling, there are two 'categories', each with two options, giving a total of 4 options for compiling. The options are:
 
-All library files are templated header files and thus to use the functionality you simply need to include the relevant header file.
+* GPU or CPU 
+* Debug or Release
+
+```Debug``` mode enables debugging support, while ```Release``` mode enables compiler optimizations.
+
+The Makefile is provided in the ```ftl/include``` directory, so to compile the test suit, navigate to that directory. The test suite can then be built using any combination of the above categories, so 
+
+```
+make cpu_debug    # default (make all does the same thing)
+make gpu_debug    # or
+make cpu_release  # or 
+make gpu_release  
+```
+
+The above commands will automatically run the test suite, and create an ```ftl_tests`` executable which can then be run using either of
+
+```
+./ftl_tests       # or
+make run
+```
 
 # Examples
 
-Coming soon
+Coming soon ...
