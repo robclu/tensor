@@ -17,7 +17,7 @@ EXE 			:= ftl_tests
 
 HOST_COMPILER	:= g++
 NVCC 			:= nvcc -ccbin $(HOST_COMPILER)
-CXX 			:= $(HOST_COMPILER)
+CXX 			:= 
 
 ########################################################################################
 #				                    INCLUDE DIRECTORIES 		                       #
@@ -53,19 +53,36 @@ RE_FLAGS        := -O3
 # 					                TARGET RULES 					                   #
 #######################################################################################
 
-.PHONY: all debug run 
+.PHONY: all cpu_debug build_and_run 
 	
-all: debug
+all: cpu_debug
 	
-release: CX_FLAGS += $(RE_FLAGS)
-release: run
-	
-debug: CX_FLAGS += $(DG_FLAGS)
-debug: run
+################################ CPU ONLY BUILD ########################################
 
-run: build_tests
+cpu_release: CXX         = $(HOST_COMPILER)
+cpu_release: CX_FLAGS   += $(RE_FLAGS)
+cpu_release: build_and_run
+
+cpu_debug: CXX           = $(HOST_COMPILER)
+cpu_debug: CX_FLAGS     += $(DG_FLAGS)
+cpu_debug: build_and_run
+
+################################## GPU BUILD ##########################################
+
+gpu_release: CXX         = $(NVCC)
+gpu_release: CX_FLAGS   += $(RE_FLAGS)
+gpu_release: build_and_run
+
+gpu_debug: CXX           = $(NVCC)
+gpu_debug: CX_FLAGS     += $(DG_FLAGS)
+gpu_debug: build_and_run
+
+build_and_run: build_tests
 	rm -rf *.o
 	./$(EXE) --log_level=test_suite
+	
+run:
+	./#(EXE) --log_level=test_suite
 	
 ftl_tests.o: ftl_tests.cpp 
 	$(CXX) $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
