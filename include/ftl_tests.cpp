@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( canCreateStaticFtlSizeType )
 
 BOOST_AUTO_TEST_CASE( canUseDefinedDimensionTypes )
 {
-    using namespace ftl::dim;         // To access dimension variables
+    using namespace ftl::dim;                    // To access dimension variables
     
     BOOST_CHECK( i.runtime_value() == 0 );
     BOOST_CHECK( j.runtime_value() == 1 );
@@ -41,8 +41,8 @@ BOOST_AUTO_TEST_SUITE( ListTestSuite )
 BOOST_AUTO_TEST_CASE( canCreateAList )
 {
     using test_list = ftl::list<ftl::int_t<3>, ftl::size_t<9>>;
-    using type_one  = ftl::get<0, test_list>;               // Should be ftl::int_t<3>   
-    using type_two  = ftl::get<1, test_list>;               // Should be ftl::size_t<9>
+    using type_one  = ftl::get<0, test_list>;   // Should be ftl::int_t<3>   
+    using type_two  = ftl::get<1, test_list>;   // Should be ftl::size_t<9>
     
     // Decalre elements of the types to get their runtime values
     type_one elem_zero;         

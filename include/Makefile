@@ -49,6 +49,8 @@ CX_FLAGS 		:= -std=c++11 -w
 DG_FLAGS        := -g
 RE_FLAGS        := -O3
 
+TP_FLAGS        := $(CX_FLAGS)
+
 ########################################################################################
 # 					                TARGET RULES 					                   #
 #######################################################################################
@@ -60,21 +62,23 @@ all: cpu_debug
 ################################ CPU ONLY BUILD ########################################
 
 cpu_release: CXX         = $(HOST_COMPILER)
+cpu_release: CU_FLAGS    = 
 cpu_release: CX_FLAGS   += $(RE_FLAGS)
 cpu_release: build_and_run
 
 cpu_debug: CXX           = $(HOST_COMPILER)
+cpu_debug: CU_FLAGS      = 
 cpu_debug: CX_FLAGS     += $(DG_FLAGS)
 cpu_debug: build_and_run
 
 ################################## GPU BUILD ##########################################
 
 gpu_release: CXX         = $(NVCC)
-gpu_release: CX_FLAGS   += $(RE_FLAGS)
+gpu_release: CX_FLAGS    = -Xcompiler $(TP_FLAGS) $(RE_FLAGS)
 gpu_release: build_and_run
 
 gpu_debug: CXX           = $(NVCC)
-gpu_debug: CX_FLAGS     += $(DG_FLAGS)
+gpu_debug: CX_FLAGS      = -Xcompiler $(TP_FLAGS) $(DG_FLAGS)
 gpu_debug: build_and_run
 
 build_and_run: build_tests
