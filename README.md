@@ -100,7 +100,13 @@ This will be updated more formally at a later stage, but for now it may help if 
 
 # Building
 
-To build the test suite which is provided with the library you will need two things installed: The Boost test libraries and the CUDA SDK (although this is nor currently necessary - see below)
+To build the test suite which is provided with the library you will need two things installed: The Boost test libraries and the CUDA SDK (although this is not necessary for CPU only builds - see [Compiling](#compiling) below).
+
+The dollowing compilers have been tested:
+
+* g++ version 4.9.1
+* clang++ version 3.6.1
+* nvcc 
 
 ## Boost
 
