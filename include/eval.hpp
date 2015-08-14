@@ -40,7 +40,7 @@ namespace ftl {
 template <typename Type>
 struct identify
 {
-    using value = Type;
+    using result = Type;
 };
 
 // ----------------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ template <typename Expression, typename Arg>
 struct eval
 {
     // Base case, evaluates to the expression itself
-    using value = Expression;
+    using result = Expression;
 };
 
 // Specializing expand - we needed eval's definition first
@@ -84,14 +84,14 @@ template <typename Expression, typename Arg>
 struct expand<Expression, Arg, false>
 {
     // If not expandable then expression evaluates to itself
-    using value = Expression; 
+    using result = Expression; 
 };
 
 // Case for when the expression is expandable 
 template <typename Expression, typename Arg>
 struct expand<Expression, Arg, true>
 {
-    using value = typename eval<Expression, Arg>::value;
+    using result = typename eval<Expression, Arg>::result;
 };
 
 // Coming back to specialize eval now
@@ -110,10 +110,10 @@ struct eval<Function<Args...>, no_args>
 {
     // Get the function type when each argument
     // of As is applied to the function F
-    using function = Function<typename expand<Args, no_args, true>::value...>;
+    using function = Function<typename expand<Args, no_args, true>::result...>;
     
-    // The value is then the function type
-    using value = typename function::type;
+    // The value is then the function result
+    using result = typename function::result;
 };
 
 }   // End namespace ftl

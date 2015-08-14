@@ -61,7 +61,7 @@ struct list
     template <template <typename...> class Function>
     struct apply
     {
-        using type = list<typename eval<Function<Ts>, no_args>::value...>;
+        using type = list<typename eval<Function<Ts>, no_args>::result...>;
     };
 };
 
@@ -93,7 +93,7 @@ struct get<ftl::size_t<0>, list<Head, Tail...>> : public identify<Head> {};
 
 // Wrapper for getting
 template <std::size_t Index, typename List>
-using get = typename detail::get<ftl::size_t<Index>, List>::value;
+using get = typename detail::get<ftl::size_t<Index>, List>::result;
 
 // ----------------------------------------------------------------------------------------------------------
 /// @struct     find_type
@@ -109,24 +109,24 @@ struct find_type;
 template <typename Type, typename Head, typename... Tail>
 struct find_type<Type, list<Head, Tail...>>
 {
-    static constexpr int next_value = find_type<Type, list<Tail...>>::value;
+    static constexpr int next_result = find_type<Type, list<Tail...>>::result;
     
     // 'Move through list'
-    static constexpr int value      = next_value >= 0 ? next_value + 1 : -1;
+    static constexpr int result      = next_result >= 0 ? next_result + 1 : -1;
 };
 
 // Case for when the type is found
 template <typename Type, typename... Tail>
 struct find_type<Type, list<Type, Tail...>>
 {
-    static constexpr int value = 0;
+    static constexpr int result = 0;
 };
 
 // Case for not found (Tail will be empty)
 template <typename Type>
 struct find_type<Type, list<>>
 {
-    static constexpr int value = -1;
+    static constexpr int result = -1;
 };
 
 // ----------------------------------------------------------------------------------------------------------
@@ -141,6 +141,49 @@ struct join;
 // Specialization for using list types
 template <typename... Ts, typename... Us>
 struct join<list<Ts...>, list<Us...>> : public identify<list<Ts..., Us...>> {};
+
+// ----------------------------------------------------------------------------------------------------------
+/// @struct     zip 
+/// @brief      Takes two lists, and zips the corresponding elements into a list of 2 elements if the function
+///             to determine if the elements should be zips succeeds, otherwise the elements are not zipped.
+/// @tparam     Evaluator       A function which operates on corresponding elements from the 2 lists to
+///             determine if the elements should be zipped.
+/// @tparam     List1           First list for zipping.
+/// @tparam     List2           Second list for zipping.
+/// @tparam     Passed          The elements which have 'passed' the functions test and have been added to the
+///             zipped list.
+// ----------------------------------------------------------------------------------------------------------
+template <template <typename...> class  Evaluator   , 
+          typename                      List1       , 
+          typename                      List2       , 
+          typename...                   Passed      >
+struct zip;
+
+// Recursize case - when the whole list has not been traversed
+template <template <typename...> class  Evaluator   ,
+          typename                      Head1       , 
+          typename...                   Tail1       ,
+          typename                      Head2       ,
+          typename...                   Tail2       ,
+          typename...                   Passed      >
+struct zip<Evaluator, list<Head1, Tail1...>, list<Head2, Tail2...>, list<Passed...>>
+{
+    using passed = typename std::conditional<
+                                Evaluator<Head1, Head2>::result,                // Check if we must zip
+                                list<Passed..., list<Head1, Head2>>,            // Zip head elements if true
+                                list<Passed...>                                 // Don't zip if false
+                                    >::type;
+    
+    // Recurse until we reach the base case (pattern)
+    using result = typename zip<Evaluator, list<Tail1...>, list<Tail2...>, passed>::result;
+};
+
+// Base case - not more elements to check in List1 or List 2
+template <template <typename...> class Evaluator, typename... Passed>
+struct zip<Evaluator, empty_list, empty_list, list<Passed...>>
+{
+    using result = list<Passed...>;
+};
 
 }   // End namespace ftl
 
