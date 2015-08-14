@@ -55,32 +55,32 @@ public:
     //! @brief     Returns the size of the expression
     //! @return    The size of the TensorExpression
     // ------------------------------------------------------------------------------------------------------
-    size_type size() const { return static_cast<E const&>(*this).size(); }
+    size_type size() const { return static_cast<E const&>( *this ).size(); }
 
     // ------------------------------------------------------------------------------------------------------
     //! @brief     Gets the sizes of the all the dimensions of the expression.
     //! @return    A constant reference to the dimension size vector of the expression 
     // ------------------------------------------------------------------------------------------------------
-    const std::vector<size_type>& dim_sizes() const { return static_cast<E const&>(*this).dim_sizes(); }
+    const std::vector<size_type>& dim_sizes() const { return static_cast<E const&>( *this ).dim_sizes(); }
     
     // ------------------------------------------------------------------------------------------------------
     //! @brief     Gets and element from the Tensor expression data.
     //! @param[in] i   The element in the expression which must be fetched.
     //! @return    The value of the element at position i of the expression data.
     // ------------------------------------------------------------------------------------------------------
-    value_type operator[](size_type i) const { return static_cast<E const&>(*this)[i]; }
+    value_type operator[]( size_type i ) const { return static_cast<E const&>( *this )[i]; }
 
     // ------------------------------------------------------------------------------------------------------
     //! @brief     Gets a reference to the Tensor expression.
     //! @return    A reference to the Tensor expression E.
     // ------------------------------------------------------------------------------------------------------
-    operator E&() { return static_cast<E&>(*this); }
+    operator E&() { return static_cast<E&>( *this ); }
 
     // ------------------------------------------------------------------------------------------------------
     //! @brief     Gets a constant reference to the Tensor expression.
     //! @return    A constant reference to the Tensror expression E.
     // ------------------------------------------------------------------------------------------------------
-    operator E const&() const   { return static_cast<const  E&>(*this); }
+    operator E const&() const   { return static_cast<const  E&>( *this ); }
 };
 
 }		// End namespace ftl

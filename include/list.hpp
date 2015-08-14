@@ -109,24 +109,24 @@ struct find_type;
 template <typename Type, typename Head, typename... Tail>
 struct find_type<Type, list<Head, Tail...>>
 {
-    static constexpr std::size_t next_value = find_type<Type, Tail...>::value;
+    static constexpr int next_value = find_type<Type, list<Tail...>>::value;
     
     // 'Move through list'
-    static constexpr std::size_t value      = next_value >= 0 ? next_value + 1 : -1;
+    static constexpr int value      = next_value >= 0 ? next_value + 1 : -1;
 };
 
 // Case for when the type is found
 template <typename Type, typename... Tail>
 struct find_type<Type, list<Type, Tail...>>
 {
-    static constexpr std::size_t value = 0;
+    static constexpr int value = 0;
 };
 
 // Case for not found (Tail will be empty)
 template <typename Type>
-struct find_type<Type, empty_list>
+struct find_type<Type, list<>>
 {
-    static constexpr std::size_t value = -1;
+    static constexpr int value = -1;
 };
 
 // ----------------------------------------------------------------------------------------------------------

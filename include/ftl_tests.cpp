@@ -69,8 +69,12 @@ BOOST_AUTO_TEST_CASE( canFindTypeInList )
 
 BOOST_AUTO_TEST_CASE( findTypeIsCorrectWhenTypeNotInList )
 {
-    using test_list     = ftl::list<ftl::size_t<3>, ftl::int_t<77>>;
-    using found_type    = ftl::find_type<ftl::int_t<9>, test_list>;
+    using test_list             = ftl::list<ftl::size_t<3>, ftl::int_t<77>, ftl::size_t<12>>;
+    using not_found_type        = ftl::find_type<ftl::int_t<9>, test_list>;
+    
+    int not_found_type_index    = not_found_type::value;
+    
+    BOOST_CHECK( not_found_type_index == -1 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
