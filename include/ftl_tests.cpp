@@ -10,6 +10,8 @@
 #include "list.hpp"
 #include "numeric_types.hpp"
 
+#include <iostream>
+
 BOOST_AUTO_TEST_SUITE( NumericTypeTestSuite )
     
 BOOST_AUTO_TEST_CASE( canCreateStaticFtlIntType )
@@ -50,6 +52,25 @@ BOOST_AUTO_TEST_CASE( canCreateAList )
     
     BOOST_CHECK( elem_zero.runtime_value() == 3 );
     BOOST_CHECK( elem_one.runtime_value()  == 9 );
+}
+
+BOOST_AUTO_TEST_CASE( canFindTypeInList )
+{
+    using test_list = ftl::list<ftl::size_t<2>, ftl::size_t<4>, ftl::int_t<6>>;
+    
+    std::size_t size_two_index  = ftl::find_type<ftl::size_t<2>, test_list>::value;
+    std::size_t size_four_index = ftl::find_type<ftl::size_t<4>, test_list>::value;
+    std::size_t int_six_index   = ftl::find_type<ftl::int_t<6>, test_list>::value;
+    
+    BOOST_CHECK( size_two_index   == 0 );
+    BOOST_CHECK( size_four_index  == 1 );
+    BOOST_CHECK( int_six_index    == 2 );
+}
+
+BOOST_AUTO_TEST_CASE( findTypeIsCorrectWhenTypeNotInList )
+{
+    using test_list     = ftl::list<ftl::size_t<3>, ftl::int_t<77>>;
+    using found_type    = ftl::find_type<ftl::int_t<9>, test_list>;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

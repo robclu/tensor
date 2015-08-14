@@ -106,10 +106,10 @@ template <typename Type, typename List>
 struct find_type;
     
 // Case to recurse
-template <typename Type,  typename Head, typename... Tail>
+template <typename Type, typename Head, typename... Tail>
 struct find_type<Type, list<Head, Tail...>>
 {
-    static constexpr std::size_t next_value = find_type<Type, list<Tail...>>::value;
+    static constexpr std::size_t next_value = find_type<Type, Tail...>::value;
     
     // 'Move through list'
     static constexpr std::size_t value      = next_value >= 0 ? next_value + 1 : -1;
@@ -122,7 +122,7 @@ struct find_type<Type, list<Type, Tail...>>
     static constexpr std::size_t value = 0;
 };
 
-// Case for not found 
+// Case for not found (Tail will be empty)
 template <typename Type>
 struct find_type<Type, empty_list>
 {
