@@ -1,9 +1,10 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for ftl tensor expression classes.
+/// @file   Header file for expression classes for the tensor library.
 // ----------------------------------------------------------------------------------------------------------
 
 /*
  * ----------------------------------------------------------------------------------------------------------
+ *  tensor_expressions.hpp header file for tensor library.
  *  Copyright (C) 2015 Rob Clucas robclu1818@gmail.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -35,11 +36,11 @@
 namespace ftl {
 
 // ----------------------------------------------------------------------------------------------------------
-//! @class      TensorExpression 
-//! @brief      Define a Tesnor expression, for example a Tensor itself, addition, subtraction ... which can
+//! @class      tesnsor_expression
+//! @brief      Define a tensor expression, for example a tensor itself, addition, subtraction ... which can
 //!             then be used by operators to make operations on Tensors look mathematic.
 //! @tparam     T   The type of data the expression uses
-//! @tparam     E   The type of exprssion (Tensor, TensorAddition etc...)
+//! @tparam     E   The type of exprssion (tensor, tensor_addition etc...)
 // ----------------------------------------------------------------------------------------------------------
 template <typename T, typename E>
 class tensor_expression {

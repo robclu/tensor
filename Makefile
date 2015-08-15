@@ -7,7 +7,7 @@
 #       - CX = C++ related variables                                                   #
 ########################################################################################
 
-EXE 			:= ftl_tests
+EXE 			:= tensor_test_suite
 
 ########################################################################################
 #					                  COMPILERS						                   #
@@ -86,12 +86,12 @@ build_and_run: build_tests
 	./$(EXE) --log_level=test_suite
 	
 run:
-	./#(EXE) --log_level=test_suite
+	./(EXE) --log_level=test_suite
 	
-ftl_tests.o: ftl_tests.cpp 
+tensor_tests.o: tensor_tests.cpp 
 	$(CXX) $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
 
-build_tests: ftl_tests.o 
+build_tests: tensor_tests.o 
 	$(CXX) -o $(EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)
 	
 clean:
