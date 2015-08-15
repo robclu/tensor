@@ -28,7 +28,6 @@
 #define FTL_CONTAINERS
 
 #include "list.hpp"
-#include "numeric_types.hpp"
 
 namespace ftl {
     
@@ -51,23 +50,36 @@ namespace detail {
     /// @struct     build_range 
     /// @brief      Builds a range of ftl::int_t types
     /// @tparam     Current     The value to (maybe) add to the range
-    /// @tparam     End         The end value of the range
     /// @tparam     Step        The increment size between successive elements
+    /// @tparam     Iteration   The current iteration of the build
     /// @tparam     Continue    If the range must continue to be built, or if we are passed the end
     /// @tparam     Values      The current values in the range
     // ------------------------------------------------------------------------------------------------------
-    template <int Current, int End, int Step, bool Continue, int... Values>
+    template <int Current, int Step, int Iteration, bool Continue, typename... Values>
     struct build_range;
     
     // Case for when we arent passed the end
-    template <int Current, int End, int Step, int... Values>
-    struct build_range<Current, End, Step, true, list<ftl::int_t<Values>...>>
+    template <int Current, int Step, int Iteration, int... Values>
+    struct build_range<Current, Step, Iteration, true, list<ftl::int_t<Values>...>>
     {
+        static constexpr bool keep_building = Iteration >= 0;
+        
+        using index_list = typename std::conditional<
+                                        keep_building                                       , 
+                                        list<ftl::int_t<Values>..., ftl::int_t<Current>>    ,   // Add Current
+                                        list<ftl::int_t<Values>...>                             // Don't add
+                                                    >::type;
+        
+        using result = typename build_range<Current + Step  ,               // Add Step to make next index  
+                                            Step            ,               // Same step
+                                            Iteration - 1   ,               // One less iteration
+                                            keep_building   ,               // If we must add more indices
+                                            index_list      >::result;      // New list, and get result
     };
  
     // Case for when we are pased the end 
-    template <int Current, int End, int Step, int... Values>
-    struct build_range<Current, End, Step, false, list<ftl::int_t<Values>...>>
+    template <int Current, int Step, int Iteration, int... Values>
+    struct build_range<Current, Step, Iteration, false, list<ftl::int_t<Values>...>>
     {
         using result = list<ftl::int_t<Values>...>;
     };
@@ -82,7 +94,17 @@ namespace detail {
 /// @tparam     Step        The step size of range values
 // ----------------------------------------------------------------------------------------------------------
 template <int Start, int End, int Step>
-using range = typename detail::build_range<Start, End, Step, Start < End, list<>>:;result;
+struct range 
+{   
+    static_assert( Start < End, "Invalid range parameters, Start must be less than End" );
+    static_assert( Step != 0  , "Invalid range parameters, Step cannot be 0" );
+    
+    using result = typename detail::build_range<Start                , 
+                                                Step                 , 
+                                                (End - Start) / Step ,      // Calculate number of iterations
+                                                true                 ,      // Asserts passed so we can start
+                                                list<>                >::result;
+};
 
 }       // End namespace ftl
 

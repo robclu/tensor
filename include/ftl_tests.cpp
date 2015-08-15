@@ -7,9 +7,9 @@
 #define BOOST_TEST_MODULE       FtlTests
 #include <boost/test/unit_test.hpp>
 
-#include "list.hpp"
-#include "numeric_types.hpp"
-#include "functions.hpp"
+#include "meta/numeric_types.hpp"
+#include "meta/functions.hpp"
+#include "meta/containers.hpp"
 
 #include <iostream>
 
@@ -76,6 +76,29 @@ BOOST_AUTO_TEST_CASE( findTypeIsCorrectWhenTypeNotInList )
     int not_found_type_index    = not_found_type::result;
     
     BOOST_CHECK( not_found_type_index == -1 );
+}
+
+BOOST_AUTO_TEST_CASE( canCreateRange )
+{
+    using range = ftl::range<-4, 4, 2>::result;         // This makes a range [-4, 4, 2] of ftl::int_t types 
+                                                        // and the range is just a list of the int_t types
+    
+    // So we should now have :
+    // range = [ -4, -2, 0, 2, 4 ] or list< int_t<-4>, int_t<-2>, ..., int_t<4> >
+    
+    // Get some of the elements to test
+    using range_0_type = ftl::get<0, range>;
+    using range_2_type = ftl::get<2, range>;
+    using range_4_type = ftl::get<4, range>;
+    
+    range_0_type range_0;           // Will be ftl::int_t< -4 > if correct
+    range_2_type range_2;           // Will be ftl::int_t<  0 > if correct
+    range_4_type range_4;           // Will be ftl::int_t<  4 > if correct
+    
+    // Since these are ftl::int_t elements, we can get their runtime values
+    BOOST_CHECK( range_0.runtime_value() == -4 );
+    BOOST_CHECK( range_2.runtime_value() ==  0 );
+    BOOST_CHECK( range_4.runtime_value() ==  4 );
 }
 
 BOOST_AUTO_TEST_CASE( canZipListElementsWithEqualityEvaluator )
