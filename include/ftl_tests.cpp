@@ -9,6 +9,7 @@
 
 #include "list.hpp"
 #include "numeric_types.hpp"
+#include "functions.hpp"
 
 #include <iostream>
 
@@ -78,7 +79,7 @@ BOOST_AUTO_TEST_CASE( findTypeIsCorrectWhenTypeNotInList )
 }
 
 BOOST_AUTO_TEST_CASE( canZipListElementsWithEqualityEvaluator )
-{
+{ 
 }
 
 BOOST_AUTO_TEST_SUITE_END()
