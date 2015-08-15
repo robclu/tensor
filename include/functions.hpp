@@ -48,7 +48,7 @@ struct equal_value
 /// @tparam     Type        The type to determine if it is found
 // ----------------------------------------------------------------------------------------------------------
 template <typename Type>
-struct 
+struct is_found 
 {
     static constexpr bool result = Type::value != -1 ? true : false;
 };
