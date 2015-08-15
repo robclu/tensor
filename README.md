@@ -1,102 +1,22 @@
 *A fast c++ tensor library*
 
-# FTL
+# Tensor
 
-FTL is a fast (well hopefully) c++ tensor library. It is designed with both speed and clearity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
+Tensor is a fast (well hopefully) c++ tensor library. It is designed with both speed and clearity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
 
 [Template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) is used to 'offload' any work which can be computed at compile time, to the compiler and [expression templates](https://en.wikipedia.org/wiki/Expression_templates) are used to achieve the translation of the mathematically expressed code to performant code.
-
-A lot of the TMP implementations were understood from the following blogs and from endlessly reading the assosciated code on their Github accounts (thanks for the help!) : 
-
-* [Manu Sancheez's blog (see the Turbo library)](http://manu343726.github.io/)
-* [Eric Niebler's blog (see his Meta library)](http://ericniebler.com/)
 
 Tests have been written using the [Boost Test library](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) to verify the 'correctness' of all the implemented components. The tests also help to illustrate the usage of the various components of the library.
 
 Please let me know, or just fix, any areas of the code which can be improved!
 
+# Dependancies
+
+Tensor uses the [nano](https://github.com/robclu/nano) template metaprogramming library to do offload some of the work to the compiler, for example things like index mapping for slicing and multiplication.
+
 # Current Status
 
 Currently the library is CPU only and is single-threaded as the development process has just begun. However, the library will be extended to include GPU functionality (with CUDA) and multi-threading (and therefore multi-core CPU - probably with OpenMP and MPI).
-
-# Conventions
-
-A lot of the inspiration for the library comes from the Boost libraries, hence the style conventions are similar to those used in the Boost libraries. A summary of the conventions used are:
-
-All class and variable names are lowercase with underscore separators:
-
-```c++
-class tensor_expression {};
-
-or
-
-int multiplication_result;
-```
-
-All template parameter names are CamelCase starting with a capital letter:
-
-```c++
-template <typename Value> struct integer;
-``` 
-
-Classes and stucts have an opening brace on the same line (as per Stroustrup), unless the class or struct is a metaclass, in which case the opening brace is on the next line (to make the separation clear and IMHO metaclasses read better with opening braces on the line following the declaration):
-
-```c++
-// Not a meta class
-template <typename T, typename E>
-class tensor {
-};
-
-// Meta class
-template <typename... As>
-struct list 
-{
-  template <template <typename...> class Function>
-  stuct apply 
-  {
-    // Rest of apply struct ...
-  };
-};
-```
-
-Functions, like metaclasses, have braces beginng on the line after the declaration (again as per Stroustrup):
-
-```c++
-int multiply(int x, int y) 
-{
-  return x * y;
-}
-```
-
-Namespaces have opening braces starting on the same line as the declaration 
-
-```c++
-namespace ftl {
-
-      // Functions for namespace ftl ...
-
-} // End namespace ftl
-```
-
-Class member variables begin with a single underscore, while local variables (and function parameters) do not: 
-
-```c++
-class foo {
-public:
-  int _class_member_variable;   // Single leading underscore
-  
-  void bar(int variable_one, int variable_two);
-};
-
-void foo::bar(int variable_one, int variable_two)
-{
-  int local_variable = 0;       // No single leading underscore
-  
-  // Rest of bar ...
-}  
-```
-
-This will be updated more formally at a later stage, but for now it may help if reading the code.
 
 # Building
 
@@ -144,7 +64,3 @@ The above commands will automatically run the test suite, and create an ```ftl_t
 ./ftl_tests       # or
 make run
 ```
-
-# Examples
-
-Coming soon ...
