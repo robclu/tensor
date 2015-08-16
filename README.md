@@ -12,7 +12,10 @@ Please let me know, or just fix, any areas of the code which can be improved!
 
 # Dependancies
 
-Tensor uses the [nano](https://github.com/robclu/nano) template metaprogramming library to do offload some of the work to the compiler, for example things like index mapping for slicing and multiplication.
+Tensor requires the following libraries:
+
+* [Nano](https://github.com/robclu/nano) : A template metaprogramming library to offload some of the work to the compiler, for example things like index mapping for slicing and multiplication.
+* [Boost Unit](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) : A unit testing library provided by boost. (This is only necessary if you want to run the test suite to check that all moduleas are running correctly. 
 
 # Current Status
 
