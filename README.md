@@ -66,9 +66,9 @@ make cpu_release  # or
 make gpu_release  
 ```
 
-The above commands will automatically run the test suite, and create a ```tensor_test_suite`` executable which can then be run using either of
+The above commands will automatically run the test suite, and create an ```ftl_tests`` executable which can then be run using either of
 
 ```
-./tensor_test_suite       # or
+./ftl_tests       # or
 make run
 ```
