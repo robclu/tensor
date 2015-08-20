@@ -4,7 +4,7 @@
 
 /*
  * ----------------------------------------------------------------------------------------------------------
- *  tensor_expressions.hpp header file for tensor library.
+ *  Tensor expressions header file for tensor library.
  *  Copyright (C) 2015 Rob Clucas robclu1818@gmail.com
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@
 //			: T     : Means Type when used as a template parameter
 // ----------------------------------------------------------------------------------------------------------
 
-#ifndef FTL_TENSOR_EXPRESSIONS
-#define FTL_TENSOR_EXPRESSIONS
+#ifndef FTL_TENSOR_EXPRESSIONS_HPP
+#define FTL_TENSOR_EXPRESSIONS_HPP
 
 namespace ftl {
 
@@ -86,4 +86,4 @@ public:
 
 }		// End namespace ftl
 
-#endif	// FTL_TENSOR_EXPRESSIONS
+#endif	// FTL_TENSOR_EXPRESSIONS_HPP
