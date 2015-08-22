@@ -85,5 +85,19 @@ BOOST_AUTO_TEST_CASE( canGetSizeOfASpecificDimensionOfTensor )
     BOOST_CHECK( dim_size_2 == 3 );
 }
 
+BOOST_AUTO_TEST_CASE( canSetElementOfTensor ) 
+{
+    ftl::tensor<int, 3> test_tensor = {3, 3, 3};
+    
+    // Set 2nd element 
+    test_tensor(1, 0, 0) = 4;
+    
+    // Get data 
+    const std::vector<int>& tensor_data = test_tensor.data();
+    
+    BOOST_CHECK( tensor_data[1] == 4 );
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -35,7 +35,6 @@
 
 namespace ftl {
     
-  
 // ----------------------------------------------------------------------------------------------------------
 /// @class  tensor
 /// @brief  Allows an N dimensional space to be created to store data and operate on the data.               \n
@@ -164,11 +163,81 @@ public:
     /// @return     The element at position i in the tensor's data vector.
     // ------------------------------------------------------------------------------------------------------
     value_type operator[](size_type i) const { return _data[i]; }
-
-
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Terminating case for the calculation of the offset for setting an element of the Ttensor.
+    /// @param[in]  idx     The index of the element in the last dimension of the tensor.
+    /// @tparam     I       The type of the idx parameter.
+    /// @return     The element at the location specified by the arguments to the function.
+    // ------------------------------------------------------------------------------------------------------
+    template <typename I>
+    typename std::enable_if<std::is_arithmetic<I>::value, T&>::type  operator() (I idx) 
+    {
+        if (!valid_index(idx, _counter)) {
+            _counter = 0;                                                   // Reset due to invalid index
+            return _data[0]; 
+        }
+        try {                                                               // Make sure variadic version 
+            if (_counter == 0) throw tensor_invalid_arguments(1, R);         // has been called already
+        } catch (tensor_invalid_arguments& e) {
+            std::cerr << e.what() << std::endl;
+        }
+        _offset += std::accumulate(_dim_sizes.begin()       , 
+                                   _dim_sizes.end() - 1     ,               // Mult all elements except last
+                                   1                        ,               // Start val for multiplication
+                                   std::multiplies<int>()   ) * idx;        // Add offset due to idx for dim
+        _counter = 0;                                                       // Reset counter for next iter
+        return _data[_offset];
+    }
+ 
+    // ------------------------------------------------------------------------------------------------------
+    //! @brief      General case for the calculation of the offset for setting an element of the Tensor. 
+    //! @param[in]  idx     The index of the element in the current dimension used in the calculation.
+    //! @param[in]  indices The indices of the element in the remaining dimensions to use for the 
+    //!             calculation.
+    //! @tparam     I       The type of the idx parameter.
+    //! @tparam     Is      The types of the remaining index parameters.
+    //! @return     Calls the function with the indices parameter as arguments, and does so until the 
+    //!             terminating case is reached.
+    // ------------------------------------------------------------------------------------------------------
+    template <typename I, typename... Is>
+    typename std::enable_if<std::is_arithmetic<I>::value, T&>::type operator()(I idx, Is... indices) 
+    {
+        const int num_args = sizeof...(Is);
+        if (!valid_index(idx, _counter)) {
+            _counter = 0; 
+            return _data[0];
+        }
+        if (_counter++ == 0) {                                                  // Case for the first index
+            try {                                                               // Check correct num arguments
+                if (num_args + 1 !=  R) throw tensor_invalid_arguments(num_args + 1, R);
+                _offset = idx;
+            } catch (tensor_invalid_arguments& e) {
+                std::cerr << e.what() << std::endl;
+                return _data[0];
+            }  
+        } else {                                                            // Case for all the other indices
+            _offset += std::accumulate(_dim_sizes.begin()               , 
+                                       _dim_sizes.end() - num_args - 1  ,
+                                       1                                , 
+                                       std::multiplies<size_type>()     ) * idx;
+        }
+        return this->operator()(indices...);
+    }  
+private:
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Checks the if an index for a given dimension is valid
+    /// @param[in]  idx     The index of the element in the dimension
+    /// @param[in]  dim     The dimension in which the index is being searched
+    /// @return     True if there was no error, otherwise false
+    /// @throw      tensor_out_of_range  If the index is out of range
+    // ------------------------------------------------------------------------------------------------------
+    bool valid_index(const size_type idx, const size_type dim) const;
 };
 
 // -------------------------------------- IMPLEMENTATIONS ---------------------------------------------------
+
+// ------------------------------------------ PUBLIC --------------------------------------------------------
 
 template <typename T, size_t R> 
 tensor<T, R>::tensor(std::vector<size_type>& dim_sizes, container_type& data)
@@ -192,6 +261,21 @@ size_t tensor<T, R>::size(const int dim) const
         std::cout << e.what() << std::endl;
          return 0;
     }
+}
+
+// ---------------------------------------- PRIVATE ---------------------------------------------------------
+
+template <typename T, size_t R>
+bool tensor<T, R>::valid_index(const size_type idx, const size_type dim) const 
+{
+    try {                                                                       
+        if (idx >= _dim_sizes[dim]) {           
+            throw tensor_out_of_range(dim + 1, _dim_sizes[dim], idx); 
+        } else return true;
+    } catch (tensor_out_of_range& e ) {
+        std::cout << e.what() << std::endl;
+        return false; 
+    }    
 }
 
 }           // End namespace ftl
