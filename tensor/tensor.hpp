@@ -27,7 +27,6 @@
 #define FTL_TENSOR_HPP
 
 #include "index_mapper.hpp"
-#include "tensor_exceptions.hpp"
 #include "tensor_expressions.hpp"
 #include "utils.hpp"
 
@@ -68,14 +67,12 @@ public:
 private:
     container_type          _data;                          ///< Container to hold tensor data elements
     std::vector<size_type>  _dim_sizes;                     ///< Sizes of each of the tensor's dimensions
-    size_type               _counter;                       ///< Iteration of the elemen offset calculation 
-    size_type               _offset;                        ///< For accessing elements with operator()
 public:
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Default constructor - sets the member variables to 0, and the number of dimensions equal 
     ///            to the rank.
     // ------------------------------------------------------------------------------------------------------
-    tensor() : _data(0), _dim_sizes(R), _counter(0), _offset(0) {}
+    tensor() : _data(0), _dim_sizes(R) {}
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Constructor using vectors to set the dimension sizes and the data of the tensor.
@@ -92,8 +89,7 @@ public:
     ///            of the nth dimension of the tensor.
     // ------------------------------------------------------------------------------------------------------
     tensor(std::initializer_list<int> dim_sizes) 
-    : _data(std::accumulate(dim_sizes.begin(), dim_sizes.end(), 1, std::multiplies<int>())),
-      _counter(0), _offset(0)
+    : _data(std::accumulate(dim_sizes.begin(), dim_sizes.end(), 1, std::multiplies<int>()))
     {   
         ASSERT(dim_sizes.size(), ==, R); 
         for (auto& element : dim_sizes) _dim_sizes.push_back(element);
@@ -108,7 +104,7 @@ public:
     // ------------------------------------------------------------------------------------------------------
     template <typename E>
     tensor(tensor_expression<T,E> const& expression) 
-    : _dim_sizes(expression.dim_sizes()), _counter(0), _offset(0)
+    : _dim_sizes(expression.dim_sizes())
     {
         E const& expr = expression;
         _data.resize(expr.size());
@@ -166,79 +162,72 @@ public:
     value_type operator[](size_type i) const { return _data[i]; }
     
     // ------------------------------------------------------------------------------------------------------
-    /// @brief      Terminating case for the calculation of the offset for setting an element of the Ttensor.
-    /// @param[in]  idx     The index of the element in the last dimension of the tensor.
+    /// @brief      General case for the calculation of the offset for setting an element of the Tensor. 
+    /// @param[in]  idx     The index of the element in the current dimension used in the calculation.
+    /// @param[in]  indices The indices of the element in the remaining dimensions to use for the 
+    ///             calculation.
+    /// @tparam     Mapper  The functor to use for the mapping. Generally this will be the defualt index
+    ///             mapper, but using the 'functor' allows for more dlexibility
     /// @tparam     I       The type of the idx parameter.
-    /// @return     The element at the location specified by the arguments to the function.
+    /// @tparam     Is      The types of the remaining index parameters.
+    /// @return     The element at the specified position, if valid.
+    /// @throw      tensor_invalid_arguments    If the number of arguments does not match the rank of the
+    ///             tensor then an error is thrown and the function returns the first value in the tensor
     // ------------------------------------------------------------------------------------------------------
-    template <typename I>
-    typename std::enable_if<std::is_arithmetic<I>::value, T&>::type  operator() (I idx) 
-    {
-        if (!valid_index(idx, _counter)) {
-            _counter = 0;                                                   // Reset due to invalid index
-            return _data[0]; 
-        }
-        try {                                                               // Make sure variadic version 
-            if (_counter == 0) throw tensor_invalid_arguments(1, R);         // has been called already
-        } catch (tensor_invalid_arguments& e) {
-            std::cerr << e.what() << std::endl;
-        }
-        _offset += std::accumulate(_dim_sizes.begin()       , 
-                                   _dim_sizes.end() - 1     ,               // Mult all elements except last
-                                   1                        ,               // Start val for multiplication
-                                   std::multiplies<int>()   ) * idx;        // Add offset due to idx for dim
-        _counter = 0;                                                       // Reset counter for next iter
-        std::cout << "OS   : " << _offset << "\n";
-        return _data[_offset];
-    }
- 
-    // ------------------------------------------------------------------------------------------------------
-    //! @brief      General case for the calculation of the offset for setting an element of the Tensor. 
-    //! @param[in]  idx     The index of the element in the current dimension used in the calculation.
-    //! @param[in]  indices The indices of the element in the remaining dimensions to use for the 
-    //!             calculation.
-    //! @tparam     I       The type of the idx parameter.
-    //! @tparam     Is      The types of the remaining index parameters.
-    //! @return     Calls the function with the indices parameter as arguments, and does so until the 
-    //!             terminating case is reached.
-    // ------------------------------------------------------------------------------------------------------
-    template <typename I, typename... Is>
+    template <typename Mapper = index_mapper, typename I = int, typename... Is>
     typename std::enable_if<std::is_arithmetic<I>::value, T&>::type operator()(I idx, Is... indices) 
     {
-        index_mapper mapper;
-        std::cout << " FM  : " <<
-            mapper(_dim_sizes, idx, indices...) << "\n";
-        
-        const int num_args = sizeof...(Is);
-        if (!valid_index(idx, _counter)) {
-            _counter = 0; 
+        // Since this is variadic, we need to check that the number 
+        // of indices specified matches the rank of the tensor
+        try {                                            
+            if (sizeof...(Is) + 1 != R) 
+                throw tensor_invalid_arguments(sizeof...(Is) + 1, R);
+        } catch (tensor_invalid_arguments& e) {
+            std::cerr << e.what() << std::endl;
             return _data[0];
-        }
-        if (_counter++ == 0) {                                                  // Case for the first index
-            try {                                                               // Check correct num arguments
-                if (num_args + 1 !=  R) throw tensor_invalid_arguments(num_args + 1, R);
-                _offset = idx;
-            } catch (tensor_invalid_arguments& e) {
-                std::cerr << e.what() << std::endl;
-                return _data[0];
-            }  
-        } else {                                                            // Case for all the other indices
-            _offset += std::accumulate(_dim_sizes.begin()               , 
-                                       _dim_sizes.end() - num_args - 1  ,
-                                       1                                , 
-                                       std::multiplies<size_type>()     ) * idx;
-        }
-        return this->operator()(indices...);
-    }  
-private:
+        }  
+        
+        // Create index mapper;
+        Mapper mapper;
+        
+        // Return result 
+        return _data[mapper(_dim_sizes, idx, indices...)];
+    }
+   
     // ------------------------------------------------------------------------------------------------------
-    /// @brief      Checks the if an index for a given dimension is valid
-    /// @param[in]  idx     The index of the element in the dimension
-    /// @param[in]  dim     The dimension in which the index is being searched
-    /// @return     True if there was no error, otherwise false
-    /// @throw      tensor_out_of_range  If the index is out of range
+    /// @brief      General case for the calculation of the offset for getting an element of the Tensor. 
+    /// @param[in]  idx     The index of the element in the current dimension used in the calculation.
+    /// @param[in]  indices The indices of the element in the remaining dimensions to use for the 
+    ///             calculation.
+    /// @tparam     Mapper  The functor to use for the mapping. Generally this will be the defualt index
+    ///             mapper, but using the 'functor' allows for more dlexibility
+    /// @tparam     I       The type of the idx parameter.
+    /// @tparam     Is      The types of the remaining index parameters.
+    /// @return     The element at the specified position, if valid.
+    /// @throw      tensor_invalid_arguments    If the number of arguments does not match the rank of the
+    ///             tensor then an error is thrown and the function returns the first value in the tensor
     // ------------------------------------------------------------------------------------------------------
-    bool valid_index(const size_type idx, const size_type dim) const;
+    template <typename Mapper = index_mapper, typename I, typename... Is>
+    typename std::enable_if<std::is_arithmetic<I>::value, const T&>::type 
+    operator()(I idx, Is... indices) const
+    {
+        // Since this is variadic, we need to check that the number 
+        // of indices specified matches the rank of the tensor
+        try {                                            
+            if (sizeof...(Is) + 1 != R) 
+                throw tensor_invalid_arguments(sizeof...(Is) + 1, R);
+        } catch (tensor_invalid_arguments& e) {
+            std::cerr << e.what() << std::endl;
+            return _data[0];
+        }  
+        
+        // Create index mapper;
+        Mapper mapper;
+        
+        // Return result 
+        return _data[mapper(_dim_sizes, idx, indices...)]; 
+    }
+
 };
 
 // -------------------------------------- IMPLEMENTATIONS ---------------------------------------------------
@@ -247,7 +236,7 @@ private:
 
 template <typename T, size_t R> 
 tensor<T, R>::tensor(std::vector<size_type>& dim_sizes, container_type& data)
-: _dim_sizes(std::move(dim_sizes)), _data(std::move(data)), _counter(0), _offset(0) 
+: _dim_sizes(std::move(dim_sizes)), _data(std::move(data)) 
 {
     ASSERT(_dim_sizes.size(), ==, R);               // Check number of dimensions is equal to the rank
     ASSERT(_data.size(), ==,                        // Check total data size is consistent with dim sizes
@@ -270,19 +259,6 @@ size_t tensor<T, R>::size(const int dim) const
 }
 
 // ---------------------------------------- PRIVATE ---------------------------------------------------------
-
-template <typename T, size_t R>
-bool tensor<T, R>::valid_index(const size_type idx, const size_type dim) const 
-{
-    try {                                                                       
-        if (idx >= _dim_sizes[dim]) {           
-            throw tensor_out_of_range(dim + 1, _dim_sizes[dim], idx); 
-        } else return true;
-    } catch (tensor_out_of_range& e ) {
-        std::cout << e.what() << std::endl;
-        return false; 
-    }    
-}
 
 }           // End namespace ftl
 

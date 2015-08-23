@@ -14,10 +14,36 @@
 BOOST_AUTO_TEST_SUITE( TensorExpressionsTestSuite )
 
 BOOST_AUTO_TEST_SUITE_END()
- 
-// --------------------------------------- TENSOR TESTS -----------------------------------------------------   
 
-BOOST_AUTO_TEST_SUITE( TensorTestSuite )
+// ------------------------------------------- INDEX MAPPER -------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( IndexMapperSuite )
+
+BOOST_AUTO_TEST_CASE( canMapIndexCorrectly )
+{
+    // Create a vector of dimensions
+    std::vector<size_t> dimension_sizes = {3, 2, 4, 2};
+    
+    // Create a dimension mapper struct (the inteded use is as a functor, this is just for testing purposes)
+    ftl::index_mapper mapper;
+    
+    // Determine the offset of elements in various dimensions
+    size_t dim_1 = mapper(dimension_sizes, 2, 0, 0, 0);
+    size_t dim_2 = mapper(dimension_sizes, 2, 1, 0, 0);
+    size_t dim_3 = mapper(dimension_sizes, 1, 0, 2, 0);
+    size_t dim_4 = mapper(dimension_sizes, 2, 1, 3, 1);
+    
+    BOOST_CHECK( dim_1 == 2  );
+    BOOST_CHECK( dim_2 == 5  );
+    BOOST_CHECK( dim_3 == 13 );
+    BOOST_CHECK( dim_4 == 47 );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+   
+// --------------------------------------------- TENSOR -----------------------------------------------------   
+
+BOOST_AUTO_TEST_SUITE( TensorSuite )
     
 BOOST_AUTO_TEST_CASE( canCreateTensorWithDefaultConstructor ) 
 {
@@ -98,6 +124,17 @@ BOOST_AUTO_TEST_CASE( canSetElementOfTensor )
     BOOST_CHECK( tensor_data[1] == 4 );
 }
 
-
+BOOST_AUTO_TEST_CASE( canGetElementOfTensor ) 
+{
+    ftl::tensor<int, 3> test_tensor = {3, 3, 3};
+    
+    // Set 2nd element 
+    test_tensor(1, 0, 0) = 12;
+    
+    // Get 2nd element now
+    int element = test_tensor(1, 0, 0);
+    
+    BOOST_CHECK( element == 12 );
+}
 
 BOOST_AUTO_TEST_SUITE_END()
