@@ -37,29 +37,41 @@ namespace ftl {
 ///             dimensions. So for example for a 2D tensor, or matrix), given element (2, 3) then the index 
 ///             mapper will determine that the element is at position 2 * num_columns + 3 ...
 // ---------------------------------------------------------------------------------------------------------- 
-class index_mapper {
-public: 
-    // ------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------
+struct index_mapper {
     template <typename I, typename... Is>
-    size_t operator()(const std::vector<size_t>& dim_sizes  , 
-                      size_t iter  = 0                      , 
-                      size_t index = 0                      , 
-                      I idx                                 , 
-                      Is... indices                         )
+    size_t operator()(const std::vector<size_t>& dim_sizes, I idx, Is... indices) 
     {
-        size_t num_indices = sizeof...(Is);     
-        if (iter == 0) {                                    // First dimension, offset is simply the index
-            index = idx;
-        } else {                                            // Other cases
-            index += std::accumulate(dim_sizes.begin()                  ,
-                                     dim_sizes.end() - num_indices - 1  ,
-                                     1                                  , 
-                                     std::multiplies<size_t>()          ) * idx;
-        }
-        return this->operator()(dim_sizes, iter + 1, index, indices...);   
+        size_t offset = idx;
+        // Call the map helper function to determine the rest of the offset
+        return map_helper<1>(dim_sizes, offset, indices...);
     }
     
+    template <size_t Iteration, typename I, typename... Is>
+    size_t map_helper(const std::vector<size_t>&    dim_sizes   , 
+                      size_t                        offset      ,       
+                      I                             idx         , 
+                      Is...                         indices     )
+    {
+        size_t num_indices = sizeof...(Is);
+        offset += std::accumulate(dim_sizes.begin()                  ,
+                                  dim_sizes.end() - num_indices - 1  ,
+                                  1                                  , 
+                                  std::multiplies<int>()             ) * idx;
+        // Keep iterating
+        return map_helper<Iteration + 1>(dim_sizes, offset, indices...);
+    }
+    
+    // Case for when there are no more indices to add to offset
+    template <size_t Iteration, typename I>
+    size_t map_helper(const std::vector<size_t>&    dim_sizes   , 
+                      size_t                        offset      ,
+                      I                             idx         )
+    {
+        return offset + std::accumulate(dim_sizes.begin()         ,
+                                        dim_sizes.end() - 1       ,
+                                        1                         ,
+                                        std::multiplies<int>()    ) * idx;
+    }
 };
 
 }           // End namespace ftl

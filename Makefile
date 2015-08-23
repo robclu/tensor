@@ -97,5 +97,3 @@ build_tests: tensor_tests.o
 clean:
 	rm -rf *.o
 	rm -rf $(EXE) 
-
-clobber: clean

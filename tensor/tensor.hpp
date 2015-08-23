@@ -26,6 +26,7 @@
 #ifndef FTL_TENSOR_HPP
 #define FTL_TENSOR_HPP
 
+#include "index_mapper.hpp"
 #include "tensor_exceptions.hpp"
 #include "tensor_expressions.hpp"
 #include "utils.hpp"
@@ -187,6 +188,7 @@ public:
                                    1                        ,               // Start val for multiplication
                                    std::multiplies<int>()   ) * idx;        // Add offset due to idx for dim
         _counter = 0;                                                       // Reset counter for next iter
+        std::cout << "OS   : " << _offset << "\n";
         return _data[_offset];
     }
  
@@ -203,6 +205,10 @@ public:
     template <typename I, typename... Is>
     typename std::enable_if<std::is_arithmetic<I>::value, T&>::type operator()(I idx, Is... indices) 
     {
+        index_mapper mapper;
+        std::cout << " FM  : " <<
+            mapper(_dim_sizes, idx, indices...) << "\n";
+        
         const int num_args = sizeof...(Is);
         if (!valid_index(idx, _counter)) {
             _counter = 0; 
