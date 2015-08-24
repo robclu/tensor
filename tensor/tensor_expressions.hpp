@@ -35,6 +35,8 @@
 
 #include "utils.hpp"
 
+#include <nano/nano.hpp>
+
 namespace ftl {
 
 // ----------------------------------------------------------------------------------------------------------
@@ -185,7 +187,54 @@ public:
     /// @return    The result of the subtraction of the Tensors.
     // ------------------------------------------------------------------------------------------------------
     value_type operator[](size_type i) const { return _x[i] + _y[i]; }
-};      
+};  
+
+// ----------------------------------------------------------------------------------------------------------
+/// @class      tensor_multipler
+/// @brief      Expression which essentially just captures the arguments passed to the constructor, which will
+///             be a list of dimensions to multiply over. It is a helper class for tensor_multiplication.
+/// @tparam     T       Type of the data used by the Tensors.
+/// @tparam     E1      Expression to multiply.
+// ----------------------------------------------------------------------------------------------------------
+template <typename T, typename E1, typename I, typename... Is>
+class tensor_multiplier : public tensor_expression<T, tensor_multiplier<T, E1, I, Is...>> {
+public:
+    using typename tensor_expression<T, tensor_multiplier<T, E1, I, Is...>>::container_type;
+    using typename tensor_expression<T, tensor_multiplier<T, E1, I, Is...>>::size_type;
+    using typename tensor_expression<T, tensor_multiplier<T, E1, I, Is...>>::value_type;
+    
+    // Define a list of index values to multiply over
+    using index_list = nano::list< typename  I::type, typename Is::type...>;
+private:
+    E1 const&       _x;                                 //!< Expression for multiplication
+public:
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Sets the expression for multiplication and stores the dimensions to multiply over
+    /// @param[in] x       The expression for multiplication
+    // ------------------------------------------------------------------------------------------------------
+    tensor_multiplier(tensor_expression<T, E1> const& x, I dim, Is... dims) 
+    : _x(x)
+    {}
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Gets the sizes of the all the dimensions of the expression.
+    /// @return    A constant reference to the dimension size vector of the expression.
+    // ------------------------------------------------------------------------------------------------------
+    const std::vector<size_type>& dimSizes() const { return _x.dimSizes(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Returns the size of the expression.
+    /// @return    The size of the tensor_multiplier.
+    // ------------------------------------------------------------------------------------------------------
+    size_type size() const { return _x.size(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Multiplies two elements (one from each Tensor) from the Tensor expression data.
+    /// @param[in] i   The element in the expression which must be fetched.
+    /// @return    The result of the multiplication of the Tensors.
+    // ------------------------------------------------------------------------------------------------------
+    value_type operator[](size_type i) const { return _x[i]; }
+};    
 
 }   // End namespace ftl
 

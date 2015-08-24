@@ -8,10 +8,22 @@
 #include <boost/test/unit_test.hpp>
 
 #include "tensor/tensor.hpp"
+#include "tensor/tensor_index.hpp"
 
 #include <iostream>
 
-BOOST_AUTO_TEST_SUITE( TensorExpressionsTestSuite )
+BOOST_AUTO_TEST_SUITE( TensorIndex )
+
+BOOST_AUTO_TEST_CASE( canUseATensorIndex ) 
+{
+    // Use index namespace, which hs indices like i,
+    // j, ... etc already defined
+    using namespace ftl::idx;
+    
+    BOOST_CHECK( i.value() == 0 );
+    BOOST_CHECK( j.value() == 1 );
+    
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -167,6 +179,17 @@ BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenSubtractingTensors )
     BOOST_CHECK( subtracted_tensor.size() == tensor_1.size() ); 
     BOOST_CHECK( subtracted_tensor.size() == tensor_2.size() ); 
     BOOST_CHECK( subtracted_tensor.size() == tensor_3.size() ); 
+}
+
+BOOST_AUTO_TEST_CASE( canMultiplyTensors )
+{
+    // To use the index variables
+    using namespace ftl::idx;    
+    
+    ftl::tensor<int, 3> test_tensor = {2, 2, 2};
+    
+    // Get a tensor_multiplier from the () operator
+    auto t_multiplier = test_tensor(i, j);
 }
 
 // Need To check that the values are actually correct

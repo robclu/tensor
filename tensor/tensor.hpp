@@ -174,7 +174,8 @@ public:
     ///             tensor then an error is thrown and the function returns the first value in the tensor
     // ------------------------------------------------------------------------------------------------------
     template <typename Mapper = index_mapper, typename I = int, typename... Is>
-    typename std::enable_if<std::is_arithmetic<I>::value, T&>::type operator()(I idx, Is... indices) 
+    typename std::enable_if<std::is_arithmetic<I>::value, T&>::type 
+    operator()(I idx, Is... indices) 
     {
         // Since this is variadic, we need to check that the number 
         // of indices specified matches the rank of the tensor
@@ -225,6 +226,14 @@ public:
         
         // Return result 
         return _data[mapper(_dim_sizes, idx, indices...)]; 
+    }
+    
+    template <typename I, typename... Is>
+    tensor_multiplier<T, tensor<T, R>, I, Is...> operator()(I index, Is... indices) const 
+    {
+        // Create a tensor_multiplier
+        return tensor_multiplier<T, tensor<T, R>, I, Is...>(static_cast<tensor<T, R> const&>(*this), 
+                                                            index, indices...);
     }
 
 };
