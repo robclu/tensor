@@ -138,3 +138,36 @@ BOOST_AUTO_TEST_CASE( canGetElementOfTensor )
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+// ------------------------------- TENSOR OPERATIONS --------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( TensorOperations )
+    
+BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenAddingTensors ) 
+{
+    ftl::tensor<float, 3> tensor_1     = {1, 2, 3};
+    ftl::tensor<float, 3> tensor_2     = {1, 2, 3};
+    ftl::tensor<float, 3> tensor_3     = {1, 2, 3};
+    
+    ftl::tensor<float, 3> added_tensor   = tensor_1 + tensor_2 + tensor_3;
+    
+    BOOST_CHECK( added_tensor.size() == tensor_1.size() ); 
+    BOOST_CHECK( added_tensor.size() == tensor_2.size() ); 
+    BOOST_CHECK( added_tensor.size() == tensor_3.size() ); 
+}
+
+BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenSubtractingTensors ) 
+{
+    ftl::tensor<float, 3> tensor_1     = {1, 2, 3};
+    ftl::tensor<float, 3> tensor_2     = {1, 2, 3};
+    ftl::tensor<float, 3> tensor_3     = {1, 2, 3};
+    
+    ftl::tensor<float, 3> subtracted_tensor   = tensor_1 - tensor_2 - tensor_3;
+    
+    BOOST_CHECK( subtracted_tensor.size() == tensor_1.size() ); 
+    BOOST_CHECK( subtracted_tensor.size() == tensor_2.size() ); 
+    BOOST_CHECK( subtracted_tensor.size() == tensor_3.size() ); 
+}
+
+// Need To check that the values are actually correct
+BOOST_AUTO_TEST_SUITE_END()

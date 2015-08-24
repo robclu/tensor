@@ -33,6 +33,8 @@
 #ifndef FTL_TENSOR_EXPRESSIONS_HPP
 #define FTL_TENSOR_EXPRESSIONS_HPP
 
+#include "utils.hpp"
+
 namespace ftl {
 
 // ----------------------------------------------------------------------------------------------------------
@@ -54,7 +56,7 @@ public:
     
     // ------------------------------------------------------------------------------------------------------
     //! @brief     Returns the size of the expression
-    //! @return    The size of the TensorExpression
+    //! @return    The size of the tensor_expression
     // ------------------------------------------------------------------------------------------------------
     size_type size() const { return static_cast<E const&>( *this ).size(); }
 
@@ -84,6 +86,150 @@ public:
     operator E const&() const   { return static_cast<const  E&>( *this ); }
 };
 
-}		// End namespace ftl
+// ----------------------------------------------------------------------------------------------------------
+/// @class      tensor_difference
+/// @brief      Expression class for calculating the difference of two tensors.
+/// @tparam     T       The type of the data used by the tensors.
+/// @tparam     E1      Expression to subtract from.
+/// @tparam     E2      Expression to subtract with.
+// ----------------------------------------------------------------------------------------------------------
+template <typename T, typename E1, typename E2>
+class tensor_difference : public tensor_expression<T, tensor_difference<T,E1,E2>> {
+public:
+    using typename tensor_expression<T, tensor_difference<T,E1,E2>>::container_type;
+    using typename tensor_expression<T, tensor_difference<T,E1,E2>>::size_type;
+    using typename tensor_expression<T, tensor_difference<T,E1,E2>>::value_type;
+private:
+    E1 const& _x;                                                   //!< First expression for subtraction
+    E2 const& _y;                                                   //!< Second expression for subtraction
+public:
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief         Constructs a tensor_difference class from the inputs.
+    /// @tparam[in]    x   The first expression for subtraction
+    /// @tparam[in]    y   The second expression for subtraction
+    // ------------------------------------------------------------------------------------------------------
+    tensor_difference(tensor_expression<T,E1> const& x, tensor_expression<T,E2> const& y) : _x(x), _y(y) 
+    { 
+        ASSERT(x.size(), ==, y.size());                         // Check total sizes
+        for (int i = 0; i < x.dim_sizes().size(); i++) {         // Check each dimension size
+            ASSERT(x.dim_sizes()[i], ==, y.dim_sizes()[i]);
+        }
+    }
+       
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Gets the sizes of the all the dimensions of the expression.
+    /// @return    A constant reference to the dimension size vector of the expression 
+    // ------------------------------------------------------------------------------------------------------
+    const std::vector<size_type>& dim_sizes() const { return _x.dim_sizes(); }
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Returns the size of the expression
+    /// @return    The size of the tensor_expression
+    // ------------------------------------------------------------------------------------------------------
+    size_type size() const { return _x.size(); }
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Subtracts two elements (one from each Tensor) from the Tensor expression data.
+    /// @param[in] i   The element in the expression which must be fetched.
+    /// @return    The result of the subtraction of the Tensors.
+    // ------------------------------------------------------------------------------------------------------
+    value_type operator[](size_type i) const { return _x[i] - _y[i]; }
+};      
+
+// ----------------------------------------------------------------------------------------------------------
+/// @class      tensor_addition
+/// @brief      Expression class for calculating the addition of two tensors.
+/// @tparam     T       Type of the data used by the tesors
+/// @tparam     E1      Expression to add to.
+/// @tparam     E2      Expression to add with.
+// ----------------------------------------------------------------------------------------------------------
+template <typename T, typename E1, typename E2>
+class tensor_addition : public tensor_expression<T, tensor_addition<T, E1, E2>> {
+public:
+    using typename tensor_expression<T, tensor_addition<T, E1, E2>>::container_type;
+    using typename tensor_expression<T, tensor_addition<T, E1, E2>>::size_type;
+    using typename tensor_expression<T, tensor_addition<T, E1, E2>>::value_type;
+private:
+    E1 const& _x;                                                   //!< First expression for addition
+    E2 const& _y;                                                   //!< Second expression for addition
+public:
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Sets the expressions for addition and checks that they have the same ranks and dimension
+    ///            sizes.
+    /// @param[in] x       The first expression for addition.
+    /// @param[in] y       The second expression for addition
+    // ------------------------------------------------------------------------------------------------------
+    tensor_addition(tensor_expression<T,E1> const& x, tensor_expression<T,E2> const& y) : _x(x), _y(y) 
+    { 
+        ASSERT(x.size(), ==, y.size());                         // Check total sizes
+        for (int i = 0; i < x.dim_sizes().size(); i++) {         // Check each dimension size
+            ASSERT(x.dim_sizes()[i], ==, y.dim_sizes()[i]);
+        }
+    }
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Gets the sizes of the all the dimensions of the expression.
+    /// @return    A constant reference to the dimension size vector of the expression 
+    // ------------------------------------------------------------------------------------------------------
+    const std::vector<size_type>& dim_sizes() const { return _x.dim_sizes(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Returns the size of the expression.
+    /// @return    The size of the tensor_addition.
+    // ------------------------------------------------------------------------------------------------------
+    size_type size() const { return _x.size(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief     Adds two elements (one from each Tensor) from the Tensor expression data.
+    /// @param[in] i   The element in the expression which must be fetched.
+    /// @return    The result of the subtraction of the Tensors.
+    // ------------------------------------------------------------------------------------------------------
+    value_type operator[](size_type i) const { return _x[i] + _y[i]; }
+};      
+
+}   // End namespace ftl
+
+// ------------------------------------ TENSOR OPERATIONS ---------------------------------------------------
+
+namespace {
+
+// ----------------------------------------------------------------------------------------------------------    
+/// @brief      Subtracts two tensor_expressions
+///
+///             The expressions could be any type: tensor, tensor_addition ..., 
+/// @param[in]  x   The tensor_expression to substract from.
+/// @param[in]  y   The tensor_expression to subtract with. 
+/// @return     The result of the subtraction of the two tensor_expressions.
+/// @tparam     T   Type of data used by the expressions.
+/// @tparam     E1  Type of the expression to subtract from.
+/// @tparam     E2  Type of the expression to subtract with.
+// ----------------------------------------------------------------------------------------------------------    
+template <typename T, typename E1, typename E2>
+ftl::tensor_difference<T, E1 ,E2> const operator-(ftl::tensor_expression<T, E1> const& x, 
+                                                  ftl::tensor_expression<T, E2> const& y)    
+{
+    return ftl::tensor_difference<T, E1, E2>(x, y);
+}
+
+// ==========================================================================================================
+// ----------------------------------------------------------------------------------------------------------    
+/// @brief      Adds two tensor_expressions
+///
+///             The expressions could be any Tensor type: tensor, tensor_difference ...
+/// @param[in]  x   The tensor_expression to add to.
+/// @param[in]  y   The tensor_expression to add with.
+/// @return     The result of the addition of the two tensor_expressions.
+/// @tparam     T   The type of data used by the expressions.
+/// @tparam     E1  The type of the expression to add to.
+/// @tparam     E2  The type of the expression to add with.
+// ----------------------------------------------------------------------------------------------------------    
+template <typename T, typename E1, typename E2>
+ftl::tensor_addition<T, E1 ,E2> const operator+(ftl::tensor_expression<T, E1> const& x, 
+                                                ftl::tensor_expression<T, E2> const& y)    
+{
+    return ftl::tensor_addition<T, E1, E2>(x, y);
+}
+
+}		// End global namespace
 
 #endif	// FTL_TENSOR_EXPRESSIONS_HPP

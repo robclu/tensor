@@ -28,7 +28,6 @@
 
 #include "index_mapper.hpp"
 #include "tensor_expressions.hpp"
-#include "utils.hpp"
 
 #include <initializer_list>
 #include <numeric>
