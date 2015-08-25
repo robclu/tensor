@@ -209,32 +209,111 @@ private:
     E1 const&       _x;                                 //!< Expression for multiplication
 public:
     // ------------------------------------------------------------------------------------------------------
-    /// @brief     Sets the expression for multiplication and stores the dimensions to multiply over
-    /// @param[in] x       The expression for multiplication
+    /// @brief      Sets the expression for multiplication
+    /// @param[in]  x       The expression for multiplication
     // ------------------------------------------------------------------------------------------------------
-    tensor_multiplier(tensor_expression<T, E1> const& x, I dim, Is... dims) 
-    : _x(x)
-    {}
+    tensor_multiplier(tensor_expression<T, E1> const& x) : _x(x) {}
    
     // ------------------------------------------------------------------------------------------------------
-    /// @brief     Gets the sizes of the all the dimensions of the expression.
-    /// @return    A constant reference to the dimension size vector of the expression.
+    /// @brief      Gets the sizes of the all the dimensions of the expression.
+    /// @return     A constant reference to the dimension size vector of the expression.
     // ------------------------------------------------------------------------------------------------------
-    const std::vector<size_type>& dimSizes() const { return _x.dimSizes(); }
+    const std::vector<size_type>& dim_sizes() const { return _x.dim_sizes(); }
     
     // ------------------------------------------------------------------------------------------------------
-    /// @brief     Returns the size of the expression.
-    /// @return    The size of the tensor_multiplier.
+    /// @brief      Returns the size of the expression.
+    /// @return     The size of the tensor_multiplier.
     // ------------------------------------------------------------------------------------------------------
     size_type size() const { return _x.size(); }
     
     // ------------------------------------------------------------------------------------------------------
-    /// @brief     Multiplies two elements (one from each Tensor) from the Tensor expression data.
-    /// @param[in] i   The element in the expression which must be fetched.
-    /// @return    The result of the multiplication of the Tensors.
+    /// @brief      Multiplies two elements (one from each Tensor) from the Tensor expression data.
+    /// @param[in]  i   The element in the expression which must be fetched.
+    /// @return     The result of the multiplication of the Tensors.
     // ------------------------------------------------------------------------------------------------------
     value_type operator[](size_type i) const { return _x[i]; }
 };    
+
+// ----------------------------------------------------------------------------------------------------------
+/// @class      tensor_multiplication
+/// @brief      Expression which takes two expressions (helper expressions) and does the multiplication 
+/// @tparam     T       Type of the data used by the expressions
+/// @tparam     E1      The first expression to multiply
+/// @tparam     E2      THe second expression to multiply
+// ----------------------------------------------------------------------------------------------------------
+template <typename T, typename E1, typename E2>
+class tensor_multiplication : public tensor_expression<T, tensor_multiplication<T, E1, E2>> {
+public:
+    using typename tensor_expression<T, tensor_multiplication<T, E1, E2>>::container_type;
+    using typename tensor_expression<T, tensor_multiplication<T, E1, E2>>::size_type;
+    using typename tensor_expression<T, tensor_multiplication<T, E1, E2>>::value_type;
+    
+    // Define some lists from the two expressions, that will be needed for doing eienstein reduction
+    // 
+    // Consider we have E1 = A, E2 = B and we want the result C_ik = A_ij * B_ji, then 
+    // 
+    // common_dims  : j -- since j is common to both 
+    // exp_one_dims : i -- since i is uncommon to both, but present in E1
+    // exp_two_dims : k -- since k is uncommon to both, but present in E2
+    using common_dims   = typename nano::find_common<   typename E1::index_list, 
+                                                        typename E2::index_list>::result;
+    using exp_one_dims  = typename nano::find_uncommon< typename E1::index_list, 
+                                                        typename E2::index_list>::result;
+    using exp_two_dims  = typename nano::find_uncommon< typename E2::index_list, 
+                                                        typename E2::index_list>::result;
+private:
+    E1 const&               _x;                         //!< First expression for multiplication
+    E2 const&               _y;                         //!< Second expression for multiplication
+    std::vector<size_type>  _dim_sizes;                 //!< Sizes of the dimensions of the resulting tensor
+public:
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Sets the expressions for multiplication
+    /// @param[in]  x        The first expression for multiplication
+    /// @param[in]  y        The second expression for multiplication
+    // ------------------------------------------------------------------------------------------------------
+    tensor_multiplication(tensor_expression<T, E1> const& x, tensor_expression<T, E2> const& y)
+    : _x(x) ,_y(y)
+    {}
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the sizes of the all the dimensions of the expression.
+    /// @return     A constant reference to the dimension size vector of the expression.
+    // ------------------------------------------------------------------------------------------------------
+    const std::vector<size_type>& dim_sizes() const { return _x.dim_sizes(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns the size of the expression.
+    /// @return     The size of the tensor_multiplier.
+    // ------------------------------------------------------------------------------------------------------
+    size_type size() const { return _x.size(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Multiplies two elements (one from each Tensor) from the Tensor expression data.
+    /// @param[in]  i   The element in the expression which must be fetched.
+    /// @return     The result of the multiplication of the Tensors.
+    // ------------------------------------------------------------------------------------------------------
+    value_type operator[](size_type i) const { return _x[i]; }
+private:
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Determines the sizes of each of the dimensions for a new tensor
+    // ------------------------------------------------------------------------------------------------------
+    void determine_dim_sizes() 
+    {
+        
+    }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Calculates the value of the element at the given index as a result of the multiplication
+    /// @param      i   The index of the element for which the value must be determined
+    /// @return     The value of the elements at the index i in the tensor which results from the
+    ///             multiplication
+    // ------------------------------------------------------------------------------------------------------
+    T calculate_value(size_type i) const 
+    {
+        
+        return T(0);
+    }
+};   
 
 }   // End namespace ftl
 

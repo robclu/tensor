@@ -232,8 +232,7 @@ public:
     tensor_multiplier<T, tensor<T, R>, I, Is...> operator()(I index, Is... indices) const 
     {
         // Create a tensor_multiplier
-        return tensor_multiplier<T, tensor<T, R>, I, Is...>(static_cast<tensor<T, R> const&>(*this), 
-                                                            index, indices...);
+        return tensor_multiplier<T, tensor<T, R>, I, Is...>(static_cast<tensor<T, R> const&>(*this));
     }
 
 };
