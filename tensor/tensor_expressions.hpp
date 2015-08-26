@@ -252,15 +252,17 @@ public:
     // 
     // Consider we have E1 = A, E2 = B and we want the result C_ik = A_ij * B_ji, then 
     // 
-    // common_dims  : j -- since j is common to both 
-    // exp_one_dims : i -- since i is uncommon to both, but present in E1
-    // exp_two_dims : k -- since k is uncommon to both, but present in E2
-    using common_dims   = typename nano::find_common<   typename E1::index_list, 
-                                                        typename E2::index_list>::result;
-    using exp_one_dims  = typename nano::find_uncommon< typename E1::index_list, 
-                                                        typename E2::index_list>::result;
-    using exp_two_dims  = typename nano::find_uncommon< typename E2::index_list, 
-                                                        typename E2::index_list>::result;
+    // reduce_dims      : j -- since j is common to both 
+    // exp_one_dims     : i -- since i is uncommon to both, but present in E1
+    // exp_two_dims     : k -- since k is uncommon to both, but present in E2
+    // non_reduce_dims  : i, k 
+    using reduce_dims       = typename nano::find_common<   typename E1::index_list, 
+                                                            typename E2::index_list>::result;
+    using exp_one_dims      = typename nano::find_uncommon< typename E1::index_list, 
+                                                            typename E2::index_list>::result;
+    using exp_two_dims      = typename nano::find_uncommon< typename E2::index_list, 
+                                                            typename E2::index_list>::result;
+    using non_reduce_dims   = typename nano::join<exp_one_dims, exp_two_dims>::result;
 private:
     E1 const&               _x;                         //!< First expression for multiplication
     E2 const&               _y;                         //!< Second expression for multiplication
@@ -299,6 +301,16 @@ private:
     // ------------------------------------------------------------------------------------------------------
     void determine_dim_sizes() 
     {
+        // Create instances of nano runtime converters
+        nano::runtime_converter<exp_one_dims> exp_one_converter;
+        nano::runtime_converter<exp_two_dims> exp_two_converter;
+        
+        auto dims_exp_one  = exp_one_converter.to_vector();
+        auto dims_exp_two  = exp_two_converter.to_vector();
+        
+        // Add the sizes of dimensions contributed by E1
+        for (auto& dim : dims_exp_one) 
+            _dim_sizes.push_back(_x.size(dim));
         
     }
     
