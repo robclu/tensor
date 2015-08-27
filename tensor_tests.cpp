@@ -161,8 +161,8 @@ BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenAddingTensors )
     ftl::tensor<float, 3> tensor_2     = {1, 2, 3};
     ftl::tensor<float, 3> tensor_3     = {1, 2, 3};
     
-    ftl::tensor<float, 3> added_tensor   = tensor_1 + tensor_2 + tensor_3;
-    
+    auto added_tensor   = tensor_1 + tensor_2 + tensor_3;
+   
     BOOST_CHECK( added_tensor.size() == tensor_1.size() ); 
     BOOST_CHECK( added_tensor.size() == tensor_2.size() ); 
     BOOST_CHECK( added_tensor.size() == tensor_3.size() ); 
@@ -186,10 +186,16 @@ BOOST_AUTO_TEST_CASE( canMultiplyTensors )
     // To use the index variables
     using namespace ftl::idx;    
     
-    ftl::tensor<int, 3> test_tensor = {2, 2, 2};
+    ftl::tensor<int, 2> test_tensor_1 = {3, 2};
+    ftl::tensor<int, 2> test_tensor_2 = {2, 3};
     
     // Get a tensor_multiplier from the () operator
-    auto t_multiplier = test_tensor(i, j);
+    auto t_multiplier = test_tensor_1(i, j) * test_tensor_2(j, k);
+    
+    std::vector<size_t> multiplier_dim_sizes = t_multiplier.dim_sizes();
+    
+    for (auto& size : multiplier_dim_sizes)
+        std::cout << "Size : " << size << "\n";
 }
 
 // Need To check that the values are actually correct

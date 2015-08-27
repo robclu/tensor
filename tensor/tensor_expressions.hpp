@@ -225,6 +225,13 @@ public:
     /// @return     The size of the tensor_multiplier.
     // ------------------------------------------------------------------------------------------------------
     size_type size() const { return _x.size(); }
+  
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns the size of a specific dimension of the tensor_multiplier
+    /// @param[in]  i   The indexx of the dimension to get the size of.
+    /// @return     The size of a dimension of the tensor_multiplier.
+    // ------------------------------------------------------------------------------------------------------
+    size_type size(const size_t i) const { return _x.size(i); }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Multiplies two elements (one from each Tensor) from the Tensor expression data.
@@ -275,13 +282,15 @@ public:
     // ------------------------------------------------------------------------------------------------------
     tensor_multiplication(tensor_expression<T, E1> const& x, tensor_expression<T, E2> const& y)
     : _x(x) ,_y(y)
-    {}
+    {
+        determine_dim_sizes();
+    }
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the sizes of the all the dimensions of the expression.
     /// @return     A constant reference to the dimension size vector of the expression.
     // ------------------------------------------------------------------------------------------------------
-    const std::vector<size_type>& dim_sizes() const { return _x.dim_sizes(); }
+    const std::vector<size_type>& dim_sizes() const { return _dim_sizes; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Returns the size of the expression.
@@ -301,17 +310,23 @@ private:
     // ------------------------------------------------------------------------------------------------------
     void determine_dim_sizes() 
     {
-        // Create instances of nano runtime converters
-        nano::runtime_converter<exp_one_dims> exp_one_converter;
-        nano::runtime_converter<exp_two_dims> exp_two_converter;
+        using e1_dims = typename nano::find_uncommon_indices<typename E1::index_list,
+                                                             typename E2::index_list>::result;
+        using e2_dims = typename nano::find_uncommon_indices<typename E2::index_list, 
+                                                             typename E1::index_list>::result;
         
-        auto dims_exp_one  = exp_one_converter.to_vector();
-        auto dims_exp_two  = exp_two_converter.to_vector();
+        // Create instances of nano runtime converters
+        nano::runtime_converter<e1_dims> e1_converter;
+        nano::runtime_converter<e2_dims> e2_converter;
+        
+        auto e1_dims_vector  = e1_converter.to_vector();
+        auto e2_dims_vector  = e2_converter.to_vector();
         
         // Add the sizes of dimensions contributed by E1
-        for (auto& dim : dims_exp_one) 
+        for (auto& dim : e1_dims_vector) 
             _dim_sizes.push_back(_x.size(dim));
-        
+        for (auto& dim : e2_dims_vector)
+            _dim_sizes.push_back(_y.size(dim)); 
     }
     
     // ------------------------------------------------------------------------------------------------------
@@ -368,6 +383,22 @@ ftl::tensor_addition<T, E1 ,E2> const operator+(ftl::tensor_expression<T, E1> co
                                                 ftl::tensor_expression<T, E2> const& y)    
 {
     return ftl::tensor_addition<T, E1, E2>(x, y);
+}
+
+// ----------------------------------------------------------------------------------------------------------
+/// @brief      Multiplies two tensor_expressions
+/// @param[in]  x   The first expression to multiply
+/// @param[in]  y   THe second expression to multiply
+/// @return     The result of the multiplication of the two tensor expressions
+/// @tparam     T   The type fo data used by the tensor expressions
+/// @tparam     E1  The type  of the first expression to multiply
+/// @tparam     E2  The type of the secod expression to multiply
+// ----------------------------------------------------------------------------------------------------------
+template <typename T, typename E1, typename E2>
+ftl::tensor_multiplication<T, E1, E2> const operator*(ftl::tensor_expression<T, E1> const& x,
+                                                      ftl::tensor_expression<T, E2> const& y)
+{
+    return ftl::tensor_multiplication<T, E1, E2>(x, y);
 }
 
 }		// End global namespace
