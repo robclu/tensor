@@ -268,8 +268,7 @@ public:
     using exp_one_dims      = typename nano::find_uncommon< typename E1::index_list, 
                                                             typename E2::index_list>::result;
     using exp_two_dims      = typename nano::find_uncommon< typename E2::index_list, 
-                                                            typename E2::index_list>::result;
-    using non_reduce_dims   = typename nano::join<exp_one_dims, exp_two_dims>::result;
+                                                            typename E1::index_list>::result;
 private:
     E1 const&               _x;                         //!< First expression for multiplication
     E2 const&               _y;                         //!< Second expression for multiplication
@@ -297,6 +296,17 @@ public:
     /// @return     The size of the tensor_multiplier.
     // ------------------------------------------------------------------------------------------------------
     size_type size() const { return _x.size(); }
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns the rank of the tensor which results from the multiplication of two expressions.
+    ///             In the case that auto is used to determine the type of the result of a multiplication,
+    ///             rather than using the result to create a new tensor, then the tensor_multiplication class 
+    ///             will need to behave as a tensor would, so give it a rank function.                      \n\n
+    ///             When Eienstein reduction is used for tensor multiplication the rank of the resulting
+    ///             tensor is number of dimensinos which are not reduced.
+    /// @return     The rank of the tensor_multiplication
+    // ------------------------------------------------------------------------------------------------------
+    size_type rank() const { return exp_one_dims::size + exp_two_dims::size; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Multiplies two elements (one from each Tensor) from the Tensor expression data.
@@ -337,7 +347,6 @@ private:
     // ------------------------------------------------------------------------------------------------------
     T calculate_value(size_type i) const 
     {
-        
         return T(0);
     }
 };   

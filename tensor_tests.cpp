@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenAddingTensors )
     ftl::tensor<float, 3> tensor_2     = {1, 2, 3};
     ftl::tensor<float, 3> tensor_3     = {1, 2, 3};
     
-    auto added_tensor   = tensor_1 + tensor_2 + tensor_3;
+    ftl::tensor<float, 3>  added_tensor = tensor_1 + tensor_2 + tensor_3;
    
     BOOST_CHECK( added_tensor.size() == tensor_1.size() ); 
     BOOST_CHECK( added_tensor.size() == tensor_2.size() ); 
@@ -196,6 +196,23 @@ BOOST_AUTO_TEST_CASE( canMultiplyTensors )
     
     for (auto& size : multiplier_dim_sizes)
         std::cout << "Size : " << size << "\n";
+}
+
+BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
+{
+    using namespace ftl::idx;
+    
+    ftl::tensor<int, 2> tensor_1 = {3, 2};
+    ftl::tensor<int, 2> tensor_2 = {2, 3};
+    
+    // Perform tensor multiplication (in this example this is exactly matrix multiplication 
+    // of the tesnor as the second dimension of the first tensor and the first dimension of 
+    // the second tensor are reduced) the result is a rank 2 tensor with dimensions of 3x3
+    auto result = tensor_1(i, j) * tensor_2(j, k);
+    
+    size_t rank = result.rank();
+    
+    BOOST_CHECK( rank == 2 );
 }
 
 // Need To check that the values are actually correct
