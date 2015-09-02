@@ -200,7 +200,7 @@ public:
     /// @param[in]  indices The indices of the element in the remaining dimensions to use for the 
     ///             calculation.
     /// @tparam     Mapper  The functor to use for the mapping. Generally this will be the defualt index
-    ///             mapper, but using the 'functor' allows for more dlexibility
+    ///             mapper, but using the 'functor' allows for more flexibility
     /// @tparam     I       The type of the idx parameter.
     /// @tparam     Is      The types of the remaining index parameters.
     /// @return     The element at the specified position, if valid.

@@ -38,20 +38,42 @@ class mapper;
 // Helper metafunctions 
 namespace detail {
     
-    template <typename Index, typename DimList, typename Passed>
-    struct dim_calculator;
+    template <typename Index, typename DimList, typename PrevDimSizes>
+    struct offset_calculator;
    
-    template <typename Index, typename Head, typename... Tail, typename... Passed>
-    struct dim_calculator<Index, nano::list<Head, Tail...>, nano::list<Passed...>>
+    // Case for the very first iteration, no previous dimensinos
+    template <typename Index, typename Head, typename... Tail, typename... PrevDimSizes>
+    struct offset_calucator<Index, nano::list<Head, Tail...>, empty_list>>
     {
+        static constexpr int offset = 
+            Index::value                            +
+            offset_calculator<Index                 ,   // Offset from the other dimensions 
+                              nano::list<Tail...>   , 
+                              nano::list<Head>      ,   // Current dim size is passed as previoud dim size
+                                  >::offset;
+    };
+           
+    // Case for all cases but the first and last  
+    template <typename Index, typename Head, typename... Tail, typename... Passed>
+    struct offset_calculator<Index, nano::list<Head, Tail...>, nano::list<Passed...>>
+    {
+       static constexpr int offset =
+           nano::multiplies<nano::list<PrevDimSizes...>>::result
     };
     
     // Base case
     template <typename Index, typename... Tail, typename... Passed>
-    struct dim_calculator<Index, nano::empty_list, nano::list<Passed>>
+    struct offset_calculator<Index, nano::empty_list, nano::list<Passed>>
     {
         
     };
+    
+    // -------------------------
+    
+    template <typename Index, typename DimSizes, typename DimIndices>
+    struct index_calculator;
+    
+    template <typename Index, typename Head, typename... Tail, typename
 
 }
 // Specialization for using the mapper class at compile time 
