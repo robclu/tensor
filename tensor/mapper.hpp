@@ -70,10 +70,47 @@ namespace detail {
     
     // -------------------------
     
-    template <typename Index, typename DimSizes, typename DimIndices>
+    template <int       Iteration = 0   , 
+              typename  Index           , 
+              typename  AllDimSizes     , 
+              typename  PrevDimSizes    , 
+              typename  MappedIndices   >
     struct index_calculator;
     
-    template <typename Index, typename Head, typename... Tail, typename
+    template <int           Iteration       ,
+              typename      Index           , 
+              typename      Head1           , 
+              typename...   Tail1           , 
+              typename...   PrevSizes       ,
+              typename...   MappedIndices   >
+    struct index_calculator<Iteration                   ,
+                            Index                       ,   // Index in the contiguous memory space
+                            nano::list<Head1, Tail1...> ,   // List of dimension sizes 
+                            nano::list<PrevSizes...>    ,   // List of dimension sizes from previous iters
+                            nano::list<MappedIndices...>>   // List of mapped indices
+    {
+        // Get the product of the dim sizes of the previous iterations
+        static constexpr int prev_product =
+            nano::multiplies<nano::list<PrevSizes...>>::result;
+        
+        // Base return result on the iterations 
+        using new_index = typename std::conditional<
+                                Iteration == 0                                                              , 
+                                nano::int_t<Index::value % Head1::value>                                    ,
+                                nano::int_t<(Index::value % (prev_product * Head1::value)) / prev_product   >
+                                    >::type;
+        
+        // Add the new index to the list and recurse
+        using result = typename index_calculator<  Iteration + 1                    , 
+                                                   Index                            , 
+                                                   nano::list<Tail1...>             ,
+                                                   nano::list<Head1, PrevSizes...>  ,
+                                                   nano::list<MappedIndices..., new_index>
+                                                       >::result
+        
+    };
+    
+    // Terminating case
 
 }
 // Specialization for using the mapper class at compile time 
