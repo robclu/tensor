@@ -2,19 +2,19 @@
 
 # Tensor
 
-Tensor is a fast (well hopefully) c++ tensor library. It is designed with both speed and clearity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
+Tensor is a fast (well hopefully) c++ tensor library. It is designed with both speed and clarity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
 
-[Template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) is used to 'offload' any work which can be computed at compile time, to the compiler and [expression templates](https://en.wikipedia.org/wiki/Expression_templates) are used to achieve the translation of the mathematically expressed code to performant code.
+[Template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) is used to 'offload' any work which can be computed at compile time, to the compiler and [expression templates](https://en.wikipedia.org/wiki/Expression_templates) are used to achieve the translation of the mathematically expressed code to high performance code.
 
 Tests have been written using the [Boost Test library](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) to verify the 'correctness' of all the implemented components. The tests also help to illustrate the usage of the various components of the library.
 
 Please let me know, or just fix, any areas of the code which can be improved!
 
-# Dependancies
+# Dependencies
 
 * [nano](https://github.com/robclu/nano) : A template metaprogramming library, is used to offload some of the work to the compiler, for example things like index mapping for slicing and multiplication.
 * [boost unit](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) : For the unit testing
-  fcomponent of the library. This is not necessary of you aren't running the tests.
+  component of the library. This is not necessary of you aren't running the tests.
 
 # Current Status
 
@@ -24,7 +24,7 @@ Currently the library is CPU only and is single-threaded as the development proc
 
 To build the test suite which is provided with the library you will need two things installed: The Boost test libraries and the CUDA SDK (although this is not necessary for CPU only builds - see [Compiling](#compiling) below).
 
-The dollowing compilers have been tested:
+The following compilers have been tested:
 
 * g++ version 4.9.1
 * clang++ version 3.6.1
