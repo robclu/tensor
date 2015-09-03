@@ -31,109 +31,122 @@
 
 namespace ftl {
     
-// Define a mapper class 
-template <typename... Dims>
-class mapper;
-
-// Helper metafunctions 
+// Helper meta functions for the mapper namespace
 namespace detail {
     
     template <typename Index, typename DimList, typename PrevDimSizes>
     struct offset_calculator;
    
     // Case for the very first iteration, no previous dimensinos
-    template <typename Index, typename Head, typename... Tail, typename... PrevDimSizes>
-    struct offset_calucator<Index, nano::list<Head, Tail...>, empty_list>>
+    template <typename Index, typename Head, typename... Tail>
+    struct offset_calculator<Index, nano::list<Head, Tail...>, nano::empty_list>
     {
         static constexpr int offset = 
             Index::value                            +
             offset_calculator<Index                 ,   // Offset from the other dimensions 
                               nano::list<Tail...>   , 
-                              nano::list<Head>      ,   // Current dim size is passed as previoud dim size
+                              nano::list<Head>          // Current dim size is passed as previoud dim size
                                   >::offset;
     };
            
     // Case for all cases but the first and last  
-    template <typename Index, typename Head, typename... Tail, typename... Passed>
-    struct offset_calculator<Index, nano::list<Head, Tail...>, nano::list<Passed...>>
+    template <typename Index, typename... DimList, typename... Passed>
+    struct offset_calculator<Index, nano::list<DimList...>, nano::list<Passed...>>
     {
        static constexpr int offset =
-           nano::multiplies<nano::list<PrevDimSizes...>>::result
+           nano::multiplies<nano::list<DimList...>>::result;
     };
     
     // Base case
-    template <typename Index, typename... Tail, typename... Passed>
-    struct offset_calculator<Index, nano::empty_list, nano::list<Passed>>
+    template <typename Index, typename... Passed>
+    struct offset_calculator<Index, nano::empty_list, nano::list<Passed...>>
     {
         
     };
     
-    // -------------------------
-    
-    template <int       Iteration = 0   , 
-              typename  Index           , 
-              typename  AllDimSizes     , 
-              typename  PrevDimSizes    , 
-              typename  MappedIndices   >
+    // ------------------------------------------------------------------------------------------------------
+    /// @struct     index_calculator
+    /// @brief      Takes an index of an element in contiguous memory, and using the mapping of that memory
+    ///             space to dimensions, determines the index in each of the dimensions of the given index. 
+    ///             For example, if a 3x3 matrix is stored column-major in memory, then index 4 in contiguous 
+    ///             memory (0 indexing) maps to row 1 column 1. This metafunction, however, does the 
+    ///             calculation for any dimensional structure at compile time.
+    /// @tparam     Index           The index of the element in contiguous memory.
+    /// @tparam     AlDimSizes      The sizes of all dimensions of the structure.
+    /// @tparam     Iteration       The iteration of the calculation.
+    /// @tparam     PrevDimSizes    The sizes of the dimensions used in previous iterations.
+    /// @tparam     MappedIndices   The determined mapped indices.
+    // ------------------------------------------------------------------------------------------------------
+    template <typename  Index           				,
+  			  typename  AllDImSizes						,
+  			  int 		Iteration = 0   				,
+              typename  PrevDimSizes = nano::list<>    	, 
+              typename  MappedIndices = nano::list<>  	>
     struct index_calculator;
     
-    template <int           Iteration       ,
-              typename      Index           , 
-              typename      Head1           , 
-              typename...   Tail1           , 
+    // Recursive case
+    template <typename      Index           , 
+  			  typename 	    Head			,
+  			  typename... 	Tail			,
+  			  int 			Iteration		,
               typename...   PrevSizes       ,
               typename...   MappedIndices   >
-    struct index_calculator<Iteration                   ,
-                            Index                       ,   // Index in the contiguous memory space
-                            nano::list<Head1, Tail1...> ,   // List of dimension sizes 
-                            nano::list<PrevSizes...>    ,   // List of dimension sizes from previous iters
-                            nano::list<MappedIndices...>>   // List of mapped indices
+    struct index_calculator<Index                       ,   
+                		    nano::list<Head, Tail...>   ,
+  						    Iteration 					,
+                            nano::list<PrevSizes...>    ,   
+                            nano::list<MappedIndices...>>
     {
         // Get the product of the dim sizes of the previous iterations
+        // which is the offset in contiguous memory
         static constexpr int prev_product =
             nano::multiplies<nano::list<PrevSizes...>>::result;
         
-        // Base return result on the iterations 
+        // The case for the first iteration is different, so check for that
         using new_index = typename std::conditional<
                                 Iteration == 0                                                              , 
-                                nano::int_t<Index::value % Head1::value>                                    ,
-                                nano::int_t<(Index::value % (prev_product * Head1::value)) / prev_product   >
+                                nano::int_t<Index::value % Head::value>                                     ,
+                                nano::int_t<(Index::value % (prev_product * Head::value)) / prev_product>
                                     >::type;
         
-        // Add the new index to the list and recurse
-        using result = typename index_calculator<  Iteration + 1                    , 
-                                                   Index                            , 
-                                                   nano::list<Tail1...>             ,
-                                                   nano::list<Head1, PrevSizes...>  ,
-                                                   nano::list<MappedIndices..., new_index>
-                                                       >::result
+        // Add the new index to the list of mapped indices and recurse, 
+        // eliminating the dimension size that was just used
+        using result = typename index_calculator<  
+                                            Index                            		, 
+                              				nano::list<Tail...>						,   
+                              				Iteration + 1 							,
+                                            nano::list<Head, PrevSizes...>   		,
+                                            nano::list<MappedIndices..., new_index>	
+                                                    >::result;
         
     };
     
-    // Terminating case
-
-}
-// Specialization for using the mapper class at compile time 
-template <typename... Dims>
-class mapper<nano::list<Dims...>> 
-{  
-    template <typename Index>
-    struct to_multidim
+    // Terminating case, just return the list of mapped indices
+    template <typename Index, int Iteration, typename... PrevSizes, typename... MappedIndices>
+    struct index_calculator< 
+                            Index                       ,
+      						nano::list<>				,
+  							Iteration					,
+                            nano::list<PrevSizes...>    , 
+                            nano::list<MappedIndices...>>
     {
-        
-    }
-    
-    template <typename... Indices>
-    struct to_index;
-    
-    // Specialize for a list
-    tempalte <typename... Indices>
-    struct to_index<nano::list<Indices...>>
-    {
+        using result = nano::list<MappedIndices...>;
     };
-};
-    
 
+}       // End namespace detail
+
+// ----------------------------------------------------------------------------------------------------------
+/// @namespace  mapper
+/// @brief      Mapping functions for converting an index in contiguous memory to its index values in the
+///             multi-dimensional space which the contiguous memory represents (a matrix for example), and 
+///             also for the reverse operations.
+// ----------------------------------------------------------------------------------------------------------
+namespace mapper {
+
+template <typename Index, typename DimSizeList>
+using index_to_dim_positions = typename detail::index_calculator<Index, DimSizeList>::result;
+
+}           // End namespace mapper
 
 }           // End namespace ftl
 

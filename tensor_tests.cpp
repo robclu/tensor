@@ -7,6 +7,7 @@
 #define BOOST_TEST_MODULE       TensorTests
 #include <boost/test/unit_test.hpp>
 
+#include "tensor/mapper.hpp"
 #include "tensor/tensor.hpp"
 #include "tensor/tensor_index.hpp"
 
@@ -52,7 +53,31 @@ BOOST_AUTO_TEST_CASE( canMapIndexCorrectly )
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-   
+  
+// -------------------------------------- TMP MAPPER OPERATIONS ---------------------------------------------
+BOOST_AUTO_TEST_SUITE( MapperOperations )
+
+BOOST_AUTO_TEST_CASE( canMapIndexToDimensionPositions )
+{
+    // Create a list of dimensions sizes which represent tesnor dimensions, so this 
+    // is a rank 3 tensor with 3 rows, 2 columns and 2 pages
+    using dim_sizes = nano::list<nano::int_t<3>, nano::int_t<2>, nano::int_t<2>>;
+    
+    // Now find the positions in each dimension of the index 10, which will be (2, 1, 1),
+    // or 3nd row, 2nd column, 2nd page (O indexing is used)
+    using position_list = ftl::mapper::index_to_dim_positions<nano::int_t<11>, dim_sizes>;
+    
+    // To make things easier, convert to a vector
+    int first_index = nano::get<0, position_list>::value;
+    int secnd_index = nano::get<1, position_list>::value;
+    int third_index = nano::get<2, position_list>::value;
+    
+    BOOST_CHECK( first_index == 2 );
+    BOOST_CHECK( secnd_index == 1 );
+    BOOST_CHECK( third_index == 1 );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 // --------------------------------------------- TENSOR -----------------------------------------------------   
 
 BOOST_AUTO_TEST_SUITE( TensorSuite )
