@@ -33,6 +33,7 @@
 #ifndef FTL_TENSOR_EXPRESSIONS_HPP
 #define FTL_TENSOR_EXPRESSIONS_HPP
 
+#include "mapper.hpp"
 #include "utils.hpp"
 
 #include <nano/nano.hpp>
@@ -60,8 +61,10 @@ public:
     //! @brief     Returns the size of the expression
     //! @return    The size of the tensor_expression
     // ------------------------------------------------------------------------------------------------------
-    size_type size() const { return static_cast<E const&>( *this ).size(); }
+    size_type size() const { return static_cast<E const&>(*this).size(); }
 
+    constexpr size_type rank() { return static_cast<E const&>(*this).rank(); }
+    
     // ------------------------------------------------------------------------------------------------------
     //! @brief     Gets the sizes of the all the dimensions of the expression.
     //! @return    A constant reference to the dimension size vector of the expression 
@@ -295,7 +298,10 @@ public:
     /// @brief      Returns the size of the expression.
     /// @return     The size of the tensor_multiplier.
     // ------------------------------------------------------------------------------------------------------
-    size_type size() const { return _x.size(); }
+    constexpr size_type size() const{ return std::accumulate(_dim_sizes.begin()      , 
+                                                    _dim_sizes.end()        , 
+                                                    1                       , 
+                                                    std::multiplies<int>()  ); }
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Returns the rank of the tensor which results from the multiplication of two expressions.
@@ -306,7 +312,7 @@ public:
     ///             tensor is number of dimensinos which are not reduced.
     /// @return     The rank of the tensor_multiplication
     // ------------------------------------------------------------------------------------------------------
-    size_type rank() const { return exp_one_dims::size + exp_two_dims::size; }
+    static constexpr size_type rank() { return exp_one_dims::size + exp_two_dims::size; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Multiplies two elements (one from each Tensor) from the Tensor expression data.

@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
     
     ftl::tensor<int, 2> tensor_1 = {3, 2};
     ftl::tensor<int, 2> tensor_2 = {2, 3};
-    
+
     // Perform tensor multiplication (in this example this is exactly matrix multiplication 
     // of the tesnor as the second dimension of the first tensor and the first dimension of 
     // the second tensor are reduced) the result is a rank 2 tensor with dimensions of 3x3
@@ -237,7 +237,11 @@ BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
     
     size_t rank = result.rank();
     
+    // COME back to this
+    // constexpr size_t size = result.size();
+    
     BOOST_CHECK( rank == 2 );
+    // BOOST_CHECK( size == 9 );
 }
 
 // Need To check that the values are actually correct

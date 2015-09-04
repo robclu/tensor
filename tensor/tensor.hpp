@@ -132,7 +132,7 @@ public:
     /// @brief     Gets the rank (number of dimensions) of the tensor.
     /// @return    The rank (number of dimensions) of the tensor.
     // ------------------------------------------------------------------------------------------------------
-    size_type rank() const { return R; }
+    static constexpr size_type rank() { return R; }
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets a vector holding the size of each dimension of the tensor.
