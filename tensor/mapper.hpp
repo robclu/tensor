@@ -107,55 +107,80 @@ namespace detail {
 }       // End namespace detail
 
 // ----------------------------------------------------------------------------------------------------------
-/// @namespace  mapper
+/// @namespace  mapping
 /// @brief      Mapping functions for converting an index in contiguous memory to its index values in the
 ///             multi-dimensional space which the contiguous memory represents (a matrix for example), and 
 ///             also for the reverse operations.
 // ----------------------------------------------------------------------------------------------------------
-namespace mapper {
+namespace mapping {
 
-template <typename Index, typename DimSizeList>
-using index_to_dim_positions = typename detail::index_calculator<Index, DimSizeList>::result;
-
-// Same as the above function, but the runtime implementation 
+    // Compile time converter
+    template <typename Index, typename DimSizeList>
+    using index_to_dim_positions = typename detail::index_calculator<Index, DimSizeList>::result;
+    
+}
 
 // ----------------------------------------------------------------------------------------------------------
 /// @brief      Takes an index of an element in contiguous memory and converts it to a list of indices which
 ///             represent the index but in a multidimensional space which the contiguous memory represents.
-/// @param[in]  index           The index of the element in contigous memory
-/// @param[in]  dim_sizes       The sizes of the dimensions of the tensor to map 
-/// @param[in]  prev_dim_sizes  The sizes of the dimensions used for previous iterations 
-/// @param[in]  index_list      The list of mapped indices from the index
-/// @tparam     ArraySize       The size of the array (The same size as dim_sizes, so will be passed implcitly
-/// @tparam     Iteration       The iteration of the fuction
+/// @tparam     KeepIterating   If the mapper has not yet filled the index list and must hence keep iterating
+/// @tparam     Iteration       The iteration of the mapping calculation
 // ----------------------------------------------------------------------------------------------------------
-template <size_t ArraySize, size_t Iteration = 0>
-std::array<size_t, ArraySize> index_to_index_list(size_t index                                      , 
-                                                  std::array<size_t, ArraySize>     dim_sizes       ,   
-                                                  std::array<size_t, ArraySize>     index_list      ,
-                                                  std::vector<size_t>               prev_dim_sizes  =
-                                                    std::vector<size_t>(Iteration)                  )
+template <bool KeepIterating = true, size_t Iteration = 0>
+struct mapper;
+
+// Case for the first iteration
+template <> struct mapper<true, 0>
 {
-    // Multiply the sizes of the dimensions used in previous iterations 
-    // which gives the offset in contig mem of the start of this dimension
-    size_t prev_product = std::accumulate(prev_dim_sizes.begin()        , 
-                                          prev_dim_sizes.end()          , 
-                                          1                             , 
-                                          std::multiplies<size_t>()     );
+    // Determine the first element of the mapped index list, then keep going
+    template <size_t ArraySize>
+    static std::array<size_t, ArraySize> index_to_index_list(size_t index                               , 
+                                                             std::array<size_t, ArraySize>& dim_sizes   , 
+                                                             std::array<size_t, ArraySize>  index_list  = 
+                                                                std::array<size_t, ArraySize>()         )
+  {
+        index_list[0] = index % dim_sizes[0];
+      
+        // Add the rest of the elements to the index list
+        ftl::mapper<ArraySize >= 2, 1>::index_to_index_list(index, dim_sizes, index_list);
     
-    index_list[Iteraion] = std::conditional< Iteration == 0         ,
-                                         index % dim_sizes[0]   ,
-                                         (index % (prev_product * dim_sizes[Iteration])) / prev_product>;
+        return index_list;
+  }
+};
+
+// Recursive case
+template <size_t Iteration>
+struct mapper<true, Iteration>
+{
+    // Determine the next element in the index list and keep iterating
+    template <size_t ArraySize>
+    static void index_to_index_list(size_t index                                , 
+                                    std::array<size_t, ArraySize>& dim_sizes    , 
+                                    std::array<size_t, ArraySize>& index_list   )
+  {
+        // Offset in memory due for this offset
+        size_t mem_offset = std::accumulate(dim_sizes.begin()                   ,
+                                            dim_sizes.begin() + Iteration       , 
+                                            1, std::multiplies<size_t>()        );
     
-    // Create new prev dim sizes
-    prev_dim_sizes.push_back(dim_sizes[Iteration]);
+        index_list[Iteration]  = (index % (mem_offset * dim_sizes[Iteration])) / mem_offset;
     
-    return std::conditional< Iteration == ArraySize , 
-                             index_list             ,
-                             index_to_index_list<Iteration + 1>(index, dim_sizes, index_list, prev_dim_sizes)>;
-    
-}
-}           // End namespace mapper
+        // Keep going until base (terminating) case
+        mapper<Iteration < ArraySize, Iteration + 1>::index_to_index_list(index, dim_sizes, index_list);                                     
+  }
+};
+
+// Base (terminating) case
+template <size_t Iteration>
+struct mapper<false, Iteration>
+{
+    template <size_t ArraySize>
+    static void index_to_index_list(size_t index                                , 
+                                    std::array<size_t, ArraySize>& dim_sizes    ,
+                                    std::array<size_t, ArraySize>& index_list   )
+    { 
+    }
+};
 
 }           // End namespace ftl
 
