@@ -298,7 +298,7 @@ public:
     /// @brief      Returns the size of the expression.
     /// @return     The size of the tensor_multiplier.
     // ------------------------------------------------------------------------------------------------------
-    constexpr size_type size() const{ return std::accumulate(_dim_sizes.begin()      , 
+    size_type size() const{ return std::accumulate(_dim_sizes.begin()      , 
                                                     _dim_sizes.end()        , 
                                                     1                       , 
                                                     std::multiplies<int>()  ); }

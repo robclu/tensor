@@ -28,41 +28,12 @@
 #define FTL_MAPPER_HPP
 
 #include <nano/nano.hpp>
+#include <array>
 
 namespace ftl {
     
 // Helper meta functions for the mapper namespace
 namespace detail {
-    
-    template <typename Index, typename DimList, typename PrevDimSizes>
-    struct offset_calculator;
-   
-    // Case for the very first iteration, no previous dimensinos
-    template <typename Index, typename Head, typename... Tail>
-    struct offset_calculator<Index, nano::list<Head, Tail...>, nano::empty_list>
-    {
-        static constexpr int offset = 
-            Index::value                            +
-            offset_calculator<Index                 ,   // Offset from the other dimensions 
-                              nano::list<Tail...>   , 
-                              nano::list<Head>          // Current dim size is passed as previoud dim size
-                                  >::offset;
-    };
-           
-    // Case for all cases but the first and last  
-    template <typename Index, typename... DimList, typename... Passed>
-    struct offset_calculator<Index, nano::list<DimList...>, nano::list<Passed...>>
-    {
-       static constexpr int offset =
-           nano::multiplies<nano::list<DimList...>>::result;
-    };
-    
-    // Base case
-    template <typename Index, typename... Passed>
-    struct offset_calculator<Index, nano::empty_list, nano::list<Passed...>>
-    {
-        
-    };
     
     // ------------------------------------------------------------------------------------------------------
     /// @struct     index_calculator
@@ -146,6 +117,44 @@ namespace mapper {
 template <typename Index, typename DimSizeList>
 using index_to_dim_positions = typename detail::index_calculator<Index, DimSizeList>::result;
 
+// Same as the above function, but the runtime implementation 
+
+// ----------------------------------------------------------------------------------------------------------
+/// @brief      Takes an index of an element in contiguous memory and converts it to a list of indices which
+///             represent the index but in a multidimensional space which the contiguous memory represents.
+/// @param[in]  index           The index of the element in contigous memory
+/// @param[in]  dim_sizes       The sizes of the dimensions of the tensor to map 
+/// @param[in]  prev_dim_sizes  The sizes of the dimensions used for previous iterations 
+/// @param[in]  index_list      The list of mapped indices from the index
+/// @tparam     ArraySize       The size of the array (The same size as dim_sizes, so will be passed implcitly
+/// @tparam     Iteration       The iteration of the fuction
+// ----------------------------------------------------------------------------------------------------------
+template <size_t ArraySize, size_t Iteration = 0>
+std::array<size_t, ArraySize> index_to_index_list(size_t index                                      , 
+                                                  std::array<size_t, ArraySize>     dim_sizes       ,   
+                                                  std::array<size_t, ArraySize>     index_list      ,
+                                                  std::vector<size_t>               prev_dim_sizes  =
+                                                    std::vector<size_t>(Iteration)                  )
+{
+    // Multiply the sizes of the dimensions used in previous iterations 
+    // which gives the offset in contig mem of the start of this dimension
+    size_t prev_product = std::accumulate(prev_dim_sizes.begin()        , 
+                                          prev_dim_sizes.end()          , 
+                                          1                             , 
+                                          std::multiplies<size_t>()     );
+    
+    index_list[Iteraion] = std::conditional< Iteration == 0         ,
+                                         index % dim_sizes[0]   ,
+                                         (index % (prev_product * dim_sizes[Iteration])) / prev_product>;
+    
+    // Create new prev dim sizes
+    prev_dim_sizes.push_back(dim_sizes[Iteration]);
+    
+    return std::conditional< Iteration == ArraySize , 
+                             index_list             ,
+                             index_to_index_list<Iteration + 1>(index, dim_sizes, index_list, prev_dim_sizes)>;
+    
+}
 }           // End namespace mapper
 
 }           // End namespace ftl
