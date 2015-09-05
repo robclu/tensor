@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( canMapIndexToDimensionPositions )
     
     // Now find the positions in each dimension of the index 10, which will be (2, 1, 1),
     // or 3nd row, 2nd column, 2nd page (O indexing is used)
-    using position_list = ftl::mapping::index_to_dim_positions<nano::int_t<11>, dim_sizes>;
+    using position_list = ftl::mapper::index_to_dim_positions<nano::int_t<11>, dim_sizes>;
     
     // To make things easier, convert to a vector
     int first_index = nano::get<0, position_list>::value;
@@ -79,9 +79,9 @@ BOOST_AUTO_TEST_CASE( canMapIndexToDimensionPositions )
 
 BOOST_AUTO_TEST_CASE( canMapIndextoIndexList )
 {
-    std::array<size_t, 3> dim_sizes{ {3, 2, 2} };
+    std::vector<size_t> dim_sizes{ {3, 2, 2} };
     
-    auto index_list = ftl::mapper<true, 0>::index_to_index_list(11, dim_sizes);
+    auto index_list = ftl::mapper::index_to_index_list(11, dim_sizes);
     
     BOOST_CHECK( index_list[0] == 2 );
     BOOST_CHECK( index_list[1] == 1 );

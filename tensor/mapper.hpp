@@ -107,78 +107,40 @@ namespace detail {
 }       // End namespace detail
 
 // ----------------------------------------------------------------------------------------------------------
-/// @namespace  mapping
+/// @struct     mapper
 /// @brief      Mapping functions for converting an index in contiguous memory to its index values in the
 ///             multi-dimensional space which the contiguous memory represents (a matrix for example), and 
 ///             also for the reverse operations.
 // ----------------------------------------------------------------------------------------------------------
-namespace mapping {
+struct mapper {
 
     // Compile time converter
     template <typename Index, typename DimSizeList>
     using index_to_dim_positions = typename detail::index_calculator<Index, DimSizeList>::result;
-    
-}
+   
 
-// ----------------------------------------------------------------------------------------------------------
-/// @brief      Takes an index of an element in contiguous memory and converts it to a list of indices which
-///             represent the index but in a multidimensional space which the contiguous memory represents.
-/// @tparam     KeepIterating   If the mapper has not yet filled the index list and must hence keep iterating
-/// @tparam     Iteration       The iteration of the mapping calculation
-// ----------------------------------------------------------------------------------------------------------
-template <bool KeepIterating = true, size_t Iteration = 0>
-struct mapper;
-
-// Case for the first iteration
-template <> struct mapper<true, 0>
-{
-    // Determine the first element of the mapped index list, then keep going
-    template <size_t ArraySize>
-    static std::array<size_t, ArraySize> index_to_index_list(size_t index                               , 
-                                                             std::array<size_t, ArraySize>& dim_sizes   , 
-                                                             std::array<size_t, ArraySize>  index_list  = 
-                                                                std::array<size_t, ArraySize>()         )
-  {
+    // ------------------------------ RUNTIME FUNCTIONS -----------------------------------------------------
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief  Takes an index of an element in contiguous memory and converts it to a list of indices which
+    ///         represent the index but in a multidimensional space which the contiguous memory represents.
+    /// @param[in]  index   The index to convert to an index list
+    /// @param[in]  dim_sizes   The sizes of the dimensions of the space which the index is being mapped to
+    /// @param[out] index_list  The list in indices after the mapping
+    // ------------------------------------------------------------------------------------------------------
+    static std::vector<size_t> index_to_index_list(size_t index                                             , 
+                                                   std::vector<size_t>& dim_sizes                           ,
+                                                   std::vector<size_t> index_list = std::vector<size_t>(0)  )
+    {
+        if (index_list.size() < dim_sizes.size()) index_list.resize(dim_sizes.size());
+        
         index_list[0] = index % dim_sizes[0];
-      
-        // Add the rest of the elements to the index list
-        ftl::mapper<ArraySize >= 2, 1>::index_to_index_list(index, dim_sizes, index_list);
-    
+        size_t mem_offset = dim_sizes[0];
+        for (int i = 1; i < dim_sizes.size(); ++i) {
+            index_list[i] = (index % (mem_offset * dim_sizes[i])) / mem_offset;
+            mem_offset *= dim_sizes[i];
+        }
         return index_list;
-  }
-};
-
-// Recursive case
-template <size_t Iteration>
-struct mapper<true, Iteration>
-{
-    // Determine the next element in the index list and keep iterating
-    template <size_t ArraySize>
-    static void index_to_index_list(size_t index                                , 
-                                    std::array<size_t, ArraySize>& dim_sizes    , 
-                                    std::array<size_t, ArraySize>& index_list   )
-  {
-        // Offset in memory due for this offset
-        size_t mem_offset = std::accumulate(dim_sizes.begin()                   ,
-                                            dim_sizes.begin() + Iteration       , 
-                                            1, std::multiplies<size_t>()        );
-    
-        index_list[Iteration]  = (index % (mem_offset * dim_sizes[Iteration])) / mem_offset;
-    
-        // Keep going until base (terminating) case
-        mapper<Iteration < ArraySize, Iteration + 1>::index_to_index_list(index, dim_sizes, index_list);                                     
-  }
-};
-
-// Base (terminating) case
-template <size_t Iteration>
-struct mapper<false, Iteration>
-{
-    template <size_t ArraySize>
-    static void index_to_index_list(size_t index                                , 
-                                    std::array<size_t, ArraySize>& dim_sizes    ,
-                                    std::array<size_t, ArraySize>& index_list   )
-    { 
     }
 };
 
