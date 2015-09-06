@@ -129,7 +129,7 @@ struct mapper {
     /// @param[out] index_list  The list in indices after the mapping
     // ------------------------------------------------------------------------------------------------------
     static std::vector<size_t> index_to_index_list(size_t index                                             , 
-                                                   std::vector<size_t>& dim_sizes                           ,
+                                                   const std::vector<size_t>& dim_sizes                     ,
                                                    std::vector<size_t> index_list = std::vector<size_t>(0)  )
     {
         if (index_list.size() < dim_sizes.size()) index_list.resize(dim_sizes.size());
@@ -142,6 +142,25 @@ struct mapper {
         }
         return index_list;
     }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Takes a list of elements which are the positions in each dimension of an element, and 
+    ///             converts the list into a single index for access in contiguous memory.
+    /// @param[in]  index_list  The list of indices in the tensor's dimensions
+    /// @param[in]  dim_sizes   The sizes of the dimensions of the tensor
+    /// @param[out] index       The index of the element in contiguous memory
+    // ------------------------------------------------------------------------------------------------------
+    static size_t index_list_to_index(std::vector<size_t>& index_list   , 
+                                      std::vector<size_t>& dim_sizes    )
+    {
+        size_t index     	= index_list[0];
+		size_t prev_prod 	= dim_sizes[0];
+        for (int i = 1; i < index_list.size(); ++i) {
+      	    index       += prev_prod * index_list[i];
+            prev_prod   *= dim_sizes[i];
+        } 
+      return index;
+    };
 };
 
 }           // End namespace ftl

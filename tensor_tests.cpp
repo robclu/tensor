@@ -248,6 +248,8 @@ BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
     
     size_t rank = result.rank();
     
+    result.calculate_value(0);
+    
     // COME back to this
     // constexpr size_t size = result.size();
     

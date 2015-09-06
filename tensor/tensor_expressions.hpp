@@ -268,10 +268,6 @@ public:
     // non_reduce_dims  : i, k 
     using reduce_dims       = typename nano::find_common<   typename E1::index_list, 
                                                             typename E2::index_list>::result;
-    using exp_one_dims      = typename nano::find_uncommon< typename E1::index_list, 
-                                                            typename E2::index_list>::result;
-    using exp_two_dims      = typename nano::find_uncommon< typename E2::index_list, 
-                                                            typename E1::index_list>::result;
 private:
     E1 const&               _x;                         //!< First expression for multiplication
     E2 const&               _y;                         //!< Second expression for multiplication
@@ -312,7 +308,7 @@ public:
     ///             tensor is number of dimensinos which are not reduced.
     /// @return     The rank of the tensor_multiplication
     // ------------------------------------------------------------------------------------------------------
-    static constexpr size_type rank() { return exp_one_dims::size + exp_two_dims::size; }
+    static constexpr size_type rank() { return expr_one_dims::size + expr_two_dims::size; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Multiplies two elements (one from each Tensor) from the Tensor expression data.
@@ -321,30 +317,43 @@ public:
     // ------------------------------------------------------------------------------------------------------
     value_type operator[](size_type i) const { return _x[i]; }
 private:
+    using expr_one_dims = typename nano::find_uncommon_indices<typename E1::index_list,
+                                                               typename E2::index_list>::result; 
+    using expr_two_dims = typename nano::find_uncommon_indices<typename E2::index_list,
+                                                               typename E1::index_list>::result; 
+    using element_types = typename nano::get<0, expr_one_dims>::type;
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Determines the dimensions which are not reduced from the expression x (expression 1)
+    /// @return     A vector of dimensions from expression x which mustn't be reduced
+    // ------------------------------------------------------------------------------------------------------
+    std::vector<element_types> expr_one_not_reduced() const 
+    {
+        return nano::runtime_converter<expr_one_dims>::to_vector();    
+    }
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Determines the dimensions which are not reduced from the expression y (expression 2)
+    /// @return     A vector of dimensions from expression y which mustn't be reduced
+    // ------------------------------------------------------------------------------------------------------
+    std::vector<element_types> expr_two_not_reduced() const 
+    {
+        return nano::runtime_converter<expr_two_dims>::to_vector();    
+    }
+    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Determines the sizes of each of the dimensions for a new tensor
     // ------------------------------------------------------------------------------------------------------
     void determine_dim_sizes() 
     {
-        using e1_dims = typename nano::find_uncommon_indices<typename E1::index_list,
-                                                             typename E2::index_list>::result;
-        using e2_dims = typename nano::find_uncommon_indices<typename E2::index_list, 
-                                                             typename E1::index_list>::result;
-        
-        // Create instances of nano runtime converters
-        nano::runtime_converter<e1_dims> e1_converter;
-        nano::runtime_converter<e2_dims> e2_converter;
-        
-        auto e1_dims_vector  = e1_converter.to_vector();
-        auto e2_dims_vector  = e2_converter.to_vector();
         
         // Add the sizes of dimensions contributed by E1
-        for (auto& dim : e1_dims_vector) 
+        for (auto& dim : expr_one_not_reduced()) 
             _dim_sizes.push_back(_x.size(dim));
-        for (auto& dim : e2_dims_vector)
+        for (auto& dim : expr_two_not_reduced())
             _dim_sizes.push_back(_y.size(dim)); 
     }
-    
+public: 
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Calculates the value of the element at the given index as a result of the multiplication
     /// @param      i   The index of the element for which the value must be determined
@@ -353,8 +362,15 @@ private:
     // ------------------------------------------------------------------------------------------------------
     T calculate_value(size_type i) const 
     {
-        auto index_list = mapper::index_to_index_list(i, _dim_sizes);
+        auto    index_list  = mapper::index_to_index_list(0, _dim_sizes);   
+        size_t  rdim_size   = _x.size(nano::get<0, nano::get<0, reduce_dims>>::value);
+        T       value       = 0;
+        for (int rdim = 0; i < rdim_size; ++i) {
+    //        value += _x[] * _y[];
+            
+        }
         
+        std::cout << "GET: " << rdim_size << "\n";
 
         return T(0);
     }
