@@ -353,6 +353,9 @@ private:
     // ------------------------------------------------------------------------------------------------------
     T calculate_value(size_type i) const 
     {
+        auto index_list = mapper::index_to_index_list(i, _dim_sizes);
+        
+
         return T(0);
     }
 };   
