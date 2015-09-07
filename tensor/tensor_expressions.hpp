@@ -257,17 +257,6 @@ public:
     using typename tensor_expression<T, tensor_multiplication<T, E1, E2>>::container_type;
     using typename tensor_expression<T, tensor_multiplication<T, E1, E2>>::size_type;
     using typename tensor_expression<T, tensor_multiplication<T, E1, E2>>::value_type;
-    
-    // Define some lists from the two expressions, that will be needed for doing eienstein reduction
-    // 
-    // Consider we have E1 = A, E2 = B and we want the result C_ik = A_ij * B_ji, then 
-    // 
-    // reduce_dims      : j -- since j is common to both 
-    // exp_one_dims     : i -- since i is uncommon to both, but present in E1
-    // exp_two_dims     : k -- since k is uncommon to both, but present in E2
-    // non_reduce_dims  : i, k 
-    using reduce_dims       = typename nano::find_common<   typename E1::index_list, 
-                                                            typename E2::index_list>::result;
 private:
     E1 const&               _x;                         //!< First expression for multiplication
     E2 const&               _y;                         //!< Second expression for multiplication
@@ -317,6 +306,16 @@ public:
     // ------------------------------------------------------------------------------------------------------
     value_type operator[](size_type i) const { return _x[i]; }
 private:
+    // Define some lists from the two expressions, that will be needed for doing eienstein reduction
+    // 
+    // Consider we have E1 = A, E2 = B and we want the result C_ik = A_ij * B_ji, then 
+    // 
+    // reduce_dims      : j -- since j is common to both 
+    // exp_one_dims     : i -- since i is uncommon to both, but present in E1
+    // exp_two_dims     : k -- since k is uncommon to both, but present in E2
+    // non_reduce_dims  : i, k 
+    using reduce_dims       = typename nano::find_common<   typename E1::index_list, 
+                                                            typename E2::index_list>::result; 
     using expr_one_dims = typename nano::find_uncommon_indices<typename E1::index_list,
                                                                typename E2::index_list>::result; 
     using expr_two_dims = typename nano::find_uncommon_indices<typename E2::index_list,
@@ -327,18 +326,29 @@ private:
     /// @brief      Determines the dimensions which are not reduced from the expression x (expression 1)
     /// @return     A vector of dimensions from expression x which mustn't be reduced
     // ------------------------------------------------------------------------------------------------------
-    std::vector<element_types> expr_one_not_reduced() const 
+    inline typename nano::runtime_converter<expr_one_dims>::array_type expr_one_not_reduced() const 
     {
-        return nano::runtime_converter<expr_one_dims>::to_vector();    
+        return nano::runtime_converter<expr_one_dims>::to_array();    
     }
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Determines the dimensions which are not reduced from the expression y (expression 2)
     /// @return     A vector of dimensions from expression y which mustn't be reduced
     // ------------------------------------------------------------------------------------------------------
-    std::vector<element_types> expr_two_not_reduced() const 
+    inline typename nano::runtime_converter<expr_two_dims>::array_type expr_two_not_reduced() const 
     {
-        return nano::runtime_converter<expr_two_dims>::to_vector();    
+        return nano::runtime_converter<expr_two_dims>::to_array();    
+    }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Determines the dimensions which will be reduced for each of the expressions.
+    /// @return     An array of arrays which are pairs of indices of the dimensions to reduce for the
+    ///             expressions. For example the resultant array may be [ {0,1}, {3, 2} ], which means that 
+    ///             dimensions 0 of expr1 and 1 of expr2 are reduced (eliminated) and the same for 3 and 2
+    // ------------------------------------------------------------------------------------------------------
+    inline typename nano::runtime_converter<reduce_dims>::array_type reduction_dims() const 
+    {
+        return nano::runtime_converter<reduce_dims>::to_array();
     }
     
     // ------------------------------------------------------------------------------------------------------
@@ -346,7 +356,6 @@ private:
     // ------------------------------------------------------------------------------------------------------
     void determine_dim_sizes() 
     {
-        
         // Add the sizes of dimensions contributed by E1
         for (auto& dim : expr_one_not_reduced()) 
             _dim_sizes.push_back(_x.size(dim));
@@ -362,17 +371,36 @@ public:
     // ------------------------------------------------------------------------------------------------------
     T calculate_value(size_type i) const 
     {
-        auto    index_list  = mapper::index_to_index_list(0, _dim_sizes);   
-        size_t  rdim_size   = _x.size(nano::get<0, nano::get<0, reduce_dims>>::value);
+        auto    index_list  = mapper::index_to_index_list(i, _dim_sizes);   
         T       value       = 0;
-        for (int rdim = 0; i < rdim_size; ++i) {
-    //        value += _x[] * _y[];
-            
-        }
         
-        std::cout << "GET: " << rdim_size << "\n";
-
-        return T(0);
+        // Create arrays to access the elements of the expressions
+        std::array<size_t, expr_one_dims::size + reduce_dims::size> expr_one_indices; 
+        std::array<size_t, expr_two_dims::size + reduce_dims::size> expr_two_indices; 
+       
+        // Fill the above indices with known values
+        for (int i = 0; i < expr_one_not_reduced().size(); ++i) 
+            expr_one_indices[expr_one_not_reduced()[i]] = index_list[2 * i];
+        for (int i = 0; i < expr_two_not_reduced().size(); ++i)
+            expr_two_indices[expr_two_not_reduced()[i]] = index_list[2 * i + 1];
+        
+        // Iterate over the reduced dims 
+        for (auto& rdim : reduction_dims()) {
+            // Iterate over the reduction dim
+            for (int i = 0; i < _x.size(rdim[0]); ++i) {
+                // Set the reduction values 
+                // (The which are summed over)
+                expr_one_indices[rdim[0]] = i;                   
+                expr_two_indices[rdim[1]] = i;                                   
+                
+                // Multiply the elements from E1 and E2 (this is the dot product component)
+                value += _x[mapper::index_list_to_index(expr_one_indices, _x.dim_sizes())]   *
+                         _y[mapper::index_list_to_index(expr_two_indices, _y.dim_sizes())]   ;
+               
+                std::cout << "VAL : " << value << "\n";
+            }
+        }
+        return value;
     }
 };   
 

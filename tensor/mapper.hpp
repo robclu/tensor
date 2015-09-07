@@ -128,11 +128,10 @@ struct mapper {
     /// @param[in]  dim_sizes   The sizes of the dimensions of the space which the index is being mapped to
     /// @param[out] index_list  The list in indices after the mapping
     // ------------------------------------------------------------------------------------------------------
-    static std::vector<size_t> index_to_index_list(size_t index                                             , 
-                                                   const std::vector<size_t>& dim_sizes                     ,
-                                                   std::vector<size_t> index_list = std::vector<size_t>(0)  )
+    static std::vector<size_t> index_to_index_list(size_t index                         , 
+                                                   const std::vector<size_t>& dim_sizes )
     {
-        if (index_list.size() < dim_sizes.size()) index_list.resize(dim_sizes.size());
+        std::vector<size_t> index_list(dim_sizes.size());
         
         index_list[0] = index % dim_sizes[0];
         size_t mem_offset = dim_sizes[0];
@@ -149,9 +148,11 @@ struct mapper {
     /// @param[in]  index_list  The list of indices in the tensor's dimensions
     /// @param[in]  dim_sizes   The sizes of the dimensions of the tensor
     /// @param[out] index       The index of the element in contiguous memory
+    /// @tparam     Container   The type of container used for the index list
     // ------------------------------------------------------------------------------------------------------
-    static size_t index_list_to_index(std::vector<size_t>& index_list   , 
-                                      std::vector<size_t>& dim_sizes    )
+    template <typename Container>
+    static size_t index_list_to_index(const Container&            index_list   , 
+                                      const std::vector<size_t>&  dim_sizes    )
     {
         size_t index     	= index_list[0];
 		size_t prev_prod 	= dim_sizes[0];
@@ -159,7 +160,7 @@ struct mapper {
       	    index       += prev_prod * index_list[i];
             prev_prod   *= dim_sizes[i];
         } 
-      return index;
+        return index;
     };
 };
 

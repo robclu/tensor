@@ -237,23 +237,25 @@ BOOST_AUTO_TEST_CASE( canMultiplyTensors )
 BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
 {
     using namespace ftl::idx;
+   
+    std::vector<size_t> ds1     = {3, 2};
+    std::vector<size_t> ds2     = {2, 3};
+    std::vector<int>    data1   = { 1, 2, 3, 4 , 5 , 6  };
+    std::vector<int>    data2   = { 7, 8, 9, 10, 11, 12 };
     
-    ftl::tensor<int, 2> tensor_1 = {3, 2};
-    ftl::tensor<int, 2> tensor_2 = {2, 3};
+    ftl::tensor<int, 2> tensor_1(ds1, data1);
+    ftl::tensor<int, 2> tensor_2(ds2, data2);
 
     // Perform tensor multiplication (in this example this is exactly matrix multiplication 
     // of the tesnor as the second dimension of the first tensor and the first dimension of 
     // the second tensor are reduced) the result is a rank 2 tensor with dimensions of 3x3
     auto result = tensor_1(i, j) * tensor_2(j, k);
     
-    size_t rank = result.rank();
-    
-    result.calculate_value(0);
+    result.calculate_value(1);
     
     // COME back to this
     // constexpr size_t size = result.size();
     
-    BOOST_CHECK( rank == 2 );
     // BOOST_CHECK( size == 9 );
 }
 
