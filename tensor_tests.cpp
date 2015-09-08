@@ -190,7 +190,17 @@ BOOST_AUTO_TEST_SUITE_END()
 // ------------------------------- TENSOR OPERATIONS --------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE( TensorOperations )
+
+BOOST_AUTO_TEST_CASE( canInitializeATensor )
+{
+    ftl::tensor<int, 3> tensor = {2, 2, 2};
     
+    // Initialize all values to 1
+    ftl::initialize(tensor, 1, 1);
+    
+    BOOST_CHECK( tensor(0, 0, 0) == 1 );
+}
+
 BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenAddingTensors ) 
 {
     ftl::tensor<float, 3> tensor_1     = {1, 2, 3};
