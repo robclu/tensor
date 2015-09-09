@@ -15,7 +15,7 @@ EXE 			:= tensor_test_suite
 # NOTE: Compiling with cuda because GPU support will be added                          #
 ########################################################################################
 
-HOST_COMPILER	:= g++
+HOST_COMPILER	:= clang++
 NVCC 			:= nvcc -ccbin $(HOST_COMPILER)
 CXX 			:= 
 

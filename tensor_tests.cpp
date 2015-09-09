@@ -229,23 +229,6 @@ BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenSubtractingTensors )
 
 BOOST_AUTO_TEST_CASE( canMultiplyTensors )
 {
-    // To use the index variables
-    using namespace ftl::idx;    
-    
-    ftl::tensor<int, 2> test_tensor_1 = {3, 2};
-    ftl::tensor<int, 2> test_tensor_2 = {2, 3};
-    
-    // Get a tensor_multiplier from the () operator
-    auto t_multiplier = test_tensor_1(i, j) * test_tensor_2(j, k);
-    
-    std::vector<size_t> multiplier_dim_sizes = t_multiplier.dim_sizes();
-    
-    for (auto& size : multiplier_dim_sizes)
-        std::cout << "Size : " << size << "\n";
-}
-
-BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
-{
     using namespace ftl::idx;
    
     std::vector<size_t> ds1     = {3, 2};
@@ -260,13 +243,34 @@ BOOST_AUTO_TEST_CASE( canGetRankOfTensorAfterMultiplication )
     // of the tesnor as the second dimension of the first tensor and the first dimension of 
     // the second tensor are reduced) the result is a rank 2 tensor with dimensions of 3x3
     auto result = tensor_1(i, j) * tensor_2(j, k);
+
+    //result.calculate_value(0);
     
-    result.calculate_value(1);
+    //std::cout << "SIZE: " << result.size() << "\n";
     
-    // COME back to this
-    // constexpr size_t size = result.size();
+    BOOST_CHECK( result[0] == 39  );
+    BOOST_CHECK( result[1] == 54  );
+    BOOST_CHECK( result[2] == 69  );
+    BOOST_CHECK( result[3] == 49  );
+    BOOST_CHECK( result[4] == 68  );
+    BOOST_CHECK( result[5] == 87  );
+    BOOST_CHECK( result[6] == 59  );
+    BOOST_CHECK( result[7] == 82  );
+    BOOST_CHECK( result[8] == 105 );
+}
+
+BOOST_AUTO_TEST_CASE( canGetRankAfterMultiplication )
+{
+    // To use the index variables
+    using namespace ftl::idx;    
     
-    // BOOST_CHECK( size == 9 );
+    ftl::tensor<int, 2> test_tensor_1 = {3, 2};
+    ftl::tensor<int, 2> test_tensor_2 = {2, 3};
+    
+    // Get a tensor_multiplier from the () operator
+    auto result = test_tensor_1(i, j) * test_tensor_2(j, k);
+ 
+    BOOST_CHECK( result.rank() == 2 );
 }
 
 // Need To check that the values are actually correct

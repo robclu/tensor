@@ -72,3 +72,12 @@ The above commands will automatically run the test suite, and create an ```ftl_t
 ./ftl_tests       # or
 make run
 ```
+
+# Known Issues
+
+* When compiling with g++ there is an error for ```tensor_multiplication``` when accessing elements through
+  the ```[]``` operator. The ```[]``` operator calls the ```calculate_value()``` function to get the value of
+the ith element. This relies on the ```_x``` and ```_y``` constant reference variables. The problem is that
+when compiled with g++, when the ```[]``` operator calls the ```calculate_value()``` function, the reference
+variables are incorrect. There is no problem when compiling with clang though! I'm currently working on this.
+

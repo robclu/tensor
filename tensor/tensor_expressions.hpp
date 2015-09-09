@@ -207,7 +207,7 @@ public:
     using typename tensor_expression<T, tensor_multiplier<T, E1, I, Is...>>::value_type;
     
     // Define a list of index values to multiply over
-    using index_list = nano::list< typename  I::type, typename Is::type...>;
+    using index_list = nano::list<typename I::type, typename Is::type...>;
 private:
     E1 const&       _x;                                 //!< Expression for multiplication
 public:
@@ -304,7 +304,7 @@ public:
     /// @param[in]  i   The element in the expression which must be fetched.
     /// @return     The result of the multiplication of the Tensors.
     // ------------------------------------------------------------------------------------------------------
-    value_type operator[](size_type i) const { return _x[i]; }
+    T operator[](size_type i) const { return calculate_value(i); }
 private:
     // Define some lists from the two expressions, that will be needed for doing eienstein reduction
     // 
@@ -362,7 +362,7 @@ private:
         for (auto& dim : expr_two_not_reduced())
             _dim_sizes.push_back(_y.size(dim)); 
     }
-public: 
+public:    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Calculates the value of the element at the given index as a result of the multiplication
     /// @param      i   The index of the element for which the value must be determined
@@ -396,8 +396,6 @@ public:
                 // Multiply the elements from E1 and E2 (this is the dot product component)
                 value += _x[mapper::index_list_to_index(expr_one_indices, _x.dim_sizes())]   *
                          _y[mapper::index_list_to_index(expr_two_indices, _y.dim_sizes())]   ;
-               
-                std::cout << "VAL : " << value << "\n";
             }
         }
         return value;
