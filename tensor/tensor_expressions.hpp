@@ -379,10 +379,10 @@ public:
         std::array<size_t, expr_two_dims::size + reduce_dims::size> expr_two_indices; 
        
         // Fill the above indices with known values
-        for (int i = 0; i < expr_one_not_reduced().size(); ++i) 
-            expr_one_indices[expr_one_not_reduced()[i]] = index_list[2 * i];
-        for (int i = 0; i < expr_two_not_reduced().size(); ++i)
-            expr_two_indices[expr_two_not_reduced()[i]] = index_list[2 * i + 1];
+        for (int i = 0; i < expr_one_dims::size; ++i)  
+            expr_one_indices[expr_one_not_reduced()[i]] = index_list[i];
+        for (int i = 0; i < expr_two_dims::size; ++i)
+            expr_two_indices[expr_two_not_reduced()[i]] = index_list[expr_one_dims::size + i];
         
         // Iterate over the reduced dims 
         for (auto& rdim : reduction_dims()) {

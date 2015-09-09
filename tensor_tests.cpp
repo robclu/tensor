@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE( dimensionsAreCorrectWhenSubtractingTensors )
     BOOST_CHECK( subtracted_tensor.size() == tensor_3.size() ); 
 }
 
-BOOST_AUTO_TEST_CASE( canMultiplyTensors )
+BOOST_AUTO_TEST_CASE( canMultiply2DTensorsWithEiensteinReduction )
 {
     using namespace ftl::idx;
    
@@ -243,10 +243,6 @@ BOOST_AUTO_TEST_CASE( canMultiplyTensors )
     // of the tesnor as the second dimension of the first tensor and the first dimension of 
     // the second tensor are reduced) the result is a rank 2 tensor with dimensions of 3x3
     auto result = tensor_1(i, j) * tensor_2(j, k);
-
-    //result.calculate_value(0);
-    
-    //std::cout << "SIZE: " << result.size() << "\n";
     
     BOOST_CHECK( result[0] == 39  );
     BOOST_CHECK( result[1] == 54  );
@@ -273,5 +269,44 @@ BOOST_AUTO_TEST_CASE( canGetRankAfterMultiplication )
     BOOST_CHECK( result.rank() == 2 );
 }
 
-// Need To check that the values are actually correct
+BOOST_AUTO_TEST_CASE( canMultiplyNDTensorsWithEiensteinReduction )
+{
+    using namespace ftl::idx;
+   
+    std::vector<size_t> ds1     = {3, 2};           // 2D tensor
+    std::vector<size_t> ds2     = {2, 3, 2};        // 3D tensor
+    std::vector<int>    data1   = { 1, 2, 3, 4 , 5 , 6  };
+    std::vector<int>    data2   = {  7,  8,  9,  10,  11,  12, 
+                                    -7, -8, -9, -10, -11, -12 };
+    
+    ftl::tensor<int, 2> A(ds1, data1);
+    ftl::tensor<int, 3> B(ds2, data2);
+
+    // Perform tensor multiplication. In this case it's a 2D tensor multiplied
+    // with a 3D tensor (so a matrix with 2 pages). The result is a 3D tensor 
+    // where each page of the result is the result of matrix multiplication 
+    // of A with the corresponding page of B, mathematically the result is 
+    // C_ikl = A_ij * B_jkl
+    auto C = A(i, j) * B(j, k, l);
+
+    BOOST_CHECK( C[0]  == 39   );
+    BOOST_CHECK( C[1]  == 54   );
+    BOOST_CHECK( C[2]  == 69   );
+    BOOST_CHECK( C[3]  == 49   );
+    BOOST_CHECK( C[4]  == 68   );
+    BOOST_CHECK( C[5]  == 87   );
+    BOOST_CHECK( C[6]  == 59   );
+    BOOST_CHECK( C[7]  == 82   );
+    BOOST_CHECK( C[8]  == 105  );
+    BOOST_CHECK( C[9]  == -39  );
+    BOOST_CHECK( C[10] == -54  );
+    BOOST_CHECK( C[11] == -69  );
+    BOOST_CHECK( C[12] == -49  );
+    BOOST_CHECK( C[13] == -68  );
+    BOOST_CHECK( C[14] == -87  );
+    BOOST_CHECK( C[15] == -59  );
+    BOOST_CHECK( C[16] == -82  );
+    BOOST_CHECK( C[17] == -105 ); 
+}
+
 BOOST_AUTO_TEST_SUITE_END()

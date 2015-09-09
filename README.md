@@ -81,3 +81,99 @@ the ith element. This relies on the ```_x``` and ```_y``` constant reference var
 when compiled with g++, when the ```[]``` operator calls the ```calculate_value()``` function, the reference
 variables are incorrect. There is no problem when compiling with clang though! I'm currently working on this.
 
+# Usage 
+
+The goal of *tensor* is to provide speed, and more importantly, tensor expressions which look in code as they
+do mathematically, allowing the library to be simple to use scientifically. 
+  
+## Creating a tensor
+
+To create a tensor (minimmallY, the data type and rank (number of dimensions) must be specified.
+
+```.cpp
+ftl::tensor<int, 2> A;          // Rank 2 tensor (A matrix)
+```
+
+There are then a number of ways to provide more information to the tensor. The size of the dimensions can be
+initialized as follows
+
+```.cpp
+ftl::tensor<int, 3> A = {2, 2, 2};      // Rank 3 tensor with each dimension having a value of 2
+                                        // Or equivalently, a 2x2 matrix with 2 pages
+```
+
+A tensor can also be given dimension sizes and data in the form of vectors, such as 
+
+```.cpp
+std::vector<size_t> dimension_sizes{ 2, 2 };
+std::vector<int>    data{ 1, 2, 3, 4 };
+ 
+ftl::tensor<int, 2> A(dimension_sizes, data);
+```
+
+__Note:__ The first dimension in a tensor is the vertical (column, or i) dimension, so a 2D tensor is stored column
+major. The next dimension is then horizonal (rows, or j), followed by depth (pages, or z). This makes a 3D
+space. The dimensions the repeat themselves (so vertical, horizontal, depth) but using blocks. Images will be
+added for illustration.
+
+Using the above as an example (for now) the rank 2 tensor with dimensions of 2x2 will look like 
+
+```.cpp
+1 3
+2 4
+```
+
+and its memory layout will be 
+
+```.cpp
+1 2 3 4
+```
+
+## Initialization
+
+Since it is inconvienient to set all the tensor elements for large system (such as weights in a neural
+network), the tensor elements can be initialized with the elements uniformly distributed between a range.
+
+```.cpp
+ftl::tensor<float, 4> A = { 3, 3, 2, 2 };
+ 
+// Initialize tensor with elements [0, 1]
+initialize(A, 0, 1.0f);
+```
+
+## Operations
+
+There are numerous operations for tensors, such as (currently)
+
+* Multiplication
+* Addition 
+* Subtraction
+
+### Multiplication
+
+Currently tensors use Eienstein reduction for multiplication, which means that dimensions which are common to
+both tensors are reduced, so given A and B (both 2x2 tensors), the following is an example of the reduction 
+
+C_ik = A_ij * B_jk
+
+So the common dimension is reduced. Using *tensor*, what you call the dimensions doesn't matter, just that the
+dimensions to be reduced are called the same thing. Additionally, *tensor* provides index variables, through
+the ```ftl::idx``` namespace. which allows the code to look as it would mathematically. For example
+
+```.cpp
+// Define namespace for indices
+using namespace ftl::idx;
+
+// Create 2 tensors (not providing data for previty
+ftl::tensor<int, 2> A = { 3, 2 };       // 3 rows, 2 columns
+ftl::tensor<int, 2> B = { 2, 3 };       // 2 rows, 3 columns
+
+// This is an example of matrix multiplication and will 
+// result in a rank 2 tensor with dimension sizes of 3 and 3
+// so this is a 3x3 matrix
+auto C = A(i, j) * B(j, k);             // C_ik = A_ij * B_jk
+       
+// Since the dimension names don't matter, this would be the same
+// Although this doesn't look as appelaing
+auto C = A(l, i) * B(i, j);             // C_lj = A_li * B_ij
+```
