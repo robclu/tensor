@@ -8,7 +8,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "tensor/mapper.hpp"
-#include "tensor/tensor.hpp"
+#include "tensor/tensor.h"
 #include "tensor/tensor_index.hpp"
 
 #include <iostream>
@@ -310,3 +310,15 @@ BOOST_AUTO_TEST_CASE( canMultiplyNDTensorsWithEiensteinReduction )
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+    
+// -------------------------------------- TENSOR2 TESTS -----------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( Tensor2Suite)
+    
+BOOST_AUTO_TEST_CASE( canCreateTensor2 )
+{
+    ftl::tensor2<int> A;
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
