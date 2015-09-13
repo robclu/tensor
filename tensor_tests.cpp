@@ -334,19 +334,60 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE( StaticTensorSuite)
     
-BOOST_AUTO_TEST_CASE( canCreateStaticTensor )
+BOOST_AUTO_TEST_CASE( canCreateDefaultStaticTensor )
+{
+    ftl::stensor<int, 2, 3> A;
+    
+    BOOST_CHECK( A.size() == 6 );
+}
+
+BOOST_AUTO_TEST_CASE( canCreateStaticTensorWithDataFromContainer )
 {
     // Create data for the static tensor
     std::array<int, 6> data{ {1, 2, 3, 4, 5, 6} };
     
     // Create a container specifying the dimension sizes
-    ftl::stensor<int, 2, 3> A(data);
-    ftl::stensor<int, 2, 2> B(1, 2, 3, 4);
-    ftl::stensor<int, 2, 2> C{1, 2, 3, 4};
-    ftl::stensor<int, 2, 2> D = {1, 2, 3, 4};
+    ftl::stensor<int, 2, 3> A(data); 
     
-
+    BOOST_CHECK( A.size()   == 6 );
+    BOOST_CHECK( A[0]       == 1 );
+    BOOST_CHECK( A[1]       == 2 );
+    BOOST_CHECK( A[2]       == 3 );
+    BOOST_CHECK( A[3]       == 4 );
+    BOOST_CHECK( A[4]       == 5 );
+    BOOST_CHECK( A[5]       == 6 );
 }
 
+BOOST_AUTO_TEST_CASE( canCreateStaticTensorWithLiteralList )
+{ 
+    // Create a container specifying the dimension sizes
+    ftl::stensor<int, 2, 2> A(1, 2, 3, 4);
+    
+    BOOST_CHECK( A.size()   == 4 );
+    BOOST_CHECK( A[0]       == 1 );
+    BOOST_CHECK( A[1]       == 2 );
+    BOOST_CHECK( A[2]       == 3 );
+    BOOST_CHECK( A[3]       == 4 );
+}
+
+BOOST_AUTO_TEST_CASE( canDetermineDimensionSizesCorrectly )
+{ 
+    std::array<double, 2> data{ 1.0, 2.0 };
+    
+    // Create a container specifying the dimension sizes
+    ftl::stensor<int, 2, 2>     A(1, 2, 3, 4);
+    ftl::stensor<float, 3, 3>   B;
+    ftl::stensor<double, 2>     C(data);
+    
+    auto a_dim_sizes = A.dim_sizes();
+    auto b_dim_sizes = B.dim_sizes();
+    auto c_dim_sizes = C.dim_sizes();
+    
+    BOOST_CHECK( a_dim_sizes[0] == 2 );
+    BOOST_CHECK( a_dim_sizes[1] == 2 );
+    BOOST_CHECK( b_dim_sizes[0] == 3 );
+    BOOST_CHECK( b_dim_sizes[1] == 3 );
+    BOOST_CHECK( c_dim_sizes[0] == 2 );
+}
 BOOST_AUTO_TEST_SUITE_END()
 

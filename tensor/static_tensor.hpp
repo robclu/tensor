@@ -35,27 +35,108 @@
 
 namespace ftl {
 
+// ----------------------------------------------------------------------------------------------------------
+/// @class  static_tensor 
+/// @brief  A tensor implementation for when the sizes of the dimensions can be specified as template params,
+///         and hence allows the tensor to use static data containers and infer more properties about the
+///         tensor. The performance is better than the dynamic tensor but is slightly less flexible
+/// @tparam T       The type of data used by the tensor
+/// @tparam SF      The size of the first dimension
+/// @tparam SR      The size of the rest of the dimensions 
+// ----------------------------------------------------------------------------------------------------------
 template <typename T, size_t SF, size_t... SR>
 class static_tensor : public tensor_expression<T, static_tensor<T, SF, SR...>> {
 public:
-    using data_container = tensor_container<T, SF, SR...>;
-    using container_type = typename data_container::container_type;
+    // --------------------------------------- TYPEDEFS -----------------------------------------------------
+    using data_container        = tensor_container<T, SF, SR...>;
+    using container_type        = typename data_container::container_type;
+    using dimension_container   = typename nano::runtime_converter<
+                                                typename data_container::dimension_sizes>::array_type;
+    // ------------------------------------------------------------------------------------------------------
     
-    static_tensor() {};
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Default constructor
+    // ------------------------------------------------------------------------------------------------------
+    static_tensor() 
+    {
+        // Convert the nano::list of dimension sizes to a constant array
+        _dim_sizes = nano::runtime_converter<typename data_container::dimension_sizes>::to_array(); 
+    };
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Constructor for when the data is given as an lvalue 
+    /// @param[in]  data    The data to use for the tensor
+    // ------------------------------------------------------------------------------------------------------
+    constexpr static_tensor(container_type& data)
+    : _data(data) 
+    {
+        // Convert the nano::list of dimension sizes to a constant array
+        _dim_sizes = nano::runtime_converter<typename data_container::dimension_sizes>::to_array();
+    }
    
-    static_tensor(container_type& data)
-    : _data(data) {}
-   
-    template <typename F, typename... Os> 
-    static_tensor(F first_val, Os... other_vals) 
-    : _data(std::forward<F>(first_val), std::forward<Os>(other_vals)...) {}
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Constructor for when the data is specified as a literal list
+    /// @param[in]  first_value     The first value in the literal list
+    /// @param[in]  other_values    The rest of the values in the literal list
+    /// @tparam     TF              The type of the first value
+    /// @tparam     TR              The type of the rest of the values
+    // ------------------------------------------------------------------------------------------------------
+    template <typename TF, typename... TR> 
+    constexpr static_tensor(TF&& first_value, TR&&... other_values) 
+    : _data(std::forward<TF>(first_value), std::forward<TR>(other_values)...) 
+    {
+        // Convert the nano::list of dimension sizes to a constant array
+        _dim_sizes = nano::runtime_converter<typename data_container::dimension_sizes>::to_array(); 
+    }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the size (total number of elements) in the tensor
+    /// @return     The size of the tensor
+    // ------------------------------------------------------------------------------------------------------
+    constexpr size_t size() const { return _data.size(); }
+  
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets a reference to the container holding the sizes of the dimensions for the tensor
+    /// @return     A constant reference to the dimension sizes of the tensor
+    // ------------------------------------------------------------------------------------------------------
+    constexpr const dimension_container& dim_sizes() const { return _dim_sizes; }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets an element from the tensor
+    /// @param[in]  i   The index of the element in the tensor
+    /// @return     A reference to the element at the index i in the tensor
+    // ------------------------------------------------------------------------------------------------------
+    inline T& operator[](size_t i) { return _data[i]; }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the element at a given index for each dimension of a tensor
+    /// @param[in]  index_dim_one   The index of the element in dimension 1
+    /// @param[in]  index_dim_other The index of the element in the other dimensions
+    /// @tparam     Mapper          The functor used to determine the mapping 
+    /// @tparam     IF              The type of the first index parameter
+    /// @tparam     IR              The types of the rest of the index parameters
+    // ------------------------------------------------------------------------------------------------------
+    template <typename Mapper = index_mapper, typename IF, typename... IR>
+    T& operator()(IF index_dim_one, IR... index_dim_other);
+    
 private:
-    data_container _data;
-    
+    data_container              _data;                  //!< The data container which holds all the data
+    dimension_container         _dim_sizes;             //!< The sizes of the dimensions for the tensor
 };
 
-template <typename T, size_t S1, size_t... SR>
-using stensor = static_tensor<T, S1, SR...>;
+// ----------------------------------------------- IMPLEMENTATIONS ------------------------------------------
+
+template <typename T, size_t SF, size_t...SR> template <typename Mapper, typename IF, typename... IR>
+T& static_tensor<T, SF, SR...>::operator()(IF index_dim_one, IR... index_dim_other) 
+{
+    return T(0);
+}
+
+// ------------------------------------------------- ALIAS'S ------------------------------------------------
+
+template <typename T, size_t SF, size_t... SR>
+using stensor = static_tensor<T, SF, SR...>;
+
 }           // End namespace ftl
 
 #endif      // FTL_STATIC_TENSOR_HPP

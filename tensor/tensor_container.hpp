@@ -33,46 +33,102 @@
 #include <iostream>
 
 namespace ftl {
-    
-template <typename Type, size_t... Sizes>
+   
+// ----------------------------------------------------------------------------------------------------------
+/// @struct     tensor_container
+/// @brief      Container for tensor data depending on if the tensor is static (dimension sizes, and hence the
+///             total number of elements, known at compile time -- uses std::array) or dynamic (dimension 
+///             sizes are not known at compile time -- uses std::vector).
+/// @tparam     T       The type of data used by the tensor
+/// @tparam     Sizes   The sizes of the dimensions (optional)
+// ----------------------------------------------------------------------------------------------------------
+template <typename T, size_t... Sizes>
 class tensor_container;
 
 // Specialize for static containers
-template <typename Type, size_t SizeFirst, size_t... SizeRest>
-class tensor_container<Type, SizeFirst, SizeRest...> {
+template <typename T, size_t SizeFirst, size_t... SizeRest>
+class tensor_container<T, SizeFirst, SizeRest...> {
 public:
+    // ------------------------------------ TYPEDEFS --------------------------------------------------------
     using dimension_sizes   = nano::list<nano::size_t<SizeFirst>, nano::size_t<SizeRest>...>;
     using dimension_product = nano::multiplies<dimension_sizes>;
-    using container_type    = std::array<Type, dimension_product::result>; 
-    
-    static constexpr size_t size() { return dimension_product::result; }
+    using container_type    = std::array<T, dimension_product::result>; 
+    // ------------------------------------------------------------------------------------------------------
 
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Default constructor 
+    // ------------------------------------------------------------------------------------------------------
     tensor_container() {}
 
-    tensor_container(container_type& data)
-    : _data(data) {
-        std::cout << "Reference\n";
-    };
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Contructor when given an array with the data for the container
+    /// @param[in]  data    The data to use to initalize the container data with
+    // ------------------------------------------------------------------------------------------------------
+    constexpr tensor_container(container_type& data)
+    : _data(data) {}
 
-    template <typename V1, typename... VR> 
-    tensor_container(V1 v1, VR... vr) 
-    : _data({v1, vr...}) {
-        std::cout << "Const\n";
-    }
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Move constructor for when the data is given as a literal list
+    /// @param[in]  first_value     The first value in the literal list 
+    /// @param[in]  other_valeus    The rest of the values in the literal list
+    /// @tparam     T1              The type of the first_value parameter
+    /// @tparam     TR              The type of the rest of the parameters
+    // ------------------------------------------------------------------------------------------------------
+    template <typename T1, typename... TR> 
+    constexpr tensor_container(T1&& first_value, TR&&... other_values) 
+    : _data({first_value, other_values...}) {}
+
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the size (total number of elements) in the container
+    /// @return     The size of the container
+    // ------------------------------------------------------------------------------------------------------
+    constexpr size_t size() const { return dimension_product::result; }
     
-    inline Type& operator[](size_t i) { return _data[i]; }
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets an element from the container
+    /// @param[in]  i   The index of the element in the container
+    /// @return     A reference to the element at the index i in the container
+    // ------------------------------------------------------------------------------------------------------
+    inline T& operator[](size_t i) { return _data[i]; }
 private:
     container_type _data;                                                   //!< Static data for a tensor
 };
 
-template <typename Type>
-class tensor_container<Type> {
+// Specialization for dynamic container which the dimension sizes
+// (and hence the number of elements) are not known at compile time
+template <typename T>
+class tensor_container<T> {
 public:
-    using container_type = std::vector<Type>;
+    // -------------------------------- TYPEDEFS ------------------------------------------------------------
+    using container_type = std::vector<T>;
+ 
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Default constructor 
+    // ------------------------------------------------------------------------------------------------------
+    tensor_container() : _size(0), _data(0) {}
+
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Contructor when given an array with the data for the container
+    /// @param[in]  data    The data to use to initalize the container data with
+    // ------------------------------------------------------------------------------------------------------
+    tensor_container(container_type& data)
+    : _size(data.size()), _data(data){}
    
-    inline Type& operator[](size_t i) { return _data[i]; }
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the size (total number of elements) in the container
+    /// @return     The size of the container
+    // ------------------------------------------------------------------------------------------------------
+    size_t size() const { return _size; }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets an element from the container
+    /// @param[in]  i   The index of the element in the container
+    /// @return     A reference to the element at the index i in the container
+    // ------------------------------------------------------------------------------------------------------  
+    inline T& operator[](size_t i) { return _data[i]; }
 private:
-    container_type _data;                                           //!< Dynamic data container for a tensor
+    container_type  _data;                                          //!< Dynamic data container for a tensor
+    size_t          _size;                                          //!< Number of elements in the container
 };
 
 }               // End namespace ftl
