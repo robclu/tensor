@@ -1,10 +1,10 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for tensor library which makes all the relevant includes
+/// @file   Header file for tensor library static tensor class (improved performance, less flexibility)
 // ----------------------------------------------------------------------------------------------------------
 
 /*
 * ----------------------------------------------------------------------------------------------------------
-*  Header file for tensor class  include file
+*  Header file for tensor library static tensor class
 *  Copyright (C) 2015 Rob Clucas robclu1818@gmail.com
 *
 *  This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,29 @@
 * ----------------------------------------------------------------------------------------------------------
 */
 
-#ifndef FTL_TENSOR_H
-#define FTL_TENSOR_H
+#ifndef FTL_STATIC_TENSOR_HPP
+#define FTL_STATIC_TENSOR_HPP
 
-// This includes:
-#include "tensor.hpp"
-#include "static_tensor.hpp"
+#include "tensor_container.hpp"
+#include "tensor_expressions.hpp"
 
-#endif      // FTL_TENSOR_H
+// Type alias defined at the bottom
+
+namespace ftl {
+
+template <typename T, size_t SF, size_t... SR>
+class static_tensor : public tensor_expression<T, static_tensor<T, SF, SR...>> {
+public:
+    static_tensor() {};
+private:
+    using container_type = tensor_container<T, SF, SR...>;
+    
+    container_type _data;
+    
+};
+
+template <typename T, size_t S1, size_t... SR>
+using stensor = static_tensor<T, S1, SR...>;
+}           // End namespace ftl
+
+#endif      // FTL_STATIC_TENSOR_HPP

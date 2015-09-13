@@ -10,6 +10,7 @@
 #include "tensor/mapper.hpp"
 #include "tensor/tensor.h"
 #include "tensor/tensor_index.hpp"
+#include "tensor/tensor_container.hpp"
 
 #include <iostream>
 
@@ -311,13 +312,32 @@ BOOST_AUTO_TEST_CASE( canMultiplyNDTensorsWithEiensteinReduction )
 
 BOOST_AUTO_TEST_SUITE_END()
     
-// -------------------------------------- TENSOR2 TESTS -----------------------------------------------------
+// -------------------------------------- TENSOR CONTAINER TESTS --------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( Tensor2Suite)
+BOOST_AUTO_TEST_SUITE( TensorContainerSuite)
     
-BOOST_AUTO_TEST_CASE( canCreateTensor2 )
+BOOST_AUTO_TEST_CASE( canCreateStaticContainer )
 {
-    ftl::tensor2<int> A;
+    // Create a container specifying the dimension sizes
+    ftl::tensor_container<int, 2, 3> A;
+}
+
+BOOST_AUTO_TEST_CASE( canCreateDynamicContainer )
+{
+    // Create a container without specifying the dimensions
+    ftl::tensor_container<int> A;
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+    
+// -------------------------------------- STATIC TENSOR TESTS -----------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( StaticTensorSuite)
+    
+BOOST_AUTO_TEST_CASE( canCreateStaticTensor )
+{
+    // Create a container specifying the dimension sizes
+    ftl::stensor<int, 2, 3> A;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

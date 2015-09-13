@@ -1,10 +1,10 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for tensor2 library tensor class
+/// @file   Header file for tensor library tensor_container class to allow both static and dynamic containers
 // ----------------------------------------------------------------------------------------------------------
 
 /*
 * ----------------------------------------------------------------------------------------------------------
-*  Header file for tensor tensor2 class
+*  Header file for tensor tensor_container class
 *  Copyright (C) 2015 Rob Clucas robclu1818@gmail.com
 *
 *  This program is free software; you can redistribute it and/or modify
@@ -23,24 +23,37 @@
 * ----------------------------------------------------------------------------------------------------------
 */
 
-#ifndef FTL_TENSOR2_HPP
-#define FTL_TENSOR2_HPP
+#ifndef FTL_TENSOR_CONTAINER_HPP
+#define FTL_TENSOR_CONTAINER_HPP
 
-#include "tensor.hpp"
+#include <nano/nano.hpp>
+
+#include <array>
+#include <vector>
 
 namespace ftl {
     
-// Create a type alias for a tensor2 as a specialization of tensor with rank 2
-template <typename T>
-class tensor2 : public tensor<T, 2> {
-public:
-    tensor2()
-    {
-        std::cout << "Constructing\n";
-    }
+template <typename Type, size_t... Sizes>
+class tensor_container;
+
+// Specialize for static containers
+template <typename Type, size_t SizeFirst, size_t... SizeRest>
+class tensor_container<Type, SizeFirst, SizeRest...> {
+private:
+    using dimension_sizes = nano::list<nano::size_t<SizeFirst>, nano::size_t<SizeRest>...>;
+    using container_type  = std::array<Type, nano::multiplies<dimension_sizes>::result>;
+    
+    container_type _data;
 };
 
-}           // End namespace ftl
+template <typename Type>
+class tensor_container<Type> {
+private:
+    using container_type = std::vector<Type>;
+    
+    container_type _data;
+};
 
-#endif      // FTL_TENSOR2_HPP
+}               // End namespace ftl
 
+#endif          // FTL_TENSOR_CONTAINER_HPP
