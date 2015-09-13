@@ -336,8 +336,16 @@ BOOST_AUTO_TEST_SUITE( StaticTensorSuite)
     
 BOOST_AUTO_TEST_CASE( canCreateStaticTensor )
 {
+    // Create data for the static tensor
+    std::array<int, 6> data{ {1, 2, 3, 4, 5, 6} };
+    
     // Create a container specifying the dimension sizes
-    ftl::stensor<int, 2, 3> A;
+    ftl::stensor<int, 2, 3> A(data);
+    ftl::stensor<int, 2, 2> B(1, 2, 3, 4);
+    ftl::stensor<int, 2, 2> C{1, 2, 3, 4};
+    ftl::stensor<int, 2, 2> D = {1, 2, 3, 4};
+    
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -29,6 +29,8 @@
 #include "tensor_container.hpp"
 #include "tensor_expressions.hpp"
 
+#include <initializer_list>
+
 // Type alias defined at the bottom
 
 namespace ftl {
@@ -36,11 +38,19 @@ namespace ftl {
 template <typename T, size_t SF, size_t... SR>
 class static_tensor : public tensor_expression<T, static_tensor<T, SF, SR...>> {
 public:
-    static_tensor() {};
-private:
-    using container_type = tensor_container<T, SF, SR...>;
+    using data_container = tensor_container<T, SF, SR...>;
+    using container_type = typename data_container::container_type;
     
-    container_type _data;
+    static_tensor() {};
+   
+    static_tensor(container_type& data)
+    : _data(data) {}
+   
+    template <typename F, typename... Os> 
+    static_tensor(F first_val, Os... other_vals) 
+    : _data(std::forward<F>(first_val), std::forward<Os>(other_vals)...) {}
+private:
+    data_container _data;
     
 };
 

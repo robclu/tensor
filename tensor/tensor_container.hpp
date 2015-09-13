@@ -30,6 +30,7 @@
 
 #include <array>
 #include <vector>
+#include <iostream>
 
 namespace ftl {
     
@@ -39,19 +40,39 @@ class tensor_container;
 // Specialize for static containers
 template <typename Type, size_t SizeFirst, size_t... SizeRest>
 class tensor_container<Type, SizeFirst, SizeRest...> {
-private:
-    using dimension_sizes = nano::list<nano::size_t<SizeFirst>, nano::size_t<SizeRest>...>;
-    using container_type  = std::array<Type, nano::multiplies<dimension_sizes>::result>;
+public:
+    using dimension_sizes   = nano::list<nano::size_t<SizeFirst>, nano::size_t<SizeRest>...>;
+    using dimension_product = nano::multiplies<dimension_sizes>;
+    using container_type    = std::array<Type, dimension_product::result>; 
     
-    container_type _data;
+    static constexpr size_t size() { return dimension_product::result; }
+
+    tensor_container() {}
+
+    tensor_container(container_type& data)
+    : _data(data) {
+        std::cout << "Reference\n";
+    };
+
+    template <typename V1, typename... VR> 
+    tensor_container(V1 v1, VR... vr) 
+    : _data({v1, vr...}) {
+        std::cout << "Const\n";
+    }
+    
+    inline Type& operator[](size_t i) { return _data[i]; }
+private:
+    container_type _data;                                                   //!< Static data for a tensor
 };
 
 template <typename Type>
 class tensor_container<Type> {
-private:
+public:
     using container_type = std::vector<Type>;
-    
-    container_type _data;
+   
+    inline Type& operator[](size_t i) { return _data[i]; }
+private:
+    container_type _data;                                           //!< Dynamic data container for a tensor
 };
 
 }               // End namespace ftl

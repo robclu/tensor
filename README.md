@@ -2,14 +2,30 @@
 
 # Tensor
 
-Tensor is a fast (well hopefully) c++ tensor library. It is designed with both speed and clarity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
+Tensor is a c++ tensor expression library. It is designed with both speed and clarity of expression in mind. It it thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically. 
 
 [Template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) is used to 'offload' any work which can be computed at compile time, to the compiler and [expression templates](https://en.wikipedia.org/wiki/Expression_templates) are used to achieve the translation of the mathematically expressed code to high performance code.
 
 Tests have been written using the [Boost Test library](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) to verify the 'correctness' of all the implemented components. The tests also help to illustrate the usage of the various components of the library.
 
-Please let me know, or just fix, any areas of the code which can be improved!
+The long term goal is to develop something along the lines of the tensor library in the python theano libray,
+but with support for any rank tensors with both CPU and GPU functionality.
 
+Please let me know, or submit a patch, any areas of the code which can be improved!
+
+# Current Status
+
+Currently the library is CPU only and is single-threaded as the development process has just begun. However, the library will be extended to include GPU functionality (with CUDA and probably also OpenCL) and multi-threading (and therefore multi-core CPU - probably with OpenMP and MPI).
+
+There is quite a lot of functionality which is working at present (see [usage](#usage)), however, the first
+iteration of the development used vectors as the data containers. I feel that a lot of performance improvement
+can be achieved by using static containers and the properties of the tensor which come with knowing the sizes
+of the dimensions when the tensor is created, so currently I am implementing a static version. 
+
+The final library will have support for both static and dynamic tensors, where the choice will be made based
+on the context. 
+
+# Current Development 
 # Dependencies
 
 * [nano](https://github.com/robclu/nano) : A template metaprogramming library, is used to offload some of the work to the compiler, for example things like index mapping for slicing and multiplication.
