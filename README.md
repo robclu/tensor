@@ -32,10 +32,6 @@ on the context.
 * [boost unit](http://www.boost.org/doc/libs/1_58_0/libs/test/doc/html/index.html) : For the unit testing
   component of the library. This is not necessary of you aren't running the tests.
 
-# Current Status
-
-Currently the library is CPU only and is single-threaded as the development process has just begun. However, the library will be extended to include GPU functionality (with CUDA and probably also OpenCL) and multi-threading (and therefore multi-core CPU - probably with OpenMP and MPI).
-
 # Building
 
 To build the test suite which is provided with the library you will need two things installed: The Boost test libraries and the CUDA SDK (although this is not necessary for CPU only builds - see [Compiling](#compiling) below).
