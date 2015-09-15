@@ -27,8 +27,11 @@
 #ifndef FTL_MAPPER_HPP
 #define FTL_MAPPER_HPP
 
+#include "tensor_exceptions.hpp"
+
 #include <nano/nano.hpp>
 #include <array>
+#include <numeric>
 
 namespace ftl {
     
@@ -104,6 +107,75 @@ namespace detail {
         using result = nano::list<MappedIndices...>;
     };
 
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Checks the if an index for a given dimension is valid
+    /// @param[in]  idx         The index of the element in the dimension
+    /// @param[in]  dim         The dimension in which the index is being searched
+    /// @tparam     Container   The type of containeer used to store the dimension data
+    /// @return     True if there was no error, otherwise false
+    /// @throw      tensor_out_of_range  If the index is out of range for the dimension an error is thrown
+    // ------------------------------------------------------------------------------------------------------
+    template <typename Container>
+    bool valid_index(const size_t idx, const size_t dim, const Container& dim_sizes)
+    {
+        try {                                                                       
+            if (idx >= dim_sizes[dim]) {           
+                throw tensor_out_of_range(dim + 1, dim_sizes[dim], idx); 
+            } else return true;
+        } catch (tensor_out_of_range& e ) {
+            std::cout << e.what() << std::endl;
+            return false; 
+        }     
+    }
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Recursive case helper function for the mapping of indices to and index offset, adds the 
+    ///             offset due to the number of elements in one of the dimensions of the tensor
+    /// @param[in]  dim_sizes   The sizes of all the dimensions in the tensor
+    /// @param[in]  offset      The offset of the element at the given index positions
+    /// @param[in]  idx         The index of the element in the current dimension to add to offset
+    /// @param[in]  indices     The rest of the indices for which the offset has not been determined
+    /// @tparam     IF          The type of the idx variable
+    /// @tparam     IR          The types of the rest of the index variables 
+    /// @return     The offset of the index at the postition specified by the indices
+    /// @throw      tensor_out_of_range     If the index is out of range for the dimension an error is thrown
+    // ------------------------------------------------------------------------------------------------------
+    template <size_t Iteration, typename Container, typename IF, typename... IR>
+    size_t to_index_helper(const Container& dim_sizes, size_t offset, IF idx, IR... indices)
+    {  
+        if (!valid_index(idx, Iteration, dim_sizes)) return 0;
+        size_t num_indices = sizeof...(IR); 
+        offset += std::accumulate(dim_sizes.begin()                  ,
+                                  dim_sizes.end() - num_indices - 1  ,
+                                  1                                  , 
+                                  std::multiplies<size_t>()          ) * idx;
+        // Keep iterating
+        return to_index_helper<Iteration + 1>(dim_sizes, offset, indices...); 
+    }
+ 
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Terminating case helper function for the mapping indices to an index offset, adds the 
+    ///             offset due to the number of elements in one of the dimensions of the tensor
+    /// @param[in]  dim_sizes   The sizes of all the dimensions in the tensor
+    /// @param[in]  offset      The offset of the element at the given index positions
+    /// @param[in]  idx         The index of the element in the current dimension to add to offset
+    /// @tparam     IF          The type of the idx variable
+    /// @return     The offset of the index at the postition specified by the indices
+    /// @throw      tensor_out_of_range     If the index is out of range for the dimension an error is thrown
+    // ------------------------------------------------------------------------------------------------------
+    template <size_t Iteration, typename Container, typename IF>
+    size_t to_index_helper(const Container&     dim_sizes   , 
+                           size_t               offset      ,
+                           IF                   idx         ) 
+    {
+        if (!valid_index(idx, Iteration, dim_sizes)) return 0;
+        
+        return offset + std::accumulate(dim_sizes.begin()           ,
+                                        dim_sizes.end() - 1         ,
+                                        1                           ,
+                                        std::multiplies<size_t>()   ) * idx;
+    }
+
 }       // End namespace detail
 
 // ----------------------------------------------------------------------------------------------------------
@@ -162,6 +234,28 @@ struct mapper {
         } 
         return index;
     };
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Takes a list of of variadic elements which are the positions in each dimension of an 
+    ///             element, and converts the list into a single index which is a mapping of the numerous
+    ///             dimensions to contiguous memory.
+    /// @param[in]  dim_sizes       The sizes of the dimensions of the tensor
+    /// @param[in]  first_index     The index of the element in the first dimension
+    /// @param[in]  other_indices   The indices of the element in the other dimensions
+    /// @tparam     Container       The type of container used for the dimension sizes
+    /// @tparam     IF              The type of first_index
+    /// @tparam     IR              The types of the other_indices
+    // ------------------------------------------------------------------------------------------------------
+    template <typename Container, typename IF, typename... IR>
+    static size_t index_list_to_index(const Container&      dim_sizes       ,
+                                      IF                    first_index     ,
+                                      IR...                 other_indices   )
+    {
+        if (!detail::valid_index(first_index, 0, dim_sizes)) return 0;
+        
+        // Call the map helper function to determine the rest of the offset
+        return detail::to_index_helper<1>(dim_sizes, first_index, other_indices...);  
+    }
 };
 
 }           // End namespace ftl

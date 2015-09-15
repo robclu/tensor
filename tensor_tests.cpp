@@ -7,6 +7,7 @@
 #define BOOST_TEST_MODULE       TensorTests
 #include <boost/test/unit_test.hpp>
 
+#include "tensor/container_mapper.hpp"
 #include "tensor/mapper.hpp"
 #include "tensor/tensor.h"
 #include "tensor/tensor_index.hpp"
@@ -389,5 +390,46 @@ BOOST_AUTO_TEST_CASE( canDetermineDimensionSizesCorrectly )
     BOOST_CHECK( b_dim_sizes[1] == 3 );
     BOOST_CHECK( c_dim_sizes[0] == 2 );
 }
+
+BOOST_AUTO_TEST_CASE( canGetAndSetElementOfStaticTensor ) 
+{
+    ftl::stensor<int, 2, 2> A{4, 3, 2, 1};
+    
+    // Set 2nd element 
+    A(1, 0) = 12;
+    
+    // Get 2nd element now
+    int element = A(1, 0);
+    
+    BOOST_CHECK( element == 12 );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+// ----------------------------------------- CONTAINER MAPPER SUITE -----------------------------------------
+
+BOOST_AUTO_TEST_SUITE( TensorContainerMapper )
+    
+BOOST_AUTO_TEST_CASE( canPerformStaticMapping )
+{
+    using tensor_type = ftl::stensor<int, 2, 2, 2>;
+    
+    tensor_type A{ 1, 2, 3, 4, 5, 6, 7 };
+    
+    // Dimension size list 
+    using dim_sizes = tensor_type::data_container::dimension_sizes;
+    
+    // Check static mapping 
+    size_t offset1 = ftl::static_mapper::indices_to_index<dim_sizes>(0, 1, 1);
+    size_t offset2 = ftl::static_mapper::indices_to_index<dim_sizes>(1, 0, 1);
+    size_t offset3 = ftl::static_mapper::indices_to_index<dim_sizes>(1, 1, 0);
+    size_t offset4 = ftl::static_mapper::indices_to_index<dim_sizes>(1, 0, 0);
+    
+    BOOST_CHECK( offset1 == 6 );
+    BOOST_CHECK( offset2 == 5 );
+    BOOST_CHECK( offset3 == 3 );
+    BOOST_CHECK( offset4 == 1 );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -26,6 +26,7 @@
 #ifndef FTL_STATIC_TENSOR_HPP
 #define FTL_STATIC_TENSOR_HPP
 
+#include "mapper.hpp"
 #include "tensor_container.hpp"
 #include "tensor_expressions.hpp"
 
@@ -67,7 +68,7 @@ public:
     /// @brief      Constructor for when the data is given as an lvalue 
     /// @param[in]  data    The data to use for the tensor
     // ------------------------------------------------------------------------------------------------------
-    constexpr static_tensor(container_type& data)
+    static_tensor(container_type& data)
     : _data(data) 
     {
         // Convert the nano::list of dimension sizes to a constant array
@@ -82,12 +83,18 @@ public:
     /// @tparam     TR              The type of the rest of the values
     // ------------------------------------------------------------------------------------------------------
     template <typename TF, typename... TR> 
-    constexpr static_tensor(TF&& first_value, TR&&... other_values) 
+    static_tensor(TF&& first_value, TR&&... other_values) 
     : _data(std::forward<TF>(first_value), std::forward<TR>(other_values)...) 
     {
         // Convert the nano::list of dimension sizes to a constant array
         _dim_sizes = nano::runtime_converter<typename data_container::dimension_sizes>::to_array(); 
     }
+ 
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the rank (number of dimensions) of the tensor
+    /// @return     The rank (number of dimensions) of the tensor
+    // ------------------------------------------------------------------------------------------------------
+    constexpr size_t rank() const { return sizeof...(SR) + 1; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the size (total number of elements) in the tensor
@@ -116,7 +123,7 @@ public:
     /// @tparam     IF              The type of the first index parameter
     /// @tparam     IR              The types of the rest of the index parameters
     // ------------------------------------------------------------------------------------------------------
-    template <typename Mapper = index_mapper, typename IF, typename... IR>
+    template <typename Mapper = mapper, typename IF, typename... IR>
     T& operator()(IF index_dim_one, IR... index_dim_other);
     
 private:
@@ -127,9 +134,16 @@ private:
 // ----------------------------------------------- IMPLEMENTATIONS ------------------------------------------
 
 template <typename T, size_t SF, size_t...SR> template <typename Mapper, typename IF, typename... IR>
-T& static_tensor<T, SF, SR...>::operator()(IF index_dim_one, IR... index_dim_other) 
+T& static_tensor<T, SF, SR...>::operator()(IF dim_one_index, IR... other_dim_indices) 
 {
-    return T(0);
+    try {   // Check that the fiven number of params == rank
+        if (sizeof...(IR) != sizeof...(SR))
+            throw tensor_invalid_arguments(sizeof...(IR) + 1, sizeof...(SR) + 1);
+    } catch (tensor_invalid_arguments& e) {
+        std::cerr << e.what() << "\n";
+        return _data[0];
+    }
+    return _data[mapper::index_list_to_index(_dim_sizes, dim_one_index, other_dim_indices...)];
 }
 
 // ------------------------------------------------- ALIAS'S ------------------------------------------------
