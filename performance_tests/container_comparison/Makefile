@@ -2,8 +2,8 @@
 #				 	                EXECUTABLE NAME 	                               #
 ########################################################################################
 
-EXE_CONT 		:=  container_comparison 
-EXE             :=
+EXE_SCONT 		:=  scontainer 
+EXE_DCONT       :=  dcontainer
 
 ########################################################################################
 #                                   INPUT FILES                                        #
@@ -40,37 +40,55 @@ CXX_LDIR  	    :=
 # 		--compiler-options -Wall                                                       #
 ########################################################################################
 
-CXX_FLAGS 		:= -std=c++11 -w 
+CXX_FLAGS 		:= -std=c++11 -w -O3
 
 ########################################################################################
 # 					                TARGET RULES 					                   #
 #######################################################################################
 
-.PHONY: cont_compare cont_compare_asm
+.PHONY: scont scont_asm dcont dcont_asm clean
 	
-cont_compare: build_and_run_cont
-	
-build_and_run_cont: build_sample_cont
-	rm -rf *.o
-	./$(EXE_CONT)
+scont: build_and_run_scont
+dcont: build_and_run_dcont
 
-container_comparison.o: container_comparison.cpp
+build_and_run_scont: build_scont
+	rm -rf *.o
+	./$(EXE_SCONT)
+
+scontainer.o: scontainer.cpp
 	$(CXX) $(CXX_INC) $(CXX_FLAGS) -o $@ -c $<
 	
-build_sample_cont: container_comparison.o
-	$(CXX) -o $(EXE_CONT) $+ $(CXX_LDIR) $(CXX_LIBS)
+build_scont: scontainer.o
+	$(CXX) -o $(EXE_SCONT) $+ $(CXX_LDIR) $(CXX_LIBS)
 	
-container_comparison.s: container_comparison.cpp
+scontainer.s: scontainer.cpp
 	$(CXX) $(CXX_INC) $(CXX_FLAGS) -o $@ -c $<
 
-cont_compare_asm: CXX_FLAGS += -S -g -fverbose-asm -masm=intel -O3
-cont_compare_asm: container_comparison.s 
-	as -adhln container_comparison.s > container_comparison.lst
-
-clean_cont:
-	rm -rf *.o
-	rm -rf $(EXE_CONT) 
+scont_asm: CXX_FLAGS += -S -g -fverbose-asm -masm=intel -O3
+scont_asm: scontainer.s 
+	as -adhln scontainer.s > scontainer.lst
 	
-clean_cont_asm:
-	rm -rf container_comparison.s
-	rm -rf container_comparison.lst
+build_and_run_dcont: build_dcont
+	rm -rf *.o
+	./$(EXE_DCONT)
+
+dcontainer.o: dcontainer.cpp
+	$(CXX) $(CXX_INC) $(CXX_FLAGS) -o $@ -c $<
+	
+build_dcont: dcontainer.o
+	$(CXX) -o $(EXE_DCONT) $+ $(CXX_LDIR) $(CXX_LIBS)
+	
+dcontainer.s: dcontainer.cpp
+	$(CXX) $(CXX_INC) $(CXX_FLAGS) -o $@ -c $<
+
+dcont_asm: CXX_FLAGS += -S -g -fverbose-asm -masm=intel -O3
+dcont_asm: dcontainer.s 
+	as -adhln dcontainer.s > dcontainer.lst
+
+clean:
+	rm -rf *.o
+	rm -rf *.s
+	rm -rf *.lst
+	rm -rf $(EXE_SCONT) 
+	rm -rf $(EXE_DCONT) 
+	

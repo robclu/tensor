@@ -31,7 +31,9 @@
 #include <nano/nano.hpp>
 
 #include <iostream>
+#include <type_traits>
 #include <utility>
+#include <numeric>
 
 namespace ftl {
     
@@ -85,6 +87,30 @@ struct map_to_index_static<DimSizes>
     static constexpr size_t offset(size_t current_offset) { return current_offset; }
 };
 
+// Dynamic implementation
+
+template <size_t Iteration, typename Container>
+size_t map_to_index_dynamic(const Container&    dim_sizes       ,
+                            size_t             current_offset  )
+{
+    return current_offset;
+}
+
+template <size_t Iteration, typename Container, typename IF, typename... IR>
+size_t map_to_index_dynamic(const Container&    dim_sizes       , 
+                            size_t              current_offset  , 
+                            IF                  index_first     , 
+                            IR...               indices_rest    )
+{
+    size_t num_indices = sizeof...(IR);
+    current_offset += std::accumulate(dim_sizes.begin()                 ,
+                                      dim_sizes.end() - num_indices - 1 ,
+                                      1                                 ,
+                                      std::multiplies<size_t>()         ) * index_first;
+    // Keep iterating
+    return map_to_index_dynamic<Iteration + 1>(dim_sizes, current_offset, indices_rest...);
+}
+
 }           // End namespace detail
 
 // ----------------------------------------------------------------------------------------------------------
@@ -112,7 +138,19 @@ static constexpr size_t indices_to_index(IF&& index_first, IR&&... indices_rest)
                                                                     std::forward<IF>(index_first)       , 
                                                                     std::forward<IR>(indices_rest)...   );
 }
-   
+
+};
+
+struct dynamic_mapper {
+  
+template <typename Container, typename IF, typename... IR>
+static size_t indices_to_index(const Container&     dim_sizes   ,  
+                               IF                   index_first ,
+                               IR...                indices_rest)
+{
+    return detail::map_to_index_dynamic<1>(dim_sizes, index_first, indices_rest...);
+}
+
 };
 
 }           // End namespace ftl

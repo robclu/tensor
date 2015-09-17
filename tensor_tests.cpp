@@ -431,5 +431,21 @@ BOOST_AUTO_TEST_CASE( canPerformStaticMapping )
     BOOST_CHECK( offset4 == 1 );
 }
 
+BOOST_AUTO_TEST_CASE( canPerformSDynamicMapping )
+{
+    std::array<size_t, 3> dim_sizes{ 2, 2, 2 };
+    
+    // Check static mapping 
+    size_t offset1 = ftl::dynamic_mapper::indices_to_index(dim_sizes, 0, 1, 1);
+    size_t offset2 = ftl::dynamic_mapper::indices_to_index(dim_sizes, 1, 0, 1);
+    size_t offset3 = ftl::dynamic_mapper::indices_to_index(dim_sizes, 1, 1, 0);
+    size_t offset4 = ftl::dynamic_mapper::indices_to_index(dim_sizes, 1, 0, 0);
+    
+    BOOST_CHECK( offset1 == 6 );
+    BOOST_CHECK( offset2 == 5 );
+    BOOST_CHECK( offset3 == 3 );
+    BOOST_CHECK( offset4 == 1 );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
