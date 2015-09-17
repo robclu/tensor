@@ -28,6 +28,6 @@
 
 // This includes:
 #include "tensor.hpp"
-#include "static_tensor.hpp"
+#include "tensor_static.hpp"
 
 #endif      // FTL_TENSOR_H

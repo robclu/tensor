@@ -52,7 +52,8 @@ public:
     // ------------------------------------ TYPEDEFS --------------------------------------------------------
     using dimension_sizes   = nano::list<nano::size_t<SizeFirst>, nano::size_t<SizeRest>...>;
     using dimension_product = nano::multiplies<dimension_sizes>;
-    using container_type    = std::array<T, dimension_product::result>; 
+    using data_container    = std::array<T, dimension_product::result>; 
+    using iterator          = typename data_container::iterator;
     // ------------------------------------------------------------------------------------------------------
 
     // ------------------------------------------------------------------------------------------------------
@@ -64,7 +65,7 @@ public:
     /// @brief      Contructor when given an array with the data for the container
     /// @param[in]  data    The data to use to initalize the container data with
     // ------------------------------------------------------------------------------------------------------
-    constexpr tensor_container(container_type& data)
+    constexpr tensor_container(data_container& data)
     : _data(data) {}
 
     // ------------------------------------------------------------------------------------------------------
@@ -90,8 +91,20 @@ public:
     /// @return     A reference to the element at the index i in the container
     // ------------------------------------------------------------------------------------------------------
     inline T& operator[](size_t i) { return _data[i]; }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns an iterator to the first element of the container
+    /// @return     An iterator to the first element of the container
+    // ------------------------------------------------------------------------------------------------------
+    iterator begin() { return _data.begin(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns an iterator to the element following the last element
+    /// @return     An iterator to the element following the last element
+    // ------------------------------------------------------------------------------------------------------
+    iterator end() { return _data.end(); }
 private:
-    container_type _data;                                                   //!< Static data for a tensor
+    data_container _data;                                                   //!< Static data for a tensor
 };
 
 // Specialization for dynamic container which the dimension sizes
@@ -100,7 +113,7 @@ template <typename T>
 class tensor_container<T> {
 public:
     // -------------------------------- TYPEDEFS ------------------------------------------------------------
-    using container_type = std::vector<T>;
+    using data_container = std::vector<T>;
  
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Default constructor 
@@ -111,7 +124,7 @@ public:
     /// @brief      Contructor when given an array with the data for the container
     /// @param[in]  data    The data to use to initalize the container data with
     // ------------------------------------------------------------------------------------------------------
-    tensor_container(container_type& data)
+    tensor_container(data_container& data)
     : _size(data.size()), _data(data){}
    
     // ------------------------------------------------------------------------------------------------------
@@ -127,7 +140,7 @@ public:
     // ------------------------------------------------------------------------------------------------------  
     inline T& operator[](size_t i) { return _data[i]; }
 private:
-    container_type  _data;                                          //!< Dynamic data container for a tensor
+    data_container  _data;                                          //!< Dynamic data container for a tensor
     size_t          _size;                                          //!< Number of elements in the container
 };
 

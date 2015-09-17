@@ -404,6 +404,35 @@ BOOST_AUTO_TEST_CASE( canGetAndSetElementOfStaticTensor )
     BOOST_CHECK( element == 12 );
 }
 
+BOOST_AUTO_TEST_CASE( canPerformStaticMapping )
+{
+    using tensor_type = ftl::stensor<int, 2, 2, 2>;
+    
+    // Create a tensor and fill it with some data. Data values are the indecies of the element 
+    // to show the mapping, however, 1 indexing is used since an integer value can't have leading 0's
+    // so:
+    //      value 111 = indices 0, 0, 0 for dim 0, 1, 2 respecively
+    //      value 212 = indices 1, 0, 1 for dim 0, 1, 2 respectively
+    tensor_type A{ 111, 211, 121, 221   , 
+                   112, 212, 122, 222  }; 
+    
+    BOOST_CHECK( A(0, 1, 1) == 122 );
+    BOOST_CHECK( A(1, 0, 1) == 212 );
+    BOOST_CHECK( A(1, 1, 0) == 221 );
+    BOOST_CHECK( A(1, 0, 0) == 211 );
+}
+
+BOOST_AUTO_TEST_CASE( canInitializeAStaticTensor )
+{
+    // Create a 2x2x2 tensor with initial value
+    ftl::stensor<int, 2, 2, 2> A{ 110, 120, 210, 220, 111, 121, 211, 221 };
+    
+    // Modify all values by initializing them all to 1
+    ftl::initialize(A, 1, 1);
+    
+    BOOST_CHECK( A(0, 0, 0) == 1 );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 // ----------------------------------------- CONTAINER MAPPER SUITE -----------------------------------------
@@ -414,21 +443,21 @@ BOOST_AUTO_TEST_CASE( canPerformStaticMapping )
 {
     using tensor_type = ftl::stensor<int, 2, 2, 2>;
     
-    tensor_type A{ 1, 2, 3, 4, 5, 6, 7 };
+    tensor_type A{ 1, 2, 3, 4, 5, 6, 7, 8 };
     
     // Dimension size list 
-    using dim_sizes = tensor_type::data_container::dimension_sizes;
+    using dim_sizes = tensor_type::container_type::dimension_sizes;
     
     // Check static mapping 
-    size_t offset1 = ftl::static_mapper::indices_to_index<dim_sizes>(0, 1, 1);
-    size_t offset2 = ftl::static_mapper::indices_to_index<dim_sizes>(1, 0, 1);
-    size_t offset3 = ftl::static_mapper::indices_to_index<dim_sizes>(1, 1, 0);
-    size_t offset4 = ftl::static_mapper::indices_to_index<dim_sizes>(1, 0, 0);
+    size_t offset1 = A(0, 1, 1);
+    size_t offset2 = A(1, 0, 1);
+    size_t offset3 = A(1, 1, 0);
+    size_t offset4 = A(1, 0, 0);
     
-    BOOST_CHECK( offset1 == 6 );
-    BOOST_CHECK( offset2 == 5 );
-    BOOST_CHECK( offset3 == 3 );
-    BOOST_CHECK( offset4 == 1 );
+    BOOST_CHECK( A(0, 1, 1) == 7 );
+    BOOST_CHECK( A(1, 0, 1) == 6 );
+    BOOST_CHECK( A(1, 1, 0) == 4 );
+    BOOST_CHECK( A(1, 0, 0) == 2 );
 }
 
 BOOST_AUTO_TEST_CASE( canPerformSDynamicMapping )

@@ -1,5 +1,4 @@
 #include "../../tensor/container_mapper.hpp"
-#include "../../tensor/static_tensor.hpp"
 #include "../../tensor/tensor.h"
 
 constexpr size_t D1 = 200;
@@ -14,6 +13,8 @@ int main(int argc, char** argv)
     // Define sype for static tensor
     using static_type   = ftl::stensor<int, D1, D2, D3, D4, D5, D6>;            // Static tensor type
     using dim_sizes     = static_type::data_container::dimension_sizes;         // dim sizes of static tensor
+
+    static_type s;
     
     size_t offset = 0;    
    
