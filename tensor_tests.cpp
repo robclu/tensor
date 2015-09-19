@@ -432,7 +432,31 @@ BOOST_AUTO_TEST_CASE( canInitializeAStaticTensor )
     
     BOOST_CHECK( A(0, 0, 0) == 1 );
 }
-
+/*
+BOOST_AUTO_TEST_CASE( canAddStaticTensors )
+{
+    using static_tensor = ftl::stensor<int, 2, 2, 2>;
+    
+    // Create 2 static tensors to add
+    static_tensor A, B;
+    
+    // Initialize each of the tensors with different values
+    ftl::initialize(A, 1, 1);
+    ftl::initialize(B, 2, 2);
+    
+    // Add the tensors to make a tensor C
+    static_tensor C = A + B;
+    
+    BOOST_CHECK( C(0, 0, 0) == 3 );
+    BOOST_CHECK( C(0, 0, 1) == 3 );
+    BOOST_CHECK( C(0, 1, 0) == 3 );
+    BOOST_CHECK( C(0, 1, 1) == 3 );
+    BOOST_CHECK( C(1, 0, 0) == 3 );
+    BOOST_CHECK( C(1, 0, 1) == 3 );
+    BOOST_CHECK( C(1, 1, 0) == 3 );
+    BOOST_CHECK( C(1, 1, 1) == 3 );
+}
+*/
 BOOST_AUTO_TEST_SUITE_END()
 
 // ----------------------------------------- CONTAINER MAPPER SUITE -----------------------------------------
