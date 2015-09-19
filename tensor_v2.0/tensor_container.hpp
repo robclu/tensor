@@ -4,7 +4,7 @@
 
 /*
 * ----------------------------------------------------------------------------------------------------------
-*  Tensor program is free software; you can redistribute it and/or modify
+*  Tensor is free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published
 *  by the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
@@ -41,7 +41,7 @@ namespace ftl {
 template <typename Dtype, size_t... Sizes>
 class TensorContainer;
 
-// Specialize for static containers
+// Specialize for static containers -- for when the sizes of the dimensions are given at compile-time
 template <typename Dtype, size_t SizeFirst, size_t... SizeRest>
 class TensorContainer<Dtype, SizeFirst, SizeRest...> {
 public:
@@ -50,6 +50,7 @@ public:
     using dimension_sizes   = nano::list<nano::size_t<SizeFirst>, nano::size_t<SizeRest>...>;
     using dimension_product = nano::multiplies<dimension_sizes>;
     using data_container    = std::array<data_type, dimension_product::result>; 
+    using dim_container     = typename nano::runtime_converter<dimension_sizes>::array_type;
     using size_type         = typename data_container::size_type;
     using iterator          = typename data_container::iterator;
     // ------------------------------------------------------------------------------------------------------
@@ -141,6 +142,18 @@ public:
     /// @return     A reference to the element at the index i in the container
     // ------------------------------------------------------------------------------------------------------  
     inline data_type& operator[](size_t i) { return _data[i]; }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns an iterator to the first element of the container
+    /// @return     An iterator to the first element of the container
+    // ------------------------------------------------------------------------------------------------------
+    iterator begin() { return _data.begin(); }
+    
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Returns an iterator to the element following the last element
+    /// @return     An iterator to the element following the last element
+    // ------------------------------------------------------------------------------------------------------
+    iterator end() { return _data.end(); }
 private:
     data_container  _data;                                          //!< Dynamic data container for a tensor
     size_t          _size;                                          //!< Number of elements in the container

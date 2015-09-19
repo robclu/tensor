@@ -51,8 +51,10 @@ struct TensorTraits;
 template <typename Dtype, device DeviceType, size_t SizeFirst, size_t... SizeRest>
 struct TensorTraits<Dtype, DeviceType, SizeFirst, SizeRest...> {
     // ---------------------------------------- ALIAS'S -----------------------------------------------------
+    using data_type         = Dtype;
     using container_type    = TensorContainer<Dtype, SizeFirst, SizeRest...>;
     using data_container    = typename container_type::data_container;
+    using dim_container     = typename container_type::dim_container;
     // ------------------------------------------------------------------------------------------------------
     static constexpr device device_type     = DeviceType;
 };
@@ -61,6 +63,7 @@ struct TensorTraits<Dtype, DeviceType, SizeFirst, SizeRest...> {
 template <typename Dtype, device DeviceType>
 struct TensorTraits<Dtype, DeviceType> {
     // ---------------------------------------- ALIAS'S -----------------------------------------------------
+    using data_type         = Dtype;
     using container_type    = TensorContainer<Dtype>;
     using data_container    = typename container_type::data_container;
     // ------------------------------------------------------------------------------------------------------};

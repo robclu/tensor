@@ -1,8 +1,5 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for tensor expressions for the tensor library -- includes all partial specializations
-///         for the tensor expressions. The file is intended to be included in an aplication where all tensor
-///         expression functionality is required. It will reduce compilation time, so when using a specific 
-///         expression implementation -- say static contatiers with a GPU -- include only that file.
+/// @file   Header file for tensor interface for tensor library.
 // ----------------------------------------------------------------------------------------------------------
 
 /*
@@ -23,11 +20,18 @@
  * ----------------------------------------------------------------------------------------------------------
  */ 
 
-#ifndef FTL_TENSOR_EXPRESSIONS_HPP
-#define FTL_TENSOR_EXPRESSIONS_HPP
+#ifndef FTL_TENSOR_HPP
+#define FTL_TENSOR_HPP
 
-#include "tensor_expression_dynamic_cpu.hpp"
-#include "tensor_expression_static_cpu.hpp"
+//#include "tensor_expressions.hpp"
+#include "tensor_dynamic_cpu.hpp"
+#include "tensor_static_cpu.hpp"
 
-#endif          // FTL_TENSOR_EXPRESSIONS_HPP
+namespace ftl {
+    
+// Define a type alias for a general tensor that will 'choose' the specialization
+template <typename Dtype, device DeviceType, size_t... DimSizes>
+using Tensor = TensorInterface<TensorTraits<Dtype, DeviceType, DimSizes...>>;
 
+}               // End namespace ftl
+#endif          // FTL_TENSOR_INTERFACE_HPP

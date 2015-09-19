@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for tensor expressions dynamic container specialization for tensor library.
+/// @file   Header file for tensor expressions dynamic container and cpu specialization for tensor library.
 // ----------------------------------------------------------------------------------------------------------
 
 /*
@@ -20,19 +20,19 @@
  * ----------------------------------------------------------------------------------------------------------
  */ 
 
-#ifndef FTL_TENSOR_EXPRESSIONS_DYNAMIC_ANY_HPP
-#define FTL_TENSOR_EXPRESSIONS_DYNAMIC_ANY_HPP
+#ifndef FTL_TENSOR_EXPRESSIONS_DYNAMIC_CPU_HPP
+#define FTL_TENSOR_EXPRESSIONS_DYNAMIC_CPU_HPP
 
 #include "tensor_expression_interface.hpp"
 
 namespace ftl {
 
-// Specialization for ensor expression with dynamic container traits
-template <typename Expression, typename Dtype, device DeviceType>
-class TensorExpression<Expression, TensorTraits<Dtype, DeviceType>> {
+// Specialization for tensor expression with dynamic container and cpu implemenation traits
+template <typename Expression, typename Dtype>
+class TensorExpression<Expression, TensorTraits<Dtype, CPU>> {
 public:
     // ---------------------------------------- ALIAS'S -----------------------------------------------------
-    using traits            = TensorTraits<Dtype, DeviceType>;
+    using traits            = TensorTraits<Dtype, CPU>;
     using data_type         = typename traits::data_type;
     using container_type    = typename traits::container_type;
     using data_container    = typename traits::data_container;
@@ -40,4 +40,4 @@ public:
 };
             
 }               // End namespace ftl
-#endif          // FTL_TENSOR_EXPRESSIONS_DYNAMIC_ANY_HPP
+#endif          // FTL_TENSOR_EXPRESSIONS_DYNAMIC_CPU_HPP

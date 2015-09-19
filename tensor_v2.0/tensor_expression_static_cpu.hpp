@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for tensor interface for tensor library.
+/// @file   Header file for tensor expressions static container and cpu specialization for tensor library.
 // ----------------------------------------------------------------------------------------------------------
 
 /*
@@ -20,26 +20,24 @@
  * ----------------------------------------------------------------------------------------------------------
  */ 
 
-#ifndef FTL_TENSOR_INTERFACE_HPP
-#define FTL_TENSOR_INTERFACE_HPP
+#ifndef FTL_TENSOR_EXPRESSIONS_STATIC_CPU_HPP
+#define FTL_TENSOR_EXPRESSIONS_STATIC_CPU_HPP
 
-#include "tensor_expressions.hpp"
+#include "tensor_expression_interface.hpp"
 
 namespace ftl {
-    
-template <typename Traits>
-class TensorInterface;
 
-template <typename Dtype, device DeviceType, size_t... DimSizes>
-using DynamicTensor = TensorInterface<TensorTraits<Dtype, DeviceType, DimSizes...>>;
-
-// Specialize for static tensors
-template<typename Dtype, device DeviceType>
-class Tensor : public TensorExpression<DynamicTensor<Dtype, DeviceType>, TensorTraits<Dtype, DeviceType>>
-{        
-    using traits            = TensorTraits<Dtype, DeviceType>;
+// Specialization for ensor expression with static container and cpu implementation traits
+template <typename Expression, typename Dtype, size_t SizeFirst, size_t... SizeRest>
+class TensorExpression<Expression, TensorTraits<Dtype, CPU, SizeFirst, SizeRest...>> {
+public:
+    // ---------------------------------------- ALIAS'S -----------------------------------------------------
+    using traits            = TensorTraits<Dtype, CPU, SizeFirst, SizeRest...>;
+    using data_type         = typename traits::data_type;
     using container_type    = typename traits::container_type;
+    using data_container    = typename traits::data_container;
+    // ------------------------------------------------------------------------------------------------------ 
 };
-
+            
 }               // End namespace ftl
-#endif          // FTL_TENSOR_INTERFACE_HPP
+#endif          // FTL_TENSOR_EXPRESSIONS_STATIC_CPU_HPP
