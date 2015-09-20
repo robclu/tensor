@@ -51,6 +51,7 @@ class TensorInterface<TensorTraits<DT, CPU, SF, SR...>> : public TensorExpressio
 public:
     // ---------------------------------------- ALIAS'S ----------------------------------------------------- 
     using traits            = TensorTraits<DT, CPU, SF, SR...>;
+    using size_type         = typename traits::size_type;
     using data_type         = typename traits::data_type;
     using container_type    = typename traits::container_type;
     using data_container    = typename container_type::data_container;    
@@ -93,14 +94,23 @@ public:
     /// @brief      Gets the rank (number of dimensions) of the tensor
     /// @return     The rank (number of dimensions) of the tensor
     // ------------------------------------------------------------------------------------------------------
-    constexpr size_t rank() const { return sizeof...(SR) + 1; }
+    constexpr size_type rank() const { return sizeof...(SR) + 1; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the size (total number of elements) in the tensor
     /// @return     The size of the tensor
     // ------------------------------------------------------------------------------------------------------
-    constexpr size_t size() const { return _data.size(); }
-  
+    constexpr size_type size() const { return _data.size(); }
+ 
+    // TODO: Add out of range exception
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets the size (total number of elements) in a specific dimension of the tensor, if the
+    ///             dimension is valid
+    /// @param[in]  dim     The dimension to get the size of
+    /// @return     The size of the requested dimension of the tensor if valid, otherwise 0
+    // ------------------------------------------------------------------------------------------------------
+    inline size_type size(const size_type dim) const { return dim < rank() ? _dim_sizes[dim] : 0; }  
+    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets a reference to the container holding the sizes of the dimensions for the tensor
     /// @return     A constant reference to the dimension sizes of the tensor
@@ -112,21 +122,21 @@ public:
     /// @param[in]  min     The minimum value of an element after the initialization
     /// @param[in]  max     The max value of an element after the initialization
     // ------------------------------------------------------------------------------------------------------
-    void initialize(const DT min, const DT max);
+    void initialize(const data_type min, const data_type max);
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets an element from the tensor
     /// @param[in]  i   The index of the element in the tensor
     /// @return     A reference to the element at the index i in the tensor
     // ------------------------------------------------------------------------------------------------------
-    inline data_type& operator[](size_t i) { return _data[i]; }
+    inline data_type& operator[](size_type i) { return _data[i]; }
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets an element from the tensor
     /// @param[in]  i   The index of the element in the tensor
     /// @return     The value of the element at the index i in the tensor
     // ------------------------------------------------------------------------------------------------------
-    inline data_type operator[](size_t i) const { return _data[i]; }
+    inline data_type operator[](size_type i) const { return _data[i]; }
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the element at a given index for each dimension of a tensor -- there is no bound
@@ -189,7 +199,16 @@ TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(const TensorE
     // Convert the nano::list of dimension sizes to a constant array
     _dim_sizes = nano::runtime_converter<typename container_type::dimension_sizes>::to_array();  
     assert(_dim_sizes.size() == expression.dim_sizes().size());     
-    for (size_t i = 0; i != size(); ++i) _data[i] = expression[i];
+    for (size_type i = 0; i != size(); ++i) _data[i] = expression[i];
+}
+
+template <typename DT, size_t SF, size_t... SR>
+void TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::initialize(const data_type min, const data_type max)
+{
+    std::random_device                  rand_device;
+    std::mt19937                        gen(rand_device());
+    std::uniform_real_distribution<>    dist(min, max);
+    for (auto& element : _data) element = static_cast<data_type>(dist(gen));     
 }
 
 template <typename DT, size_t SF, size_t...SR> template <typename IF, typename... IR>
@@ -204,15 +223,6 @@ DT TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::operator()(IF dim_one_inde
 {
     using dimension_sizes = typename container_type::dimension_sizes;
     return _data[StaticMapper::indices_to_index<dimension_sizes>(dim_one_index, other_dim_indices...)];
-}
-
-template <typename DT, size_t SF, size_t... SR>
-void TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::initialize(const DT min, const DT max)
-{
-    std::random_device                  rand_device;
-    std::mt19937                        gen(rand_device());
-    std::uniform_real_distribution<>    dist(min, max);
-    for (auto& element : _data) element = static_cast<data_type>(dist(gen));     
 }
 
 }               // End namespace ftl

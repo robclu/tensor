@@ -55,6 +55,7 @@ struct TensorTraits<Dtype, DeviceType, SizeFirst, SizeRest...> {
     using container_type    = TensorContainer<Dtype, SizeFirst, SizeRest...>;
     using data_container    = typename container_type::data_container;
     using dim_container     = typename container_type::dim_container;
+    using size_type         = typename container_type::size_type;
     // ------------------------------------------------------------------------------------------------------
     static constexpr device device_type     = DeviceType;
 };
@@ -66,6 +67,8 @@ struct TensorTraits<Dtype, DeviceType> {
     using data_type         = Dtype;
     using container_type    = TensorContainer<Dtype>;
     using data_container    = typename container_type::data_container;
+    using dim_container     = typename container_type::dim_container;
+    using size_type         = typename container_type::size_type;
     // ------------------------------------------------------------------------------------------------------};
     static constexpr device device_type     = DeviceType;
 };

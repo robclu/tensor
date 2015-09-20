@@ -115,6 +115,7 @@ public:
     using data_type         = Dtype;
     using data_container    = std::vector<data_type>;
     using size_type         = typename data_container::size_type;
+    using dim_container     = std::vector<size_type>;
     using iterator          = typename data_container::iterator;
     // ------------------------------------------------------------------------------------------------------
  
@@ -134,7 +135,7 @@ public:
     /// @brief      Gets the size (total number of elements) in the container
     /// @return     The size of the container
     // ------------------------------------------------------------------------------------------------------
-    size_t size() const { return _size; }
+    inline size_t size() const { return _size; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets an element from the container
