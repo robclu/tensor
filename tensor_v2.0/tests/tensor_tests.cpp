@@ -10,6 +10,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "../tensor.hpp"
+#include "../tensor_operations.hpp"
 
 BOOST_AUTO_TEST_SUITE( TensorSuite)
     

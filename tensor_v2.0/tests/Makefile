@@ -62,6 +62,9 @@ all: debug
 debug: CX_FLAGS += $(DG_FLAGS)
 debug: build_tests
 
+operations_tests.o: operations_tests.cpp
+	$(CXX) $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
+	
 container_tests.o: container_tests.cpp 
 	$(CXX) $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
 	
@@ -74,7 +77,7 @@ traits_tests.o: traits_tests.cpp
 tests.o: tests.cpp 
 	$(CXX) $(CU_INC) $(CU_FLAGS) $(CX_INC) $(CX_FLAGS) -o $@ -c $<
 
-build_tests: container_tests.o tensor_tests.o traits_tests.o tests.o
+build_tests: container_tests.o tensor_tests.o traits_tests.o operations_tests.o tests.o
 	$(CXX) -o $(EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)	
 
 clean:

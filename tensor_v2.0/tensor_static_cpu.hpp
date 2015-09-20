@@ -27,6 +27,8 @@
 #include "tensor_expression_static_cpu.hpp"         // NOTE: Only including expression specialization for 
                                                     //       static cpu implementation -- all specializations
                                                     //       are provided by tensor_expressions.hpp 
+                                                
+#include <type_traits>
 
 // NOTE : Using long template names results in extremely bulky code, so the following abbreviations are
 //        used to reduve the bulk for template parameters:
@@ -71,13 +73,12 @@ public:
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Constructor for when the data is specified as a literal list
-    /// @param[in]  first_value     The first value in the literal list
-    /// @param[in]  other_values    The rest of the values in the literal list
-    /// @tparam     TF              The type of the first value
+    /// @param[in]  first_value     The first value in the literal list -- must be data_type
+    /// @param[in]  other_values    The other values which make up the data
     /// @tparam     TR              The type of the rest of the values
     // ------------------------------------------------------------------------------------------------------
-    template <typename TF, typename... TR> 
-    TensorInterface(TF&& first_value, TR&&... other_values);
+    template <typename... TR>
+    TensorInterface(DT&& first_value, TR&&... other_values);
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Constructor for creation from a tensor expression -- this is only used for simple 
@@ -136,7 +137,7 @@ public:
     /// @param[in]  i   The index of the element in the tensor
     /// @return     The value of the element at the index i in the tensor
     // ------------------------------------------------------------------------------------------------------
-    inline data_type operator[](size_type i) const { return _data[i]; }
+    inline const data_type& operator[](size_type i) const { return _data[i]; }
    
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the element at a given index for each dimension of a tensor -- there is no bound
@@ -162,7 +163,7 @@ public:
     template <typename IF, typename... IR>
     DT operator()(IF index_dim_one, IR... index_dim_other) const;
 private:
-    container_type      _data;                  //!< The data container which holds all the data
+    data_container      _data;                  //!< The data container which holds all the data
     dim_container       _dim_sizes;             //!< The sizes of the dimensions for the tensor
 };
 
@@ -185,9 +186,9 @@ TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(data_containe
     _dim_sizes = nano::runtime_converter<typename container_type::dimension_sizes>::to_array();
 }
 
-template <typename DT, size_t SF, size_t...SR> template <typename TF, typename... TR> 
-TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(TF&& first_value, TR&&... other_values) 
-: _data(std::forward<TF>(first_value), std::forward<TR>(other_values)...) 
+template <typename DT, size_t SF, size_t...SR> template <typename... TR> 
+TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(DT&& first_value, TR&&... other_values) 
+: _data{{std::forward<DT>(first_value), std::forward<TR>(other_values)...}}
 {
     // Convert the nano::list of dimension sizes to a constant array
     _dim_sizes = nano::runtime_converter<typename container_type::dimension_sizes>::to_array(); 
@@ -198,7 +199,6 @@ TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(const TensorE
 {   
     // Convert the nano::list of dimension sizes to a constant array
     _dim_sizes = nano::runtime_converter<typename container_type::dimension_sizes>::to_array();  
-    assert(_dim_sizes.size() == expression.dim_sizes().size());     
     for (size_type i = 0; i != size(); ++i) _data[i] = expression[i];
 }
 

@@ -69,14 +69,12 @@ public:
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Move constructor for when the data is given as a literal list
-    /// @param[in]  first_value     The first value in the literal list 
-    /// @param[in]  other_valeus    The rest of the values in the literal list
-    /// @tparam     TF              The type of the first_value parameter
+    /// @param[in]  values          The first value in the literal list 
     /// @tparam     TR              The type of the rest of the parameters
     // ------------------------------------------------------------------------------------------------------
-    template <typename TF, typename... TR> 
-    constexpr TensorContainer(TF&& first_value, TR&&... other_values) 
-    : _data({first_value, other_values...}) {}
+    template <typename... TR> 
+    constexpr TensorContainer(TR&&... values) 
+    : _data{{std::forward<TR>(values)...}} {}
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the size (total number of elements) in the container
@@ -90,6 +88,13 @@ public:
     /// @return     A reference to the element at the index i in the container
     // ------------------------------------------------------------------------------------------------------
     inline data_type& operator[](size_t i) { return _data[i]; }
+
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets an element from the container
+    /// @param[in]  i   The index of the element in the container
+    /// @return     A reference to the element at the index i in the container
+    // ------------------------------------------------------------------------------------------------------
+    inline const data_type& operator[](size_t i) const { return _data[i]; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Returns an iterator to the first element of the container
@@ -143,6 +148,13 @@ public:
     /// @return     A reference to the element at the index i in the container
     // ------------------------------------------------------------------------------------------------------  
     inline data_type& operator[](size_t i) { return _data[i]; }
+
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Gets an element from the container
+    /// @param[in]  i   The index of the element in the container
+    /// @return     A reference to the element at the index i in the container
+    // ------------------------------------------------------------------------------------------------------  
+    inline const data_type& operator[](size_t i) const { return _data[i]; }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Returns an iterator to the first element of the container
