@@ -56,6 +56,18 @@ public:
     /// @return    A const pointer to the expression.
     // ------------------------------------------------------------------------------------------------------
     const Expression* expression() const { return static_cast<const Expression*>(this); }    
+   
+    // ------------------------------------------------------------------------------------------------------
+    //! @brief     Gets a reference to the Tensor expression.
+    //! @return    A reference to the Tensor expression E.
+    // ------------------------------------------------------------------------------------------------------
+    operator Expression&() { return static_cast<Expression&>(*this); }
+
+    // ------------------------------------------------------------------------------------------------------
+    //! @brief     Gets a constant reference to the Tensor expression.
+    //! @return    A constant reference to the Tensror expression E.
+    // ------------------------------------------------------------------------------------------------------
+    operator Expression const&() const { return static_cast<const Expression&>(*this); }
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Returns the size of the expression

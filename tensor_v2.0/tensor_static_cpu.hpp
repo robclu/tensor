@@ -23,6 +23,7 @@
 #ifndef FTL_TENSOR_STATIC_CPU_HPP
 #define FTL_TENSOR_STATIC_CPU_HPP
 
+#include <iostream>
 #include "mapper.hpp"
 #include "tensor_expression_static_cpu.hpp"         // NOTE: Only including expression specialization for 
                                                     //       static cpu implementation -- all specializations
@@ -196,7 +197,7 @@ TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(DT&& first_va
 
 template <typename DT, size_t SF, size_t...SR> template <typename E, typename T> 
 TensorInterface<TensorTraits<DT, CPU, SF, SR...>>::TensorInterface(const TensorExpression<E, T>& expression) 
-{   
+{
     // Convert the nano::list of dimension sizes to a constant array
     _dim_sizes = nano::runtime_converter<typename container_type::dimension_sizes>::to_array();  
     for (size_type i = 0; i != size(); ++i) _data[i] = expression[i];

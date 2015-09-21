@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------------------------------------
-/// @file   Header file for tensor addition for tensor library.
+/// @file   Header file for tensor sybtraction for tensor library.
 // ----------------------------------------------------------------------------------------------------------
 
 /*
@@ -20,38 +20,38 @@
  * ----------------------------------------------------------------------------------------------------------
  */ 
 
-#ifndef FTL_TENSOR_ADDITION_HPP
-#define FTL_TENSOR_ADDITION_HPP
+#ifndef FTL_TENSOR_SUBTRACTION_HPP
+#define FTL_TENSOR_SUBTRACTION_HPP
 
 #include "tensor_expressions.hpp"
 
 namespace ftl {
 
 // ----------------------------------------------------------------------------------------------------------
-/// @class      TensorAddition
-/// @brief      Expression class for calculating the addition of two tensors.
-/// @tparam     E1      The first expression for addition
-/// @tparam     E2      The second expression for addition
+/// @class      TensorSubtraction
+/// @brief      Expression class for calculating the subtraction of two tensors.
+/// @tparam     E1      The first expression for subtraction
+/// @tparam     E2      The second expression for subtraction
 /// @tparam     T1      The traits of the first expression
 /// @tparam     T2      The traits if the second expression
 // ----------------------------------------------------------------------------------------------------------
 template <typename E1, typename E2, typename T1, typename T2>
-class TensorAddition : public TensorExpression<TensorAddition<E1, E2, T1, T2>, T1> {
+class TensorSubtraction : public TensorExpression<TensorSubtraction<E1, E2, T1, T2>, T1> {
 public:
     using traits            = T1;
     using dim_container     = typename traits::dim_container;
     using size_type         = typename traits::size_type;
     using data_type         = typename traits::data_type;
 private:
-    E1 const& _x;       //!< First expression for addition
-    E2 const& _y;       //!< Second expression for addition
+    E1 const& _x;       //!< First expression for subtraction
+    E2 const& _y;       //!< Second expression for subtraction
 public:
     // ------------------------------------------------------------------------------------------------------
-    /// @brief     Sets the expressions for addition and checks that they have the same ranks and dimension
-    /// @param[in] x       The first expression for addition.
-    /// @param[in] y       The second expression for addition
+    /// @brief     Sets the expressions for subtraction and checks that they have the same ranks and dimension
+    /// @param[in] x       The first expression for subtraction.
+    /// @param[in] y       The second expression for subtraction
     // ------------------------------------------------------------------------------------------------------
-    TensorAddition(TensorExpression<E1, T1> const& x, TensorExpression<E2, T2> const& y); 
+    TensorSubtraction(TensorExpression<E1, T1> const& x, TensorExpression<E2, T2> const& y); 
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Gets the sizes of the all the dimensions of the expression.
@@ -61,13 +61,13 @@ public:
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Returns the size of the expression.
-    /// @return    The size of the tensor_addition.
+    /// @return    The size of the tensor_subtraction.
     // ------------------------------------------------------------------------------------------------------
     inline const size_type size() const { return _x.size(); }
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Returns the size of the expression.
-    /// @return    The size of the tensor_addition.
+    /// @return    The size of the tensor_subtraction.
     // ------------------------------------------------------------------------------------------------------
     inline const size_type rank() const { return _x.rank(); }
     
@@ -79,21 +79,18 @@ public:
     inline data_type operator[](size_type i) const { return _x[i] + _y[i]; }
 };  
 
-// ------------------------------------- ADDITION IMPLEMENTATIONS -------------------------------------------
+// ------------------------------------- SUBTRACTION IMPLEMENTATIONS -------------------------------------------
 
 template <typename E1, typename E2, typename T1, typename T2>
-TensorAddition<E1, E2, T1, T2>::TensorAddition(const TensorExpression<E1, T1>& x, 
-                                               const TensorExpression<E2, T2>& y) 
+TensorSubtraction<E1, E2, T1, T2>::TensorSubtraction(const TensorExpression<E1, T1>& x, 
+                                                     const TensorExpression<E2, T2>& y) 
 : _x(x), _y(y)
 {
-    int i = 0;
-    while (x.dim_sizes()[i] == y.dim_sizes()[i]) ++i; // Check equality of dimension sizes
-    
     // TODO: Add error throwing
     // Check that the ranks are equal
-    if (x.rank() != y.rank() || i != x.rank()) ;
+    if (x.rank() != y.rank() && x.dim_sizes() != y.dim_sizes()) ;
         // Throw error here 
 }
 
 }           // End namespace ftl  
-#endif      // FTL_TENSOR_ADDITION_HPP
+#endif      // FTL_TENSOR_SUBTRACTION_HPP

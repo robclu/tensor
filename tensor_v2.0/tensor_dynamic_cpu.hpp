@@ -90,6 +90,18 @@ public:
     ///             of the nth dimension of the tensor.
     // ------------------------------------------------------------------------------------------------------
     TensorInterface(std::initializer_list<size_type> dim_sizes); 
+   
+    // ------------------------------------------------------------------------------------------------------
+    /// @brief      Constructor for creation from a tensor expression -- this is only used for simple 
+    ///             expressions (which do not modify the rank and/or dimension sizes) -- such as addition
+    ///             and subtraction. Rank modifying expressions-- such as multiplication and slicing -- have 
+    ///             specialized constructors (to be implemented).
+    /// @param[in]  expression      The expression instance to create the static tensor from
+    /// @tparam     Expression      The type of the expressionA
+    /// @tparam     Traits          The tensor traits of the expression
+    // ------------------------------------------------------------------------------------------------------
+    template <typename Expression, typename Traits>
+    TensorInterface(const TensorExpression<Expression, Traits>& expression);
     
     // ------------------------------------------------------------------------------------------------------
     /// @brief     Gets the rank (number of dimensions) of the tensor.
@@ -144,7 +156,7 @@ public:
     /// @param[in]  i   The index of the element to access.
     /// @return     The element at position i in the tensor's data vector.
     // ------------------------------------------------------------------------------------------------------
-    inline data_type operator[](size_type i) const { return _data[i]; }
+    inline const data_type& operator[](size_type i) const { return _data[i]; }
 
     // ------------------------------------------------------------------------------------------------------
     /// @brief      Gets the element at a given index for each dimension of a tensor -- there is no bound
@@ -204,7 +216,14 @@ TensorInterface<TensorTraits<DT, CPU>>::TensorInterface(dim_container&& dim_size
     //       product of the sizes of the dimensions that were given
     
 }
-    
+  
+template <typename DT> template <typename E, typename T> 
+TensorInterface<TensorTraits<DT, CPU>>::TensorInterface(const TensorExpression<E, T>& expression)
+: _data(expression.size()), _dim_sizes(expression.dim_sizes()), _rank(expression.rank())
+{
+    for (size_type i = 0; i != size(); ++i) _data[i] = expression[i];
+}
+
 template <typename DT>
 void TensorInterface<TensorTraits<DT, CPU>>::initialize(const data_type min, const data_type max)
 {
