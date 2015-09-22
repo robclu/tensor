@@ -1,32 +1,28 @@
 ---
 layout: page 
-title: Introducing Nano 
+title: Introducing Tensor 
 ---  
  
-Nano is a c++ template metaprogramming library. It is designed with ease of use in mind, to provide compile
-time implementations of common STL functions as well as functions commonly seen in functional programming.
-Nano is written by [Rob Clucas](https://robclu.github.io) and is released under the [GNU GPL V2.0](http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+Tensor is a c++ expression template library. It is designed with both speed and clarity of expression in mind. It is thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically.
+
+Template metaprogramming is used to 'offload' any work which can be computed at compile time, to the compiler and expression templates are used to achieve the translation of the mathematically expressed code to high performance code.
+
+The long term goal is to develop something along the lines of the tensor library in the python theano libray, but with support for any rank tensors with both CPU and GPU functionality.
+
+Tensor is written by [Rob Clucas](https://robclu.github.io) and is released under the [GNU GPL V2.0](http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
  
-## Why Nano?
+## Why Tensor?
 
 ----
 
-There are a some very good TMP libraries already available such as
+Tensor provides a lot of flexibility, making it suitable for numrous situations. The two main areas of
+flexibility:
 
-* [Boost.MPL](http://www.boost.org/doc/libs/1_58_0/libs/mpl/doc/index.html)
-* [Meta](https://github.com/ericniebler/meta)
-* [Turbo](https://github.com/Manu343726/Turbo)
-
-The last two I found extremely helpful when learning TMP. 
-
-I found the amount effort required to learn TMP to be substantial, and the resources limited,
-so when writing nano I made an effort to document the code especially thoroughly so that anyone going 
-through the process of learning TMP can use nano as a starting point. 
-
-Additionally, nano attempts 
-to provide compile-time functions (metafunctions) in the same format as they are found in teh STL or in 
-functional languages (mostly haskell), so that both understanding and usage of nano is simple -- as the
-interfaces will not be too unfamiliar.
+* __Container type:__ Tensor provides both static and dynamic containers. If the size of each of the
+  dimensions of the tensor is known, a static container can be used which will improve performance, otherwise
+a dynamic tensor can be used. 
+* __Device type:__ Tensor provides (will provide) support for both CPU and GPU devices, CUDA will be used for
+  the GPU implementations, and (most probably) Intel TBB will be used for multi-threaded CPU implementations.
 
 ## Documentation 
 
@@ -38,8 +34,11 @@ Information regarding installation can be found at [installation](/nano/installa
 
 ## Examples
 
-Nano is still under development, however, examples of the latest functionality can be found at
+Tensor is still under development, however, examples of the latest functionality can be found at
 [examples](https:://robclu.github.io/examples.md).
+
+Currently only the CPU implementations are supported. I will update the status and the examples as additional
+functionality is added.
 
 Suggestions for additional functionality are welcomed.
 
