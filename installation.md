@@ -11,6 +11,7 @@ title: Installation
 * [Building](#building)
 * [Compilers](#compilers)
 * [Compiling](#compiling)
+* [Cleaning] (#cleaning)
 
 # Dependencies
 
@@ -44,7 +45,7 @@ Since tensor is (currently) a header-only library, there is nothing to install i
 it in your own application. However, tests are provided with tensor so ensure that everything is qorking as
 expected as well as to provide examples of the usage of tensor.
 
-To compile the tests, cd into ```/tensor_v2.0/tests```, at which point you are provided with a few options:
+To compile the tests, cd into ```tests/```, at which point you are provided with a few options:
 
 * Make all the tests
 * Make an individual tests
@@ -61,10 +62,11 @@ make all (or make -jN all -- to make in parallel with N processes)
 
 The following individual test components are provided 
 
-* tensor_tests -- tests related to tensors specifically
-* traits_tets -- tests for the tensor traits
-* tensor_container -- tests for the tensor containers
-* tensor_operations -- tests for the operations (addition, subtraction etc..)
+
+* __tensor__ : tests related to tensors specifically
+* __traits__ : tests for the tensor traits
+* __container__ : tests for the tensor containers
+* __operations__ : tests for the operations (addition, subtraction etc..)
 
 To make an individual tests, issuse
 
@@ -72,4 +74,12 @@ To make an individual tests, issuse
 make <test_name>
 ```
 
-with the appropriate test name.
+with the appropriate test name, for example ```make container```
+
+# Cleaning
+
+To clean the tests, issue
+
+``` 
+make clean
+```
