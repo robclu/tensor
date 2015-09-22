@@ -5,12 +5,12 @@
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-    #define BOOST_TEST_MODULE Operations
+    #define BOOST_TEST_MODULE OperationsTests
 #endif
 #include <boost/test/unit_test.hpp>
 
-#include "../tensor.hpp"
-#include "../tensor_operations.hpp"
+#include "../tensor/tensor.hpp"
+#include "../tensor/tensor_operations.hpp"
 
 #include <iostream>
 

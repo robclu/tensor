@@ -5,12 +5,12 @@
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-    #define BOOST_TEST_MODULE Main
+    #define BOOST_TEST_MODULE TensorTests
 #endif
 #include <boost/test/unit_test.hpp>
 
-#include "../tensor.hpp"
-#include "../tensor_operations.hpp"
+#include "../tensor/tensor.hpp"
+#include "../tensor/tensor_operations.hpp"
 
 BOOST_AUTO_TEST_SUITE( TensorSuite)
     

@@ -5,11 +5,11 @@
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-    #define BOOST_TEST_MODULE Main
+    #define BOOST_TEST_MODULE TraitsTests
 #endif
 #include <boost/test/unit_test.hpp>
 
-#include "../tensor_traits.hpp"
+#include "../tensor/tensor_traits.hpp"
 
 BOOST_AUTO_TEST_SUITE( TensorTraitsSuite)
 

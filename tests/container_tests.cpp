@@ -5,12 +5,12 @@
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-    #define BOOST_TEST_MODULE Main
+    #define BOOST_TEST_MODULE ContainerTests
 #endif
 #include <boost/test/unit_test.hpp>
 
 #ifndef FTL_TENSOR_CONTAINER_HPP
-    #include "../tensor_container.hpp"
+    #include "../tensor/tensor_container.hpp"
 #endif
 
 BOOST_AUTO_TEST_SUITE( TensorContainerSuite)
