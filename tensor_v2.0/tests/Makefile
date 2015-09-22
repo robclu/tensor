@@ -8,6 +8,11 @@
 ########################################################################################
 
 EXE 			:= test_suite
+CONTAINER_EXE   := container_suite
+OPERATIONS_EXE  := operations_suite
+TENSOR_EXE      := tensor_suite
+TRAITS_EXE      := traits_suite
+
 
 ########################################################################################
 #					                  COMPILERS						                   #
@@ -55,7 +60,7 @@ TP_FLAGS        := $(CX_FLAGS)
 # 					                TARGET RULES 					                   #
 #######################################################################################
 
-.PHONY: all container tensor traits
+.PHONY: all container operations tensor traits
 
 all: debug
 
@@ -80,6 +85,26 @@ tests.o: tests.cpp
 build_tests: container_tests.o tensor_tests.o traits_tests.o operations_tests.o tests.o
 	$(CXX) -o $(EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)	
 
+container: CX_FLAGS += -DSTAND_ALONE
+container: container_tests.o
+	$(CXX) -o $(CONTAINER_EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)	
+	
+operations: CX_FLAGS += -DSTAND_ALONE
+operations: operations_tests.o
+	$(CXX) -o $(OPERATIONS_EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)	
+	
+tensor: CX_FLAGS += -DSTAND_ALONE
+tensor: tensor_tests.o
+	$(CXX) -o $(TENSOR_EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)	
+	
+traits: CX_FLAGS += -DSTAND_ALONE
+traits: traits_tests.o
+	$(CXX) -o $(TRAITS_EXE) $+ $(CU_LDIR) $(CU_LIBS) $(CX_LDIR) $(CX_LIBS)	
+	
 clean:
 	rm -rf *.o
 	rm -rf $(EXE) 
+	rm -rf $(CONTAINER_EXE)
+	rm -rf $(OPERATIONS_EXE)
+	rm -rf $(TENSOR_EXE)
+	rm -rf $(TRAITS_EXE)

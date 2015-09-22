@@ -15,7 +15,9 @@
 #include <iostream>
 
 BOOST_AUTO_TEST_SUITE( OperationsSuite )
-    
+
+// -------------------------------------------- ADDITION ---------------------------------------------------
+
 BOOST_AUTO_TEST_CASE( canAdd2StaticTensors )
 {
     ftl::Tensor<int, ftl::CPU, 2, 2> A{ 1, 2, 3, 4 };
@@ -103,6 +105,30 @@ BOOST_AUTO_TEST_CASE( canAddADynamicAndStaticTensorToGetADynamicTensor )
     BOOST_CHECK( D[2] == 13 );
     BOOST_CHECK( C[3] == 14 );
     BOOST_CHECK( D[3] == 14 ); 
+}
+
+// ---------------------------------------------- SUBTRACTION -----------------------------------------------
+
+BOOST_AUTO_TEST_CASE( canSubtract2StaticTensors )
+{
+    // Tensor dimensions are stored down (col) then across (row)
+    ftl::Tensor<int, ftl::CPU, 2, 2> A{ 1, 2, 3, 4 };
+    ftl::Tensor<int, ftl::CPU, 2, 2> B{ 2, 4, 6, 8 };
+    
+    auto C = A - B;
+    ftl::Tensor<int, ftl::CPU, 2, 2> D = A - B;
+
+    // Using auto makes a TensorSubtraction<...> which doesn't have 
+    // and overloaded () operator at present as the expression classes
+    // are supposed to be used to create new tensors (as is done for D)
+    BOOST_CHECK( C[0]    == -1 );
+    BOOST_CHECK( D(0, 0) == -1 );
+    BOOST_CHECK( C[1]    == -2 );
+    BOOST_CHECK( D(1, 0) == -2 );
+    BOOST_CHECK( C[2]    == -3 );
+    BOOST_CHECK( D(0, 1) == -3 );
+    BOOST_CHECK( C[3]    == -4 );
+    BOOST_CHECK( D(1, 1) == -4 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

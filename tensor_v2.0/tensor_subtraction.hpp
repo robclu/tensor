@@ -76,7 +76,7 @@ public:
     /// @param[in] i   The element in the expression which must be fetched.
     /// @return    The result of the subtraction of the Tensors.
     // ------------------------------------------------------------------------------------------------------
-    inline data_type operator[](size_type i) const { return _x[i] + _y[i]; }
+    inline data_type operator[](size_type i) const { return _x[i] - _y[i]; }
 };  
 
 // ------------------------------------- SUBTRACTION IMPLEMENTATIONS -------------------------------------------
