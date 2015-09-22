@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Nano</title>
+ <link href="https://robclu.github.io/nano/atom.xml" rel="self"/>
+ <link href="https://robclu.github.io/nano/"/>
+ <updated>2015-09-21T23:44:30+02:00</updated>
+ <id>https://robclu.github.io/nano</id>
+ <author>
+   <name>Rob Clucas</name>
+   <email></email>
+ </author>
+
+ 
+ <entry>
+   <title>Introducing Nano</title>
+   <link href="https://robclu.github.io/nano/2015/09/22/introducing-nano/"/>
+   <updated>2015-09-22T00:00:00+02:00</updated>
+   <id>https://robclu.github.io/nano/2015/09/22/introducing-nano</id>
+   <content type="html">&lt;p&gt;Nano is a c++ template metaprogramming library. It is designed with ease of use in mind, to provide compile
+time implementations of common STL functions as well as functions commonly seen in functional programming.
+Nano is written by &lt;a href=&quot;https://robclu.github.io&quot;&gt;Rob Clucas&lt;/a&gt; and is released under the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html&quot;&gt;GNU GPL V2.0&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Why Nano?&lt;/h2&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;There are a some very good TMP libraries already available such as&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.boost.org/doc/libs/1_58_0/libs/mpl/doc/index.html&quot;&gt;Boost.MPL&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/ericniebler/meta&quot;&gt;Meta&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/Manu343726/Turbo&quot;&gt;Turbo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The last I found extremely helpful when learning TMP. However, the effort required to learn TMP was substantial,
+so when writing nano I made an effort to document the code especially thoroughly so that anyone going 
+through the process of learning TMP can use nano as a starting point. Additionally, nano attempts 
+to provide compile-time functions (metafunctions) in the same format as they are found in teh STL or in 
+functional languages (mostly haskell), so that both understanding and usage of nano is simple.&lt;/p&gt;
+
+&lt;h2&gt;Documentation&lt;/h2&gt;
+
+&lt;p&gt;The automatically generated documentation from the code comments can be found at : &lt;a href=&quot;&quot;&gt;API documentation&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Installation&lt;/h2&gt;
+
+&lt;p&gt;See the &lt;a href=&quot;/nano/installation&quot;&gt;installation&lt;/a&gt; or the link in the sidebar for
+installation.&lt;/p&gt;
+
+&lt;h2&gt;Examples&lt;/h2&gt;
+
+&lt;p&gt;Nano is still under development, however, examples of the latest functionality can be found at
+&lt;a href=&quot;https:://robclu.github.io/examples.md&quot;&gt;examples&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Suggestions for additional general, or specific functionality are welcomed.&lt;/p&gt;
+
+&lt;h2&gt;Contact&lt;/h2&gt;
+
+&lt;p&gt;Feel free to drop me an email at &lt;a href=&quot;mailto:robjclucas@gmail.com&quot;&gt;robjclucas@gmail.com&lt;/a&gt; with any comments or
+suggestions.&lt;/p&gt;
+</content>
+ </entry>
+ 
+
+</feed>

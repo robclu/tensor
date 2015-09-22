@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Installation &middot; Nano
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/nano/public/css/poole.css">
+  <link rel="stylesheet" href="/nano/public/css/syntax.css">
+  <link rel="stylesheet" href="/nano/public/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/nano/public/nano.png">
+  <link rel="shortcut icon" href="/nano/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/nano/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d layout-reverse">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>A C++ template metaprogramming library designed to provide compile time implementations of common STL and functional programming functions, as well as allowing user-defined metafunctions to be easily implemented using the functions provided by nano</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/nano">Home</a>
+
+    
+
+
+    
+    
+      
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/nano/examples/">Examples and Usage</a>
+        
+      
+    
+      
+    
+      
+        
+          <a class="sidebar-nav-item active" href="/nano/installation/">Installation</a>
+        
+      
+    
+
+    <a class="sidebar-nav-item" href="https://github.com/robclu/nano/archive/master.zip">Download</a>
+    <a class="sidebar-nav-item" href="https://github.com/robclu/nano">GitHub project</a>
+    <!--<span class="sidebar-nav-item">Currently v1.0</span>-->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2015. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+          <h3 class="masthead-title">
+            <a href="/nano" title="Home">Nano</a>
+            <small>A C++ template metaprogramming library</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="page">
+  <h1 class="page-title">Installation</h1>
+  <p>Nano is a header only library, so to use it you just need to include the header file:</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include &quot;nano/nano.hpp&quot;</span>
+</code></pre></div>
+<p>so long as the dirctory in which the nano folder is installed is in your <code>PATH</code>. If it is not in your
+path, to will need to give the compiler the directory in which the nano headers are found, like:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">-I/path/to/nano/
+</code></pre></div>
+<p>A Makefile is provided to install nano to <code>/usr/local</code> by default (all this does is move the nano folder to 
+<code>/usr/local</code> which you can change by modifying the <code>INSTALL_DIR</code> variable in the Makefile to the desired
+ path). </p>
+
+<p>You must then add the directory to the <code>PATH</code> (ideally add this to your <code>~/.bashrc</code>):</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">export PATH=&lt;INSTALL_DIR&gt;:$PATH
+</code></pre></div>
+<p>Once the Makefile is setup, nano can be <strong>installed</strong> with:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo make install
+</code></pre></div>
+<p>You can <strong>uninstall</strong> nano as follows:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo make uninstall
+</code></pre></div>
+<h2>Compilers</h2>
+
+<p>Nano has been tested with the following compilers on ubuntu 15.04:</p>
+
+<ul>
+<li>g++ - version 4.9.1</li>
+<li>clang++ - version 3.6.1</li>
+</ul>
+
+<p>I haven&#39;t tested it on Windows yet -- I will do a test shortly!</p>
+
+<h2>Tests</h2>
+
+<p>A test file is provided to ensure that all the functionality is working correctly.
+To run the test file you&#39;ll need to install the boost test library from <a href="http://www.boost.org/">Boost</a> and 
+(the test file dynamically links the test library, so you&#39;ll actually have to install the library and not 
+just include the header file).</p>
+
+<p>With Boost.Test and nano installed you can run the tests with:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">make                    # builds then runs
+                        # or
+make build_and_run      # builds then runs
+</code></pre></div>
+<p>or by</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">make build              # only builds
+./nano_test_suite       
+</code></pre></div>
+</div>
+
+      </div>
+    </div>
+
+  </body>
+</html>
