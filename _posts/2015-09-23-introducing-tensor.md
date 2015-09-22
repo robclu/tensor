@@ -30,12 +30,12 @@ The automatically generated documentation from the code comments (using Doxygen)
 
 ## Installation 
 
-Information regarding installation can be found at [installation](/nano/installation) or through the link in the sidebar.
+Information regarding installation can be found at [installation](/tensor/installation) or through the link in the sidebar.
 
 ## Examples
 
 Tensor is still under development, however, examples of the latest functionality can be found at
-[examples](https:://robclu.github.io/examples.md).
+[examples](/tensor/examples).
 
 Currently only the CPU implementations are supported. I will update the status and the examples as additional
 functionality is added.

@@ -10,7 +10,7 @@
 
   <title>
     
-      Introducing Nano &middot; Tensor
+      Introducing Tensor &middot; Tensor
     
   </title>
 
@@ -99,33 +99,29 @@
 
       <div class="container content">
         <div class="page">
-  <h1 class="page-title">Introducing Nano</h1>
-  <p>Nano is a c++ template metaprogramming library. It is designed with ease of use in mind, to provide compile
-time implementations of common STL functions as well as functions commonly seen in functional programming.
-Nano is written by <a href="https://robclu.github.io">Rob Clucas</a> and is released under the <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GNU GPL V2.0</a>.</p>
+  <h1 class="page-title">Introducing Tensor</h1>
+  <p>Tensor is a c++ expression template library. It is designed with both speed and clarity of expression in mind. It is thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically.</p>
 
-<h2>Why Nano?</h2>
+<p>Template metaprogramming is used to &#39;offload&#39; any work which can be computed at compile time, to the compiler and expression templates are used to achieve the translation of the mathematically expressed code to high performance code.</p>
+
+<p>The long term goal is to develop something along the lines of the tensor library in the python theano libray, but with support for any rank tensors with both CPU and GPU functionality.</p>
+
+<p>Tensor is written by <a href="https://robclu.github.io">Rob Clucas</a> and is released under the <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GNU GPL V2.0</a>.</p>
+
+<h2>Why Tensor?</h2>
 
 <hr>
 
-<p>There are a some very good TMP libraries already available such as</p>
+<p>Tensor provides a lot of flexibility, making it suitable for numrous situations. The two main areas of
+flexibility:</p>
 
 <ul>
-<li><a href="http://www.boost.org/doc/libs/1_58_0/libs/mpl/doc/index.html">Boost.MPL</a></li>
-<li><a href="https://github.com/ericniebler/meta">Meta</a></li>
-<li><a href="https://github.com/Manu343726/Turbo">Turbo</a></li>
+<li><strong>Container type:</strong> Tensor provides both static and dynamic containers. If the size of each of the
+dimensions of the tensor is known, a static container can be used which will improve performance, otherwise
+a dynamic tensor can be used. </li>
+<li><strong>Device type:</strong> Tensor provides (will provide) support for both CPU and GPU devices, CUDA will be used for
+the GPU implementations, and (most probably) Intel TBB will be used for multi-threaded CPU implementations.</li>
 </ul>
-
-<p>The last two I found extremely helpful when learning TMP. </p>
-
-<p>I found the amount effort required to learn TMP to be substantial, and the resources limited,
-so when writing nano I made an effort to document the code especially thoroughly so that anyone going 
-through the process of learning TMP can use nano as a starting point. </p>
-
-<p>Additionally, nano attempts 
-to provide compile-time functions (metafunctions) in the same format as they are found in teh STL or in 
-functional languages (mostly haskell), so that both understanding and usage of nano is simple -- as the
-interfaces will not be too unfamiliar.</p>
 
 <h2>Documentation</h2>
 
@@ -133,12 +129,15 @@ interfaces will not be too unfamiliar.</p>
 
 <h2>Installation</h2>
 
-<p>Information regarding installation can be found at <a href="/nano/installation">installation</a> or through the link in the sidebar.</p>
+<p>Information regarding installation can be found at <a href="/tensor/installation">installation</a> or through the link in the sidebar.</p>
 
 <h2>Examples</h2>
 
-<p>Nano is still under development, however, examples of the latest functionality can be found at
-<a href="https:://robclu.github.io/examples.md">examples</a>.</p>
+<p>Tensor is still under development, however, examples of the latest functionality can be found at
+<a href="tensor/examples">examples</a>.</p>
+
+<p>Currently only the CPU implementations are supported. I will update the status and the examples as additional
+functionality is added.</p>
 
 <p>Suggestions for additional functionality are welcomed.</p>
 

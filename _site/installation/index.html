@@ -100,53 +100,81 @@
       <div class="container content">
         <div class="page">
   <h1 class="page-title">Installation</h1>
-  <p>Nano is a header only library, so to use it you just need to include the header file:</p>
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include &quot;nano/nano.hpp&quot;</span>
-</code></pre></div>
-<p>so long as the dirctory in which the nano folder is installed is in your <code>PATH</code>. If it is not in your
-path, to will need to give the compiler the directory in which the nano headers are found, like:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">-I/path/to/nano/
-</code></pre></div>
-<p>A Makefile is provided to install nano to <code>/usr/local</code> by default (all this does is move the nano folder to 
-<code>/usr/local</code> which you can change by modifying the <code>INSTALL_DIR</code> variable in the Makefile to the desired
- path). </p>
-
-<p>You must then add the directory to the <code>PATH</code> (ideally add this to your <code>~/.bashrc</code>):</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">export PATH=&lt;INSTALL_DIR&gt;:$PATH
-</code></pre></div>
-<p>Once the Makefile is setup, nano can be <strong>installed</strong> with:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo make install
-</code></pre></div>
-<p>You can <strong>uninstall</strong> nano as follows:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo make uninstall
-</code></pre></div>
-<h2>Compilers</h2>
-
-<p>Nano has been tested with the following compilers on ubuntu 15.04:</p>
+  <h1>Contents</h1>
 
 <ul>
-<li>g++ - version 4.9.1</li>
-<li>clang++ - version 3.6.1</li>
+<li><a href="#dependancies">Dependencies</a>
+
+<ul>
+<li><a href="#nano">Nano</a></li>
+<li><a href="#boost-test">Boost.Test</a></li>
+</ul></li>
+<li><a href="#building">Building</a></li>
+<li><a href="#compilers">Compilers</a></li>
+<li><a href="#compiling">Compiling</a></li>
 </ul>
 
-<p>I haven&#39;t tested it on Windows yet -- I will do a test shortly!</p>
+<h1>Dependencies</h1>
 
-<h2>Tests</h2>
+<ul>
+<li><a href="https://robclu.github.io/nano">Nano</a> : A template metaprogramming library, which is used to offload some of the work to the compiler, for example things like index mapping for slicing and multiplication.</li>
+<li><a href="http://www.boost.org/doc/libs/1_59_0/libs/test/doc/html/index.html">Boost.Test</a> : For the unit testing component of the library. This is not necessary of you aren&#39;t running the tests.</li>
+</ul>
 
-<p>A test file is provided to ensure that all the functionality is working correctly.
-To run the test file you&#39;ll need to install the boost test library from <a href="http://www.boost.org/">Boost</a> and 
-(the test file dynamically links the test library, so you&#39;ll actually have to install the library and not 
-just include the header file).</p>
+<p><strong>Note:</strong> At present CUDA is not requires as the GPU component of the library has not yet been implemented.</p>
 
-<p>With Boost.Test and nano installed you can run the tests with:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">make                    # builds then runs
-                        # or
-make build_and_run      # builds then runs
+<h2>Nano</h2>
+
+<p>You can get the nano library from here -- <a href="https://github.com/robclu/nano">nano</a> -- it is a header only library. 
+By default it is installed to usr/include. If you install it somewhere else make sure that it is on your <code>$PATH</code> so that tensor can find it.</p>
+
+<h2>Boost</h2>
+
+<p>You can get the Boost test library from here -- <a href="http://www.boost.org/doc/libs/1_59_0/libs/test/doc/html/index.html">Boost.Test</a> -- and follow the Getting Started Guide to install the libraries.</p>
+
+<p>Note: You only need the test library from Boost, but it is dynamically linked in the Makefile provided with the tensor library, so you should install it to allow dynamic linking (i.e the library needs to be installed and not just the header files).</p>
+
+<h1>Compilers</h1>
+
+<p>The following compilers have been tested:</p>
+
+<p>g++ (version 4.9.1)
+clang++ (version 3.6.1)</p>
+
+<h1>Compiling</h1>
+
+<p>Since tensor is (currently) a header-only library, there is nothing to install if you would just like to use
+it in your own application. However, tests are provided with tensor so ensure that everything is qorking as
+expected as well as to provide examples of the usage of tensor.</p>
+
+<p>To compile the tests, cd into <code>/tensor_v2.0/tests</code>, at which point you are provided with a few options:</p>
+
+<ul>
+<li>Make all the tests</li>
+<li>Make an individual tests</li>
+</ul>
+
+<h2>All tests</h2>
+
+<p>To make all the tests, simply issue</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">make all (or make -jN all -- to make in parallel with N processes)
 </code></pre></div>
-<p>or by</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">make build              # only builds
-./nano_test_suite       
+<h2>Individual tests</h2>
+
+<p>The following individual test components are provided </p>
+
+<ul>
+<li>tensor_tests -- tests related to tensors specifically</li>
+<li>traits_tets -- tests for the tensor traits</li>
+<li>tensor_container -- tests for the tensor containers</li>
+<li>tensor_operations -- tests for the operations (addition, subtraction etc..)</li>
+</ul>
+
+<p>To make an individual tests, issuse</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">make &lt;test_name&gt;
 </code></pre></div>
+<p>with the appropriate test name.</p>
+
 </div>
 
       </div>

@@ -1,4 +1,4 @@
-# Nano Documentation
+# Tensor Documentation
 
-Documentation branch for Nano
+Documentation branch for Tensor
 

@@ -4,7 +4,7 @@
  <title>Tensor</title>
  <link href="https://robclu.github.io/tensor/atom.xml" rel="self"/>
  <link href="https://robclu.github.io/tensor/"/>
- <updated>2015-09-22T17:13:08+02:00</updated>
+ <updated>2015-09-23T00:51:19+02:00</updated>
  <id>https://robclu.github.io/tensor</id>
  <author>
    <name>Rob Clucas</name>
@@ -13,36 +13,32 @@
 
  
  <entry>
-   <title>Introducing Nano</title>
+   <title>Introducing Tensor</title>
    <link href="https://robclu.github.io/tensor/2015/09/22/introducing-nano/"/>
    <updated>2015-09-22T00:00:00+02:00</updated>
    <id>https://robclu.github.io/tensor/2015/09/22/introducing-nano</id>
-   <content type="html">&lt;p&gt;Nano is a c++ template metaprogramming library. It is designed with ease of use in mind, to provide compile
-time implementations of common STL functions as well as functions commonly seen in functional programming.
-Nano is written by &lt;a href=&quot;https://robclu.github.io&quot;&gt;Rob Clucas&lt;/a&gt; and is released under the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html&quot;&gt;GNU GPL V2.0&lt;/a&gt;.&lt;/p&gt;
+   <content type="html">&lt;p&gt;Tensor is a c++ expression template library. It is designed with both speed and clarity of expression in mind. It is thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically.&lt;/p&gt;
 
-&lt;h2&gt;Why Nano?&lt;/h2&gt;
+&lt;p&gt;Template metaprogramming is used to &amp;#39;offload&amp;#39; any work which can be computed at compile time, to the compiler and expression templates are used to achieve the translation of the mathematically expressed code to high performance code.&lt;/p&gt;
+
+&lt;p&gt;The long term goal is to develop something along the lines of the tensor library in the python theano libray, but with support for any rank tensors with both CPU and GPU functionality.&lt;/p&gt;
+
+&lt;p&gt;Tensor is written by &lt;a href=&quot;https://robclu.github.io&quot;&gt;Rob Clucas&lt;/a&gt; and is released under the &lt;a href=&quot;http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html&quot;&gt;GNU GPL V2.0&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Why Tensor?&lt;/h2&gt;
 
 &lt;hr&gt;
 
-&lt;p&gt;There are a some very good TMP libraries already available such as&lt;/p&gt;
+&lt;p&gt;Tensor provides a lot of flexibility, making it suitable for numrous situations. The two main areas of
+flexibility:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.boost.org/doc/libs/1_58_0/libs/mpl/doc/index.html&quot;&gt;Boost.MPL&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/ericniebler/meta&quot;&gt;Meta&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/Manu343726/Turbo&quot;&gt;Turbo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Container type:&lt;/strong&gt; Tensor provides both static and dynamic containers. If the size of each of the
+dimensions of the tensor is known, a static container can be used which will improve performance, otherwise
+a dynamic tensor can be used. &lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Device type:&lt;/strong&gt; Tensor provides (will provide) support for both CPU and GPU devices, CUDA will be used for
+the GPU implementations, and (most probably) Intel TBB will be used for multi-threaded CPU implementations.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;The last two I found extremely helpful when learning TMP. &lt;/p&gt;
-
-&lt;p&gt;I found the amount effort required to learn TMP to be substantial, and the resources limited,
-so when writing nano I made an effort to document the code especially thoroughly so that anyone going 
-through the process of learning TMP can use nano as a starting point. &lt;/p&gt;
-
-&lt;p&gt;Additionally, nano attempts 
-to provide compile-time functions (metafunctions) in the same format as they are found in teh STL or in 
-functional languages (mostly haskell), so that both understanding and usage of nano is simple -- as the
-interfaces will not be too unfamiliar.&lt;/p&gt;
 
 &lt;h2&gt;Documentation&lt;/h2&gt;
 
@@ -50,12 +46,15 @@ interfaces will not be too unfamiliar.&lt;/p&gt;
 
 &lt;h2&gt;Installation&lt;/h2&gt;
 
-&lt;p&gt;Information regarding installation can be found at &lt;a href=&quot;/nano/installation&quot;&gt;installation&lt;/a&gt; or through the link in the sidebar.&lt;/p&gt;
+&lt;p&gt;Information regarding installation can be found at &lt;a href=&quot;/tensor/installation&quot;&gt;installation&lt;/a&gt; or through the link in the sidebar.&lt;/p&gt;
 
 &lt;h2&gt;Examples&lt;/h2&gt;
 
-&lt;p&gt;Nano is still under development, however, examples of the latest functionality can be found at
-&lt;a href=&quot;https:://robclu.github.io/examples.md&quot;&gt;examples&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Tensor is still under development, however, examples of the latest functionality can be found at
+&lt;a href=&quot;tensor/examples&quot;&gt;examples&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Currently only the CPU implementations are supported. I will update the status and the examples as additional
+functionality is added.&lt;/p&gt;
 
 &lt;p&gt;Suggestions for additional functionality are welcomed.&lt;/p&gt;
 
