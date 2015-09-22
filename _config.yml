@@ -7,7 +7,7 @@ permalink:        pretty
 
 # Setup
 title:            Tensor
-tagline:          'A C++ expression template library for N dimension tensor computations'
+tagline:          'A C++ expression template library for N dimensional tensor computations'
 description:      'A C++ expression template library designed to provide operations on N dimensional tensors using static or dynamic containers, and CPU or GPU devices.'
 url:              https://robclu.github.io/tensor
 baseurl:          /tensor
