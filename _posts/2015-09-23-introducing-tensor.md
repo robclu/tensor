@@ -26,7 +26,7 @@ a dynamic tensor can be used.
 
 ## Documentation 
 
-The automatically generated documentation from the code comments (using Doxygen) can be found at : [API documentation](/nano/documentation).
+The automatically generated documentation from the code comments (using Doxygen) can be found at : [API documentation](/tensor/documentation).
 
 ## Installation 
 
