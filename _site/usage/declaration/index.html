@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Tensor Declarations &middot; Tensor
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/tensor/public/css/poole.css">
+  <link rel="stylesheet" href="/tensor/public/css/syntax.css">
+  <link rel="stylesheet" href="/tensor/public/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/tensor/public/tensor.png">
+  <link rel="shortcut icon" href="/tensor/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/tensor/atom.xml">
+</head>
+
+
+  <body class="theme-base-0d layout-reverse">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>A C++ expression template library designed to provide operations on N dimensional tensors using static or dynamic containers, and CPU or GPU devices.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/tensor">Home</a>
+
+    
+
+
+    
+    
+      
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/tensor/examples/">Examples and Usage</a>
+        
+      
+    
+      
+    
+      
+        
+      
+    
+      
+        
+          <a class="sidebar-nav-item" href="/tensor/installation/">Installation</a>
+        
+      
+    
+      
+        
+      
+    
+
+    <a class="sidebar-nav-item" href="https://github.com/robclu/tensor/archive/master.zip">Download</a>
+    <a class="sidebar-nav-item" href="https://github.com/robclu/tensor">GitHub project</a>
+    <!--<span class="sidebar-nav-item">Currently v1.0</span>-->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2015. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+          <h3 class="masthead-title">
+            <a href="/tensor" title="Home">Tensor</a>
+            <small>A C++ expression template library for N dimensional tensor computations</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Tensor Declarations</h1>
+  <span class="post-date"></span>
+  <p>This page provides examples of the available tensor types and their usage.</p>
+
+<h1>Dynamic Tensors</h1>
+
+<p>Dynamic tensors are tensors for which the size, and hence the sizes of the dimensions, are not known. This
+lack of information requires using a vector so that the container can be dynamically allocated. This
+flexibility comes at the cost of performance.</p>
+
+<p>A dynamic tensor can be declared using either the general tensor interface, providing type for the tensor and
+the device to use for computation, for example</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// Declare a CPU tensor with integer elements</span>
+<span class="n">ftl</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">ftl</span><span class="o">::</span><span class="n">CPU</span><span class="o">&gt;</span> <span class="n">cpu_tensor</span><span class="p">;</span>
+
+<span class="c1">// Declare a GPU tensor with floating point elements</span>
+<span class="n">ftl</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="p">,</span> <span class="n">ftl</span><span class="o">::</span><span class="n">GPU</span><span class="o">&gt;</span> <span class="n">gpu_tensor</span><span class="p">;</span>
+</code></pre></div>
+<p>Additionally, tensor defines type aliases for <code>CPU</code> tensors, so a dynamic CPU tensor can be declared as
+follows</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// Declare a dynamic CPU tensor with integer elements</span>
+<span class="n">ftl</span><span class="o">::</span><span class="n">DynamicTensorCPU</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span>
+</code></pre></div>
+<h1>Static Tensors</h1>
+
+<p>Static tensors should be used when performance is critial and when the size of the dimensions is known when
+the tensor is created. The dimension sizes must be passed as template parameters. This choice was made to
+allow a lot of the computation for index offsetting to be done at compile-time, greatly improving performance.
+A static tensor can be declared using the general tensor interface as follows</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// Declare a 2 dimensional (rank 2) cpu static tensor with integer elements</span>
+<span class="c1">// This example is the equivalent of a 4x4 matrix</span>
+<span class="n">ftl</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">ftl</span><span class="o">::</span><span class="n">CPU</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">,</span>                  <span class="c1">// Size of the first dimension</span>
+            <span class="mi">4</span>                   <span class="c1">// Size of the second dimension</span>
+            <span class="o">&gt;</span> <span class="n">cpu_tensor</span><span class="p">;</span>   
+</code></pre></div>
+<p>As for dynamic tensors, tensor defines a type alias for static CPU tensors. The same static tensor as above
+can also be created as follows</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// Declare a rank 2 static cpu tensor </span>
+<span class="c1">// This is also a 4x4 matrix</span>
+<span class="n">ftl</span><span class="o">::</span><span class="n">StaticTensorCpu</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span> <span class="n">cpu_tensor</span><span class="p">;</span>
+</code></pre></div>
+<p>A particularly important part of tensor is that the number of dimensions which a tensor may have is unbound,
+so a 5 dimensional static tensor could be created as follows</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">ftl</span><span class="o">::</span><span class="n">StaticTensorCpu</span><span class="o">&lt;</span><span class="kt">float</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span> <span class="n">rank_five_tensor</span><span class="p">;</span>
+</code></pre></div>
+<p>You can also provide the data for the static tensor to the constructor, such as </p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">ftl</span><span class="o">::</span><span class="n">StaticTensorCpu</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span> <span class="n">A</span><span class="p">{</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="p">}</span> <span class="p">};</span>
+</code></pre></div>
+<h1>Initialization</h1>
+
+<p>See the page on <a href="/tensor/usage/initialization">initialization</a> for how tensors can be initialized efficiently.</p>
+
+<h1>Memory Layout</h1>
+
+<p>As tensors support N dimensions, the memory layout becomes complex, thus a dedicated page is provided for a
+detailed explanation, see <a href="/tensor/usage/memorylayout/">memory layout</a>.</p>
+
+</div>
+
+
+      </div>
+    </div>
+
+  </body>
+</html>

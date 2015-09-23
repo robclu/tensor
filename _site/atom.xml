@@ -4,7 +4,7 @@
  <title>Tensor</title>
  <link href="https://robclu.github.io/tensor/atom.xml" rel="self"/>
  <link href="https://robclu.github.io/tensor/"/>
- <updated>2015-09-23T00:51:19+02:00</updated>
+ <updated>2015-09-23T21:54:59+02:00</updated>
  <id>https://robclu.github.io/tensor</id>
  <author>
    <name>Rob Clucas</name>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>Introducing Tensor</title>
-   <link href="https://robclu.github.io/tensor/2015/09/22/introducing-nano/"/>
-   <updated>2015-09-22T00:00:00+02:00</updated>
-   <id>https://robclu.github.io/tensor/2015/09/22/introducing-nano</id>
+   <link href="https://robclu.github.io/tensor/2015/09/23/introducing-tensor/"/>
+   <updated>2015-09-23T00:00:00+02:00</updated>
+   <id>https://robclu.github.io/tensor/2015/09/23/introducing-tensor</id>
    <content type="html">&lt;p&gt;Tensor is a c++ expression template library. It is designed with both speed and clarity of expression in mind. It is thus intended to provide high levels of performance but allow operations on tensors in the code to appear exactly as they do mathematically.&lt;/p&gt;
 
 &lt;p&gt;Template metaprogramming is used to &amp;#39;offload&amp;#39; any work which can be computed at compile time, to the compiler and expression templates are used to achieve the translation of the mathematically expressed code to high performance code.&lt;/p&gt;
@@ -42,7 +42,7 @@ the GPU implementations, and (most probably) Intel TBB will be used for multi-th
 
 &lt;h2&gt;Documentation&lt;/h2&gt;
 
-&lt;p&gt;The automatically generated documentation from the code comments (using Doxygen) can be found at : &lt;a href=&quot;&quot;&gt;API documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The automatically generated documentation from the code comments (using Doxygen) can be found at : &lt;a href=&quot;/tensor/documentation&quot;&gt;API documentation&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2&gt;Installation&lt;/h2&gt;
 
@@ -51,7 +51,7 @@ the GPU implementations, and (most probably) Intel TBB will be used for multi-th
 &lt;h2&gt;Examples&lt;/h2&gt;
 
 &lt;p&gt;Tensor is still under development, however, examples of the latest functionality can be found at
-&lt;a href=&quot;tensor/examples&quot;&gt;examples&lt;/a&gt;.&lt;/p&gt;
+&lt;a href=&quot;/tensor/examples&quot;&gt;examples&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Currently only the CPU implementations are supported. I will update the status and the examples as additional
 functionality is added.&lt;/p&gt;

@@ -57,6 +57,10 @@
     
       
         
+      
+    
+      
+        
           <a class="sidebar-nav-item" href="/tensor/examples/">Examples and Usage</a>
         
       
@@ -65,7 +69,15 @@
     
       
         
+      
+    
+      
+        
           <a class="sidebar-nav-item active" href="/tensor/installation/">Installation</a>
+        
+      
+    
+      
         
       
     
@@ -91,8 +103,8 @@
           <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
           <h3 class="masthead-title">
-            <a href="/nano" title="Home">Tensor</a>
-            <small>A C++ expression template library for N dimension tensor computations</small>
+            <a href="/tensor" title="Home">Tensor</a>
+            <small>A C++ expression template library for N dimensional tensor computations</small>
           </h3>
         </div>
       </div>
@@ -112,6 +124,7 @@
 <li><a href="#building">Building</a></li>
 <li><a href="#compilers">Compilers</a></li>
 <li><a href="#compiling">Compiling</a></li>
+<li><a href="#cleaning">Cleaning</a></li>
 </ul>
 
 <h1>Dependencies</h1>
@@ -147,7 +160,7 @@ clang++ (version 3.6.1)</p>
 it in your own application. However, tests are provided with tensor so ensure that everything is qorking as
 expected as well as to provide examples of the usage of tensor.</p>
 
-<p>To compile the tests, cd into <code>/tensor_v2.0/tests</code>, at which point you are provided with a few options:</p>
+<p>To compile the tests, cd into <code>tests/</code>, at which point you are provided with a few options:</p>
 
 <ul>
 <li>Make all the tests</li>
@@ -164,17 +177,22 @@ expected as well as to provide examples of the usage of tensor.</p>
 <p>The following individual test components are provided </p>
 
 <ul>
-<li>tensor_tests -- tests related to tensors specifically</li>
-<li>traits_tets -- tests for the tensor traits</li>
-<li>tensor_container -- tests for the tensor containers</li>
-<li>tensor_operations -- tests for the operations (addition, subtraction etc..)</li>
+<li><strong>tensor</strong> : tests related to tensors specifically</li>
+<li><strong>traits</strong> : tests for the tensor traits</li>
+<li><strong>container</strong> : tests for the tensor containers</li>
+<li><strong>operations</strong> : tests for the operations (addition, subtraction etc..)</li>
 </ul>
 
 <p>To make an individual tests, issuse</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">make &lt;test_name&gt;
 </code></pre></div>
-<p>with the appropriate test name.</p>
+<p>with the appropriate test name, for example <code>make container</code></p>
 
+<h1>Cleaning</h1>
+
+<p>To clean the tests, issue</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">make clean
+</code></pre></div>
 </div>
 
       </div>
